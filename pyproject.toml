@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "corep-crr3-community"
+version = "4.2.7"
+description = "Corep Engine Community — Standard Approach et SA-CCR"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{name = "Alexandre Charpentier"}]
+# Dépendances de base : suffisantes pour les fonctions de calcul PURES (SA, SA-CCR).
+# psycopg2 n'est PAS requis pour le calcul — uniquement pour l'exécution sur une
+# base PostgreSQL réelle (extra `postgres`).
+dependencies = [
+  "scipy>=1.9.0",
+  "typing-extensions>=4.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg2-binary>=2.9.0"]
+dev = [
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+]
+
+[project.scripts]
+corep-community = "corep_crr3.public_registry:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+corep_crr3 = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+# Couverture (v4.2.6) — seuil plancher anti-régression, à calibrer après 1re mesure.
+[tool.coverage.run]
+source = ["corep_crr3"]
+branch = true
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]

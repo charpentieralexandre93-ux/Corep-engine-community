@@ -1,0 +1,71 @@
+{
+  "version": "4.2.8",
+  "edition": "Community",
+  "engines": [
+    "SA",
+    "SA_CCR"
+  ],
+  "reset_sql": "00_reset_database_dev_ONLY.sql",
+  "steps": [
+    {
+      "path": "01_schema/01_schema_common_community.sql",
+      "group": "always",
+      "description": "socle commun public SA / SA-CCR"
+    },
+    {
+      "path": "01_schema/02_schema_domain_normalization_community.sql",
+      "group": "always",
+      "description": "domaines CRM et contreparties publics"
+    },
+    {
+      "path": "01_schema/03_schema_bcnf_integrity_patch.sql",
+      "group": "always",
+      "description": "contraintes naturelles BCNF"
+    },
+    {
+      "path": "02_seeds/00_seed_common_reference_community.sql",
+      "group": "always",
+      "description": "référentiel commun public minimal"
+    },
+    {
+      "path": "01_schema/engines/schema_credit_standard.sql",
+      "group": "run_sa",
+      "description": "schéma moteur SA"
+    },
+    {
+      "path": "02_seeds/01_seed_credit_standard.sql",
+      "group": "run_sa",
+      "description": "règles prudentielles SA et CRM"
+    },
+    {
+      "path": "03_mapping/01_mapping_credit_standard_community.sql",
+      "group": "run_sa",
+      "description": "mapping COREP public SA"
+    },
+    {
+      "path": "01_schema/engines/schema_saccr.sql",
+      "group": "run_saccr",
+      "description": "schéma moteur SA-CCR"
+    },
+    {
+      "path": "02_seeds/02_seed_saccr.sql",
+      "group": "run_saccr",
+      "description": "règles prudentielles SA-CCR"
+    },
+    {
+      "path": "03_mapping/02_mapping_saccr.sql",
+      "group": "run_saccr",
+      "description": "mapping COREP SA-CCR"
+    },
+    {
+      "path": "03_mapping/99_mapping_conditions_bcnf.sql",
+      "group": "post_seed",
+      "description": "normalisation BCNF des conditions de mapping"
+    },
+    {
+      "path": "04_post_seed/99_post_seed_constraints_community.sql",
+      "group": "post_seed",
+      "description": "validation finale du périmètre Community"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : db.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.2.7
+VERSION : 4.2.8
 ================================================================================
 
 PATCH v6 — THREAD-SAFETY
@@ -162,8 +162,10 @@ def _resolve_pgpassword() -> Optional[str]:
     command = os.getenv("PGPASSWORD_CMD")
     if command:
         import shlex
-        import subprocess  # nosec B404 — commande fournie par l'opérateur via env
-        result = subprocess.run(  # nosec B603 — pas de shell, args splittés via shlex
+        # Commande fournie par l'opérateur via env, sans shell implicite.
+        import subprocess  # nosec B404
+        # Arguments splittés via shlex, sans shell=True.
+        result = subprocess.run(  # nosec B603
             shlex.split(command),
             capture_output=True, text=True, check=True,
         )

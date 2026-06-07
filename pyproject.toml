@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "4.2.7"
+version = "4.2.8"
 description = "Corep Engine Community — Standard Approach et SA-CCR"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -26,18 +26,25 @@ dev = [
 
 [project.scripts]
 corep-community = "corep_crr3.public_registry:main"
+corep-community-bootstrap = "corep_crr3.community_bootstrap:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-corep_crr3 = ["py.typed"]
+corep_crr3 = [
+  "py.typed",
+  "sql/**/*.sql",
+  "sql/*.txt",
+  "sql/*.json",
+  "sql/*.md",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
 
-# Couverture (v4.2.6) — seuil plancher anti-régression, à calibrer après 1re mesure.
+# Couverture (v4.2.8) — seuil étape 1 anti-régression.
 [tool.coverage.run]
 source = ["corep_crr3"]
 branch = true

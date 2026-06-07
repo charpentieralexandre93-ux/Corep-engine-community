@@ -1,4 +1,4 @@
-# Corep Engine Community v4.2.7
+# Corep Engine Community v4.2.8
 
 Édition publique volontairement limitée à deux moteurs réglementaires :
 
@@ -18,11 +18,22 @@ corep-community
 ```
 
 Pour exécuter les moteurs complets (`run_standard_engine` / `run_saccr_engine`)
-sur une base PostgreSQL réelle, ajouter l'extra dédié :
+sur PostgreSQL, ajouter l'extra dédié puis initialiser le schéma Community :
 
 ```bash
 python -m pip install -e ".[dev,postgres]"
+python -m corep_crr3.community_bootstrap --list
+python -m corep_crr3.community_bootstrap
 ```
+
+Reset destructif, réservé à une base locale ou éphémère :
+
+```bash
+python -m corep_crr3.community_bootstrap --reset --confirm-reset RESET
+```
+
+Le bootstrap utilise `DATABASE_URL` ou les variables PostgreSQL standard
+`PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER` et `PGPASSWORD`.
 
 ## Périmètre publié
 
@@ -32,14 +43,16 @@ Le package expose uniquement :
 - `saccr_engine.py` ;
 - leurs dépendances techniques directes ;
 - un registre public limité à `SA` et `SA_CCR` ;
-- des tests de fumée et une CI multi-version.
+- un bootstrap PostgreSQL autonome et un sous-ensemble SQL strictement limité
+  au socle partagé, à SA et à SA-CCR ;
+- des tests unitaires, une CI multi-version et une recette PostgreSQL réelle.
 
 ## Périmètre exclu
 
 Aucun moteur ni composant Enterprise n'est fourni : IRB, CVA, SFT, FRTB,
 Market Risk, liquidité, IRRBB, risque opérationnel, titrisation, grands
 risques, fonds propres, crypto-actifs, Output Floor, FINREP, DPM/XBRL,
-bootstrap SQL complet, mappings propriétaires et orchestration multi-moteurs.
+mappings propriétaires des autres moteurs et orchestration multi-moteurs.
 
 ## Utilisation
 
@@ -49,9 +62,24 @@ Deux niveaux d'usage :
   maturité, facteur de maturité SA-CCR… s'utilisent directement en mémoire
   (voir `examples/sa_pure_functions.py`). Aucun psycopg2 requis.
 - **Moteurs complets** (`run_standard_engine` / `run_saccr_engine`) : utilisent
-  l'interface `Database` et supposent que les tables et règles nécessaires à SA
-  et SA-CCR sont disponibles dans PostgreSQL (extra `postgres`). Le schéma
-  complet de la plateforme Enterprise n'est pas inclus.
+  l'interface `Database`. Les tables, règles, seeds et mappings publics requis
+  sont fournis dans `sql/` et installables avec `community_bootstrap`.
+
+## SQL public et frontière open-core
+
+Le contrat `sql/COMMUNITY_SQL_CONTRACT.json` constitue la liste blanche des
+scripts distribués. Il inclut uniquement :
+
+- un socle BCNF public dédié aux deux moteurs, sans objets FINREP ni tables de
+  moteurs privés ;
+- le schéma, les règles et les mappings COREP SA ;
+- le schéma, les règles et les mappings SA-CCR ;
+- la normalisation des conditions et les contraintes finales Community.
+
+Les scripts IRB, SFT, CVA, Liquidité, Market Risk/FRTB, IRRBB, Output Floor,
+DPM/XBRL et autres moteurs Enterprise ne sont ni copiés ni exécutables depuis
+cette édition. Les ressources SQL sont également embarquées dans le package,
+ce qui permet au bootstrap de fonctionner après installation en wheel.
 
 ## Licence
 

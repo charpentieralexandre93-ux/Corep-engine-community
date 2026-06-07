@@ -1,0 +1,17 @@
+# ACTIVE_SQL_MANIFEST — Corep Engine Community v4.2.8
+# Périmètre public strict : SA + SA-CCR.
+# Source d'exécution : COMMUNITY_SQL_CONTRACT.json.
+
+# Ordre SQL effectif
+01 | always     | 01_schema/01_schema_common_community.sql | socle commun public SA / SA-CCR
+02 | always     | 01_schema/02_schema_domain_normalization_community.sql | domaines CRM et contreparties publics
+03 | always     | 01_schema/03_schema_bcnf_integrity_patch.sql | contraintes naturelles BCNF
+04 | always     | 02_seeds/00_seed_common_reference_community.sql | référentiel commun public minimal
+05 | run_sa     | 01_schema/engines/schema_credit_standard.sql | schéma moteur SA
+06 | run_sa     | 02_seeds/01_seed_credit_standard.sql | règles prudentielles SA et CRM
+07 | run_sa     | 03_mapping/01_mapping_credit_standard_community.sql | mapping COREP public SA
+08 | run_saccr  | 01_schema/engines/schema_saccr.sql | schéma moteur SA-CCR
+09 | run_saccr  | 02_seeds/02_seed_saccr.sql | règles prudentielles SA-CCR
+10 | run_saccr  | 03_mapping/02_mapping_saccr.sql | mapping COREP SA-CCR
+11 | post_seed  | 03_mapping/99_mapping_conditions_bcnf.sql | normalisation BCNF des conditions de mapping
+12 | post_seed  | 04_post_seed/99_post_seed_constraints_community.sql | validation finale du périmètre Community

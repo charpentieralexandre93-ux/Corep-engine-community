@@ -1,0 +1,14 @@
+-- =============================================================================
+-- schema_credit_standard.sql
+-- Moteur risque de crédit standard — schéma BCNF.
+--
+-- Les tables suivantes appartiennent au socle commun car elles sont aussi
+-- utilisées par le CRM, le mapping et la réconciliation transverse :
+--   stg.stg_exposures, stg.stg_protections,
+--   core.core_standard_results, core.core_protection_allocation,
+--   rpt.rpt_decision_rule_trace, rpt.rpt_supporting_factor_trace.
+--
+-- Ce fichier est volontairement idempotent et sans DDL additionnel.
+-- Il sert de point d'ancrage explicite dans le bootstrap conditionnel.
+-- =============================================================================
+SELECT 1;

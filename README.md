@@ -1,3 +1,5 @@
+[![Community CI](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml?query=branch%3Amain)
+
 # Corep Engine Community v4.2.8
 
 Édition publique volontairement limitée à deux moteurs réglementaires :

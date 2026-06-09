@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence, Tuple
 
 from .db import Database, build_dsn_from_env
+from . import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +63,11 @@ def load_sql_contract(sql_dir: Path) -> dict[str, Any]:
     """Charge et valide le contrat SQL distribué avec l'édition Community."""
     contract_path = sql_dir / _CONTRACT_NAME
     raw = json.loads(contract_path.read_text(encoding="utf-8"))
-    if raw.get("version") != "4.2.8":
-        raise ValueError("Le contrat SQL Community doit être versionné 4.2.8.")
+    if raw.get("version") != __version__:
+        raise ValueError(
+            f"Version du contrat SQL Community ({raw.get('version')!r}) "
+            f"!= version du package ({__version__!r})."
+        )
     if raw.get("edition") != "Community":
         raise ValueError(f"Contrat SQL inattendu : edition={raw.get('edition')!r}")
     if raw.get("engines") != ["SA", "SA_CCR"]:
@@ -191,7 +195,7 @@ def _record_applied(db: Database, script_name: str, checksum: str) -> None:
             applied_at = EXCLUDED.applied_at,
             notes = EXCLUDED.notes
         """,
-        (script_name, checksum, "Applied by Community bootstrap v4.2.8"),
+        (script_name, checksum, f"Applied by Community bootstrap v{__version__}"),
     )
     db.commit()
 

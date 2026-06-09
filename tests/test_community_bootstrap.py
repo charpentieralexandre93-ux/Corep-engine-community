@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import corep_crr3
 from corep_crr3 import community_bootstrap as cb
 
 
@@ -46,7 +47,7 @@ class FakeDb:
 
 def _write_contract(sql_dir: Path, paths=("01_first.sql", "02_second.sql")) -> None:
     contract = {
-        "version": "4.2.8",
+        "version": corep_crr3.__version__,
         "edition": "Community",
         "engines": ["SA", "SA_CCR"],
         "reset_sql": "00_reset_database_dev_ONLY.sql",
@@ -70,7 +71,7 @@ def _write_contract(sql_dir: Path, paths=("01_first.sql", "02_second.sql")) -> N
 def test_packaged_contract_is_strictly_sa_and_saccr():
     sql_dir = cb.resolve_sql_dir()
     contract = cb.load_sql_contract(sql_dir)
-    assert contract["version"] == "4.2.8"
+    assert contract["version"] == corep_crr3.__version__
     assert contract["engines"] == ["SA", "SA_CCR"]
     paths = {step["path"] for step in contract["steps"]}
     assert "01_schema/01_schema_common_community.sql" in paths
@@ -96,7 +97,7 @@ def test_manifest_is_generated_from_contract_and_all_files_exist():
     sql_dir = cb.resolve_sql_dir()
     manifest = cb.render_sql_manifest(sql_dir)
     steps = cb.sql_steps(sql_dir)
-    assert "Corep Engine Community v4.2.8" in manifest
+    assert f"Corep Engine Community v{corep_crr3.__version__}" in manifest
     assert "SA + SA-CCR" in manifest
     for step in steps:
         assert step["path"] in manifest

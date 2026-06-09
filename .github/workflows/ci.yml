@@ -15,7 +15,7 @@ jobs:
       matrix:
         python-version: ["3.9", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -98,7 +98,7 @@ jobs:
       RUN_POSTGRES_E2E_RESET: "1"
       COREP_ALLOW_DESTRUCTIVE_RESET: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"

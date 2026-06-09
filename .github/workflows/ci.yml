@@ -23,6 +23,18 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev]"
 
+      # ruff BLOQUANT (v4.2.9) — erreurs critiques uniquement (syntaxe, noms non définis).
+      - name: ruff (bloquant — erreurs critiques)
+        run: |
+          pip install ruff
+          ruff check --select=E9,F63,F7,F82 src
+
+      # mypy report-only — retirer `|| true` pour le rendre bloquant après tri local.
+      - name: mypy (report-only)
+        run: |
+          pip install "mypy<2.0"
+          mypy src/corep_crr3 || true
+
       # Securite : bloquant (aucun site SQL f-string dans la community).
       - name: bandit (bloquant)
         run: |
@@ -33,13 +45,28 @@ jobs:
         run: >-
           python -m pytest -q
           --cov=corep_crr3 --cov-report=term-missing --cov-report=xml
-          --cov-fail-under=60
+          --cov-fail-under=64
 
       - name: pip-audit (report-only)
         continue-on-error: true
         run: |
           pip install pip-audit || true
           pip-audit || true
+
+      - name: SBOM (CycloneDX)
+        if: matrix.python-version == '3.11'
+        continue-on-error: true
+        run: |
+          pip install cyclonedx-bom
+          cyclonedx-py environment -o sbom.cdx.json || cyclonedx-py -o sbom.cdx.json
+
+      - name: Publier le SBOM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.cdx.json
+          if-no-files-found: ignore
 
       - name: Publier la couverture
         if: always()

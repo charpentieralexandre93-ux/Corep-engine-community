@@ -1,4 +1,4 @@
-# ACTIVE_SQL_MANIFEST — Corep Engine Community v4.2.8
+# ACTIVE_SQL_MANIFEST — Corep Engine Community v4.3.0
 # Périmètre public strict : SA + SA-CCR.
 # Source d'exécution : COMMUNITY_SQL_CONTRACT.json.
 

@@ -1,6 +1,6 @@
 # Corep Engine Community v4.3.0
 
-[![CI](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml)
+[![CI](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org)
 

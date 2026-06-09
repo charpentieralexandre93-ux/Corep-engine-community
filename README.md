@@ -1,6 +1,9 @@
-[![Community CI](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml?query=branch%3Amain)
+# Corep Engine Community v4.3.0
 
-# Corep Engine Community v4.2.8
+[![CI](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org)
+
 
 Édition publique volontairement limitée à deux moteurs réglementaires :
 

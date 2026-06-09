@@ -4,11 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "4.2.8"
+version = "4.3.0"
 description = "Corep Engine Community — Standard Approach et SA-CCR"
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [{name = "Alexandre Charpentier"}]
+license = {text = "Apache-2.0"}
+classifiers = ["License :: OSI Approved :: Apache Software License"]
 # Dépendances de base : suffisantes pour les fonctions de calcul PURES (SA, SA-CCR).
 # psycopg2 n'est PAS requis pour le calcul — uniquement pour l'exécution sur une
 # base PostgreSQL réelle (extra `postgres`).
@@ -44,7 +46,7 @@ corep_crr3 = [
 testpaths = ["tests"]
 pythonpath = ["src"]
 
-# Couverture (v4.2.8) — seuil étape 1 anti-régression.
+# Couverture (v4.3.0) — seuil étape 1 anti-régression.
 [tool.coverage.run]
 source = ["corep_crr3"]
 branch = true
@@ -56,3 +58,9 @@ show_missing = true
 [tool.bandit]
 exclude_dirs = ["tests"]
 skips = ["B101"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]

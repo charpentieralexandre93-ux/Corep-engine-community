@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: corep_user
+      POSTGRES_PASSWORD: ${PGPASSWORD:-corep_password}
+      POSTGRES_DB: corep_crr3
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U corep_user -d corep_crr3"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://corep_user:${PGPASSWORD:-corep_password}@db:5432/corep_crr3
+    # Démo sans base : docker compose run --rm app python examples/sa_pure_functions.py

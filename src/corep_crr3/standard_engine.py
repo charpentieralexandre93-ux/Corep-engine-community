@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : standard_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.3.0
+VERSION : 4.3.2
 ================================================================================
 
 DESCRIPTION
@@ -556,6 +556,17 @@ def run_standard_engine(
 
     # ── Chargement des expositions depuis le staging ───────────────────────────
     rows = db.query("SELECT * FROM stg.stg_exposures WHERE batch_id = %s", (batch_id,))
+
+    # ── Routage par approche prudentielle (CRR3 Art.142) ───────────────────────
+    # SA ne traite QUE les expositions standard. Les expositions IRB-F / IRB-A
+    # sont traitées par irb_engine (édition enterprise). Filtre Python plutôt que
+    # SQL : `.get` tolère l'absence de la colonne calculation_approach (édition
+    # community SA/SA-CCR, où elle n'existe pas) -> None -> traitée en SA. Empeche
+    # tout double comptage SA/IRB sans rendre la colonne obligatoire.
+    rows = [
+        r for r in rows
+        if str(r.get("calculation_approach") or "SA").upper() not in ("IRB-F", "IRB-A")
+    ]
 
     # ── Pré-chargement des règles Supporting Factors (CORRECTION v4) ──────────
     # AVANT : apply_supporting_factors() chargeait les règles depuis la base

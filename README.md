@@ -1,4 +1,4 @@
-# Corep Engine Community v4.3.0
+# Corep Engine Community v4.3.2
 
 [![CI](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
@@ -88,9 +88,5 @@ ce qui permet au bootstrap de fonctionner après installation en wheel.
 
 ## Licence
 
-Cette publication est proposée sous une licence d'évaluation source-visible.
-Voir `LICENSE-COMMUNITY.md`.
-
-> Certaines versions antérieures du projet ont pu être publiées sous licence
-> MIT. Les droits déjà accordés sur ces versions antérieures ne sont pas
-> révoqués par cette édition.
+Cette édition Community est distribuée sous licence Apache-2.0.
+Voir `LICENSE`, `NOTICE` et `LICENSE-COMMUNITY.md`.

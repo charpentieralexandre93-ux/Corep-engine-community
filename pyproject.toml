@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "4.3.0"
+version = "4.3.2"
 description = "Corep Engine Community — Standard Approach et SA-CCR"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -46,7 +46,7 @@ corep_crr3 = [
 testpaths = ["tests"]
 pythonpath = ["src"]
 
-# Couverture (v4.3.0) — seuil étape 1 anti-régression.
+# Couverture (v4.2.8) — seuil étape 1 anti-régression.
 [tool.coverage.run]
 source = ["corep_crr3"]
 branch = true

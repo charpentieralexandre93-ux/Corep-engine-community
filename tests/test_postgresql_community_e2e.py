@@ -143,23 +143,15 @@ def test_community_bootstrap_then_sa_and_saccr_engines():
         assert "01_schema/engines/schema_credit_standard.sql" in names
         assert "01_schema/engines/schema_saccr.sql" in names
         forbidden = (
-            "irb",
-            "sft",
-            "cva",
-            "liquidity",
-            "irrbb",
-            "market_risk",
-            "operational_risk",
-            "own_funds",
-            "securitisation",
-            "large_exposures",
-            "crypto_assets",
-            "frtb",
-            "output_floor",
-            "dpm_xbrl",
-            "finrep",
+            "irb", "sft", "cva", "liquidity", "irrbb", "market_risk",
+            "operational_risk", "own_funds", "securitisation",
+            "large_exposures", "crypto_assets", "frtb", "output_floor",
+            "dpm_xbrl", "finrep",
         )
-        assert not any(any(token in name.lower() for token in forbidden) for name in names)
+        assert not any(
+            any(token in name.lower() for token in forbidden)
+            for name in names
+        )
 
         private_objects = db.query(
             """
@@ -172,18 +164,12 @@ def test_community_bootstrap_then_sa_and_saccr_engines():
         )[0]
         assert all(value is None for value in private_objects.values())
 
-        assert (
-            db.query("SELECT COUNT(*) AS n FROM ref.ref_mapping_rules WHERE framework <> 'COREP'")[
-                0
-            ]["n"]
-            == 0
-        )
-        assert (
-            db.query(
-                "SELECT COUNT(*) AS n FROM ref.ref_asset_classes "
-                "WHERE asset_class_id = 'SECURITISATION'"
-            )[0]["n"]
-            == 0
-        )
+        assert db.query(
+            "SELECT COUNT(*) AS n FROM ref.ref_mapping_rules WHERE framework <> 'COREP'"
+        )[0]["n"] == 0
+        assert db.query(
+            "SELECT COUNT(*) AS n FROM ref.ref_asset_classes "
+            "WHERE asset_class_id = 'SECURITISATION'"
+        )[0]["n"] == 0
     finally:
         db.close()

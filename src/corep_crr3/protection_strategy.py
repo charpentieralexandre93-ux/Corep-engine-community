@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : protection_strategy.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.3.5
+VERSION : 4.4.0
 ================================================================================
 
 DESCRIPTION
@@ -89,19 +89,16 @@ def _enrich_protection_bucket(
     exposure_id = protection.get("exposure_id")
     protection_id = protection.get("protection_id")
     context = {
-        "_context_key": f"{exposure_id}:{protection_id}",
-        "protection_type": protection.get("protection_type"),
-        "provider_type": protection.get("provider_type"),
-        "collateral_type": protection.get("collateral_type"),
-        "collateral_grade": protection.get("collateral_grade"),
-        "issuer_type": protection.get("issuer_type") or protection.get("provider_type"),
+        "_context_key":       f"{exposure_id}:{protection_id}",
+        "protection_type":    protection.get("protection_type"),
+        "provider_type":      protection.get("provider_type"),
+        "collateral_type":    protection.get("collateral_type"),
+        "collateral_grade":   protection.get("collateral_grade"),
+        "issuer_type":        protection.get("issuer_type") or protection.get("provider_type"),
         "protection_subtype": protection.get("protection_subtype"),
     }
     decision = evaluate_rule_set(
-        db,
-        batch_id,
-        regulatory_version,
-        "PROTECTION_BUCKET",
+        db, batch_id, regulatory_version, "PROTECTION_BUCKET",
         context,
         trace_buffer=trace_buffer,
     )
@@ -190,6 +187,8 @@ def load_ranked_protections(
     )
 
     return [
-        _enrich_protection_bucket(db, batch_id, regulatory_version, row, trace_buffer=trace_buffer)
+        _enrich_protection_bucket(
+            db, batch_id, regulatory_version, row, trace_buffer=trace_buffer
+        )
         for row in rows
     ]

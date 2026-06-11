@@ -4,15 +4,14 @@ Ce fichier est volontairement limité aux contrats de données SA-CCR.
 """
 
 from __future__ import annotations
-
 from typing import Dict, List, Optional
-
-from typing_extensions import Literal, NotRequired, TypedDict
-
+try:
+    from typing import TypedDict, NotRequired, Literal
+except ImportError:
+    from typing_extensions import TypedDict, NotRequired, Literal
 
 class SaccrTradeRow(TypedDict, total=False):
     """Ligne stg.stg_saccr_trades — v7 : champs complets pour calcul PFE natif."""
-
     trade_id: str
     batch_id: str
     netting_set_id: str
@@ -37,10 +36,8 @@ class SaccrTradeRow(TypedDict, total=False):
     addon: NotRequired[float]
     reporting_date: str
 
-
 class SaccrAdjNotional(TypedDict):
     """Notionnel ajusté d'un trade SA-CCR (calcul PFE natif v7)."""
-
     trade_id: str
     asset_class: str
     delta: float
@@ -49,10 +46,8 @@ class SaccrAdjNotional(TypedDict):
     bucket: str
     sub_type: str
 
-
 class SaccrAddOnBreakdown(TypedDict):
     """Décomposition PFE SA-CCR Art.278-280."""
-
     addon_ird: float
     addon_fx: float
     addon_credit: float

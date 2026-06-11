@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "4.3.5"
+version = "4.4.0"
 description = "Corep Engine Community — Standard Approach et SA-CCR"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -64,9 +64,3 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E9", "F63", "F7", "F82"]
-
-[tool.mypy]
-python_version = "3.10"
-ignore_missing_imports = true
-warn_unused_ignores = false
-implicit_optional = true

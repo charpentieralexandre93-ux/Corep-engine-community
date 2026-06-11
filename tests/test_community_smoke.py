@@ -26,7 +26,7 @@ from corep_crr3.standard_engine import (
 
 # --- Version & registre public -------------------------------------------------
 def test_version():
-    assert corep_crr3.__version__ == "4.3.5"
+    assert corep_crr3.__version__ == "4.4.0"
 
 
 def test_registry_is_limited_to_sa_and_saccr():
@@ -48,7 +48,6 @@ def test_registry_rejects_enterprise_engine():
 def test_importable_without_psycopg2():
     """Le paquet et les moteurs s'importent meme sans psycopg2 installe."""
     from corep_crr3 import db
-
     assert hasattr(db, "Database")
 
 
@@ -107,36 +106,16 @@ def test_maturity_mismatch_none_is_neutral():
 # --- Recherche de haircut FCP sur regles prechargees (pur) --------------------
 def test_lookup_fcp_haircut_exact_match():
     rules = [
-        {
-            "collateral_type": "CASH",
-            "collateral_grade": None,
-            "residual_maturity": None,
-            "haircut_rate": 0.0,
-        },
-        {
-            "collateral_type": "BOND",
-            "collateral_grade": "AA",
-            "residual_maturity": None,
-            "haircut_rate": 0.02,
-        },
+        {"collateral_type": "CASH", "collateral_grade": None, "residual_maturity": None, "haircut_rate": 0.0},
+        {"collateral_type": "BOND", "collateral_grade": "AA", "residual_maturity": None, "haircut_rate": 0.02},
     ]
-    assert (
-        lookup_fcp_haircut_rate_from_rules(
-            rules, {"collateral_type": "bond", "collateral_grade": "aa"}
-        )
-        == 0.02
-    )
+    assert lookup_fcp_haircut_rate_from_rules(
+        rules, {"collateral_type": "bond", "collateral_grade": "aa"}
+    ) == 0.02
 
 
 def test_lookup_fcp_haircut_unknown_type_is_zero():
-    rules = [
-        {
-            "collateral_type": "CASH",
-            "collateral_grade": None,
-            "residual_maturity": None,
-            "haircut_rate": 0.0,
-        }
-    ]
+    rules = [{"collateral_type": "CASH", "collateral_grade": None, "residual_maturity": None, "haircut_rate": 0.0}]
     assert lookup_fcp_haircut_rate_from_rules(rules, {"collateral_type": "GOLD"}) == 0.0
 
 
@@ -150,21 +129,14 @@ def test_saccr_maturity_factor_positive():
 
 
 def test_saccr_margined_factor_below_unmargined():
-    assert _maturity_factor(1.0, margined=True, mpor_days=10.0) < _maturity_factor(
-        1.0, margined=False
-    )
+    assert _maturity_factor(1.0, margined=True, mpor_days=10.0) < _maturity_factor(1.0, margined=False)
 
 
 # --- Determinisme (reproductibilite d'un calcul pur) --------------------------
 def test_pure_calculations_are_deterministic():
-    args = dict(
-        protection_value=137.5,
-        haircut_rate=0.123,
-        fx_mismatch=True,
-        fx_haircut=0.08,
-        exposure_maturity_months=48,
-        protection_maturity_months=30,
-    )
+    args = dict(protection_value=137.5, haircut_rate=0.123,
+                fx_mismatch=True, fx_haircut=0.08,
+                exposure_maturity_months=48, protection_maturity_months=30)
     first = compute_recognized_fcp_value(**args)
     second = compute_recognized_fcp_value(**args)
     assert first == second

@@ -26,21 +26,10 @@ _MANIFEST_NAME = "ACTIVE_SQL_MANIFEST.txt"
 _RESET_CONFIRMATION = "RESET"
 _ALLOWED_GROUPS = {"always", "run_sa", "run_saccr", "post_seed"}
 _FORBIDDEN_SQL_TOKENS = (
-    "irb",
-    "sft",
-    "cva",
-    "liquidity",
-    "irrbb",
-    "market_risk",
-    "operational_risk",
-    "own_funds",
-    "securitisation",
-    "large_exposures",
-    "crypto_assets",
-    "frtb",
-    "output_floor",
-    "dpm_xbrl",
-    "finrep",
+    "irb", "sft", "cva", "liquidity", "irrbb", "market_risk",
+    "operational_risk", "own_funds", "securitisation",
+    "large_exposures", "crypto_assets", "frtb", "output_floor",
+    "dpm_xbrl", "finrep",
 )
 
 
@@ -102,11 +91,15 @@ def load_sql_contract(sql_dir: Path) -> dict[str, Any]:
             raise ValueError(f"Étape SQL dupliquée : {rel_path_value}")
         seen_paths.add(rel_path_value)
         if step["group"] not in _ALLOWED_GROUPS:
-            raise ValueError(f"Étape SQL #{index} : groupe non autorisé {step['group']!r}.")
+            raise ValueError(
+                f"Étape SQL #{index} : groupe non autorisé {step['group']!r}."
+            )
         normalized = rel_path_value.lower()
         leaked = sorted(token for token in _FORBIDDEN_SQL_TOKENS if token in normalized)
         if leaked:
-            raise ValueError(f"Étape SQL #{index} hors périmètre Community : {', '.join(leaked)}.")
+            raise ValueError(
+                f"Étape SQL #{index} hors périmètre Community : {', '.join(leaked)}."
+            )
     return raw
 
 
@@ -129,7 +122,9 @@ def render_sql_manifest(sql_dir: Optional[Path] = None) -> str:
         "# Ordre SQL effectif",
     ]
     for index, step in enumerate(contract["steps"], start=1):
-        lines.append(f"{index:02d} | {step['group']:<10s} | {step['path']} | {step['description']}")
+        lines.append(
+            f"{index:02d} | {step['group']:<10s} | {step['path']} | {step['description']}"
+        )
     return "\n".join(lines) + "\n"
 
 
@@ -141,9 +136,7 @@ def write_sql_manifest(sql_dir: Optional[Path] = None) -> Path:
     return path
 
 
-def _resolved_scripts(
-    sql_dir: Path, steps: Sequence[dict[str, str]]
-) -> list[tuple[Path, dict[str, str]]]:
+def _resolved_scripts(sql_dir: Path, steps: Sequence[dict[str, str]]) -> list[tuple[Path, dict[str, str]]]:
     resolved: list[tuple[Path, dict[str, str]]] = []
     missing: list[str] = []
     for step in steps:

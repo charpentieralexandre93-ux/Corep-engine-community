@@ -28,7 +28,6 @@ Usage :
     python tools/bump_version.py --set 4.3.1         # aligne tout
     python tools/bump_version.py --set 4.3.1 --dry-run   # aperçu sans écrire
 """
-
 from __future__ import annotations
 
 import argparse
@@ -42,20 +41,9 @@ SEMVER = r"\d+\.\d+\.\d+"
 SEMVER_FULL = re.compile(rf"^{SEMVER}$")
 MIGRATION_RE = re.compile(r"_v(\d+)_(\d+)_(\d+)")
 EXCLUDE_DIRS = {
-    ".git",
-    "__pycache__",
-    "old",
-    "input.bak",
-    "build",
-    "dist",
-    "node_modules",
-    ".hypothesis",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".ruff_cache",
-    ".venv",
-    "venv",
-    ".eggs",
+    ".git", "__pycache__", "old", "input.bak", "build", "dist",
+    "node_modules", ".hypothesis", ".pytest_cache", ".mypy_cache",
+    ".ruff_cache", ".venv", "venv", ".eggs",
 }
 SCAN_SUFFIXES = {".py", ".toml", ".json", ".txt", ".sql"}
 
@@ -69,48 +57,20 @@ class Rule:
 
 
 RULES: tuple[Rule, ...] = (
-    Rule(
-        "__version__",
-        True,
-        lambda p: p.name == "__init__.py",
-        re.compile(rf'__version__\s*=\s*["\'](?P<v>{SEMVER})["\']'),
-    ),
-    Rule(
-        "pyproject",
-        True,
-        lambda p: p.name == "pyproject.toml",
-        re.compile(rf'(?m)^\s*version\s*=\s*["\'](?P<v>{SEMVER})["\']'),
-    ),
-    Rule(
-        "contract",
-        True,
-        lambda p: p.suffix == ".json" and "contract" in p.name.lower(),
-        re.compile(rf'"version"\s*:\s*"(?P<v>{SEMVER})"'),
-    ),
-    Rule(
-        "smoke_assert",
-        True,
-        lambda p: p.suffix == ".py" and "test" in p.name.lower(),
-        re.compile(rf'__version__\s*==\s*["\'](?P<v>{SEMVER})["\']'),
-    ),
-    Rule(
-        "manifest",
-        True,
-        lambda p: p.name == "ACTIVE_SQL_MANIFEST.txt",
-        re.compile(rf"ACTIVE_SQL_MANIFEST[^\n]*?\bv(?P<v>{SEMVER})\b"),
-    ),
-    Rule(
-        "version_header",
-        False,
-        lambda p: p.suffix in {".py", ".sql"},
-        re.compile(rf"VERSION\s*:\s*(?P<v>{SEMVER})"),
-    ),
-    Rule(
-        "sql_title",
-        False,
-        lambda p: p.suffix == ".sql",
-        re.compile(rf"Corep Engine Community v(?P<v>{SEMVER})\s*—\s*validation finale"),
-    ),
+    Rule("__version__", True, lambda p: p.name == "__init__.py",
+         re.compile(rf'__version__\s*=\s*["\'](?P<v>{SEMVER})["\']')),
+    Rule("pyproject", True, lambda p: p.name == "pyproject.toml",
+         re.compile(rf'(?m)^\s*version\s*=\s*["\'](?P<v>{SEMVER})["\']')),
+    Rule("contract", True, lambda p: p.suffix == ".json" and "contract" in p.name.lower(),
+         re.compile(rf'"version"\s*:\s*"(?P<v>{SEMVER})"')),
+    Rule("smoke_assert", True, lambda p: p.suffix == ".py" and "test" in p.name.lower(),
+         re.compile(rf'__version__\s*==\s*["\'](?P<v>{SEMVER})["\']')),
+    Rule("manifest", True, lambda p: p.name == "ACTIVE_SQL_MANIFEST.txt",
+         re.compile(rf'ACTIVE_SQL_MANIFEST[^\n]*?\bv(?P<v>{SEMVER})\b')),
+    Rule("version_header", False, lambda p: p.suffix in {".py", ".sql"},
+         re.compile(rf'VERSION\s*:\s*(?P<v>{SEMVER})')),
+    Rule("sql_title", False, lambda p: p.suffix == ".sql",
+         re.compile(rf'Corep Engine Community v(?P<v>{SEMVER})\s*—\s*validation finale')),
 )
 
 
@@ -177,10 +137,8 @@ def cmd_check(root: Path, self_path: Path) -> int:
 
     crit = [f for f in findings if f.rule.critical]
     crit_versions = sorted({f.version for f in crit})
-    print(
-        f"Emplacements analysés : {len(findings)} "
-        f"({len(crit)} critiques, {len(findings) - len(crit)} cosmétiques)"
-    )
+    print(f"Emplacements analysés : {len(findings)} "
+          f"({len(crit)} critiques, {len(findings) - len(crit)} cosmétiques)")
 
     ok = True
     if len(crit_versions) != 1:
@@ -197,19 +155,20 @@ def cmd_check(root: Path, self_path: Path) -> int:
         print(f"✓ Champs critiques cohérents : {canonical}")
 
     if canonical is not None:
-        mism = [
-            f for f in findings if not f.rule.critical and f.version != expected_for(f, canonical)
-        ]
+        mism = [f for f in findings
+                if not f.rule.critical and f.version != expected_for(f, canonical)]
         if mism:
             ok = False
             print("\n✗ En-têtes cosmétiques désalignés :")
             for f in mism:
                 exp = expected_for(f, canonical)
-                print(f"    {rel(f.path, root)} [{f.rule.name}] : {f.version} (attendu {exp})")
+                print(f"    {rel(f.path, root)} [{f.rule.name}] : "
+                      f"{f.version} (attendu {exp})")
         else:
             print("✓ En-têtes cosmétiques alignés (exceptions migrations respectées)")
 
-    print("\n" + ("✅ Cohérence de version : OK" if ok else "❌ Cohérence de version : ÉCHEC"))
+    print("\n" + ("✅ Cohérence de version : OK" if ok
+                  else "❌ Cohérence de version : ÉCHEC"))
     return 0 if ok else 1
 
 
@@ -256,15 +215,13 @@ def cmd_set(root: Path, self_path: Path, target: str, dry_run: bool) -> int:
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Cohérence de version (check/set).")
-    parser.add_argument(
-        "--root", type=Path, default=None, help="Racine du dépôt (défaut : parent de tools/)."
-    )
+    parser.add_argument("--root", type=Path, default=None,
+                        help="Racine du dépôt (défaut : parent de tools/).")
     g = parser.add_mutually_exclusive_group(required=True)
     g.add_argument("--check", action="store_true", help="Vérifie la cohérence (CI).")
     g.add_argument("--set", metavar="X.Y.Z", help="Aligne tous les emplacements.")
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Avec --set : montre les changements sans écrire."
-    )
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Avec --set : montre les changements sans écrire.")
     args = parser.parse_args(argv)
 
     self_path = Path(__file__).resolve()

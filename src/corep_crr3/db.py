@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : db.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.3.5
+VERSION : 4.4.0
 ================================================================================
 
 PATCH v6 — THREAD-SAFETY
@@ -106,7 +106,6 @@ try:
     import psycopg2
     import psycopg2.extras
     import psycopg2.pool
-
     _PSYCOPG2_IMPORT_ERROR = None
 except Exception as _exc:  # ModuleNotFoundError ou échec de chargement natif
     psycopg2 = None  # type: ignore[assignment]
@@ -163,16 +162,12 @@ def _resolve_pgpassword() -> Optional[str]:
     command = os.getenv("PGPASSWORD_CMD")
     if command:
         import shlex
-
         # Commande fournie par l'opérateur via env, sans shell implicite.
         import subprocess  # nosec B404
-
         # Arguments splittés via shlex, sans shell=True.
         result = subprocess.run(  # nosec B603
             shlex.split(command),
-            capture_output=True,
-            text=True,
-            check=True,
+            capture_output=True, text=True, check=True,
         )
         return result.stdout.strip() or None
     return None
@@ -216,7 +211,6 @@ def build_dsn_from_env(
 
     return default
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -247,7 +241,7 @@ class Database:
       implémenté dans les scripts CLI (run_batch.py, bootstrap.py, etc.).
     """
 
-    def __init__(self, dsn: str | None = None, *, conn=None):
+    def __init__(self, dsn: str = None, *, conn=None):
         """Initialise et ouvre la connexion à PostgreSQL.
 
         Paramètres
@@ -266,11 +260,11 @@ class Database:
         """
         if conn is not None:
             # Connexion fournie externement (depuis DatabasePool)
-            self.dsn = None
+            self.dsn  = None
             self.conn = conn
         else:
             _require_psycopg2()
-            self.dsn = dsn or build_dsn_from_env()
+            self.dsn  = dsn or build_dsn_from_env()
             self.conn = psycopg2.connect(self.dsn)
 
         # Désactivation de l'autocommit : les transactions sont gérées explicitement.
@@ -344,11 +338,11 @@ class Database:
             le rollback.
         """
         try:
-            yield  # Exécution du bloc with
-            self.conn.commit()  # Validation si pas d'exception
+            yield                  # Exécution du bloc with
+            self.conn.commit()     # Validation si pas d'exception
         except Exception:
-            self.conn.rollback()  # Annulation en cas d'erreur
-            raise  # Re-lever pour que l'appelant gère
+            self.conn.rollback()   # Annulation en cas d'erreur
+            raise                  # Re-lever pour que l'appelant gère
 
     # ──────────────────────────────────────────────────────────────────────────
     # COMMANDES DML (Data Manipulation Language)
@@ -508,7 +502,6 @@ class Database:
 # PATCH v6 : POOL DE CONNEXIONS THREAD-SAFE
 # ──────────────────────────────────────────────────────────────────────────────
 
-
 class DatabasePool:
     """Pool de connexions PostgreSQL thread-safe pour usage concurrent.
 
@@ -549,11 +542,15 @@ class DatabasePool:
     Chaque thread obtient une connexion dédiée — pas de partage de curseur.
     """
 
-    def __init__(self, dsn: str | None = None, minconn: int = 1, maxconn: int = 10):
+    def __init__(self, dsn: str = None, minconn: int = 1, maxconn: int = 10):
         _require_psycopg2()
         resolved_dsn = dsn or build_dsn_from_env()
-        self._pool = psycopg2.pool.ThreadedConnectionPool(minconn, maxconn, resolved_dsn)
-        logger.info("DatabasePool initialisé : minconn=%d maxconn=%d", minconn, maxconn)
+        self._pool = psycopg2.pool.ThreadedConnectionPool(
+            minconn, maxconn, resolved_dsn
+        )
+        logger.info(
+            "DatabasePool initialisé : minconn=%d maxconn=%d", minconn, maxconn
+        )
 
     @contextlib.contextmanager
     def acquire(self) -> Generator[Database, None, None]:
@@ -577,14 +574,14 @@ class DatabasePool:
             Si toutes les connexions du pool sont déjà empruntées (maxconn atteint).
         """
         conn = self._pool.getconn()
-        db = Database(conn=conn)
+        db   = Database(conn=conn)
         try:
             yield db
         finally:
             # Restitution inconditionnelle (même en cas d'exception dans le with)
             # NE PAS appeler conn.close() — putconn() remet la connexion en pool
             try:
-                conn.rollback()  # Annuler toute transaction pendante avant restitution
+                conn.rollback()   # Annuler toute transaction pendante avant restitution
             except Exception:
                 pass
             self._pool.putconn(conn)

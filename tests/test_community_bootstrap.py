@@ -56,7 +56,9 @@ def _write_contract(sql_dir: Path, paths=("01_first.sql", "02_second.sql")) -> N
             for index, path in enumerate(paths, start=1)
         ],
     }
-    (sql_dir / "COMMUNITY_SQL_CONTRACT.json").write_text(json.dumps(contract), encoding="utf-8")
+    (sql_dir / "COMMUNITY_SQL_CONTRACT.json").write_text(
+        json.dumps(contract), encoding="utf-8"
+    )
     (sql_dir / "00_reset_database_dev_ONLY.sql").write_text(
         "DROP SCHEMA IF EXISTS core CASCADE;", encoding="utf-8"
     )
@@ -85,9 +87,9 @@ def test_packaged_contract_is_strictly_sa_and_saccr():
         content = (sql_dir / step["path"]).read_text(encoding="utf-8").lower()
         assert not any(token in content for token in forbidden), step["path"]
 
-    common_sql = (
-        (sql_dir / "01_schema/01_schema_common_community.sql").read_text(encoding="utf-8").lower()
-    )
+    common_sql = (sql_dir / "01_schema/01_schema_common_community.sql").read_text(
+        encoding="utf-8"
+    ).lower()
     assert "create role" not in common_sql
 
 
@@ -258,7 +260,9 @@ def test_main_bootstrap_and_reset_with_injected_database(tmp_path, monkeypatch):
 
     db2 = FakeDb()
     monkeypatch.setattr(cb, "Database", lambda _dsn: db2)
-    assert cb.main(["--sql-dir", str(tmp_path), "--reset", "--confirm-reset", "RESET"]) == 0
+    assert cb.main([
+        "--sql-dir", str(tmp_path), "--reset", "--confirm-reset", "RESET"
+    ]) == 0
     assert any("DROP SCHEMA" in sql for sql in db2.scripts)
     assert db2.closed is True
 

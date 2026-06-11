@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : standard_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.3.4
+VERSION : 4.3.5
 ================================================================================
 
 DESCRIPTION
@@ -123,6 +123,7 @@ logger = logging.getLogger(__name__)
 # HELPER — SUBSTITUTION UFCP PARTIELLE (Art.235 CRR3)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def apply_ufcp_partial_substitution(
     ead_at_obligor_rw: float,
     base_rw: float,
@@ -196,8 +197,8 @@ def apply_ufcp_partial_substitution(
     # Coercitions défensives (psycopg2 renvoie des Decimal pour les NUMERIC ;
     # Decimal × float lèverait TypeError plus bas). _f est idempotent sur float.
     rw_provider_f = _f(rw_provider)
-    base_rw_f     = _f(base_rw)
-    ead_rest      = _f(ead_at_obligor_rw)
+    base_rw_f = _f(base_rw)
+    ead_rest = _f(ead_at_obligor_rw)
 
     if rw_provider_f >= base_rw_f:
         return (0.0, 0.0, ead_rest)
@@ -209,8 +210,8 @@ def apply_ufcp_partial_substitution(
         return (0.0, 0.0, ead_rest)
 
     guarantee_amount = min(ead_rest, max(0.0, _f(protection_value)))
-    rwa_increment    = guarantee_amount * rw_provider_f
-    new_ead          = ead_rest - guarantee_amount
+    rwa_increment = guarantee_amount * rw_provider_f
+    new_ead = ead_rest - guarantee_amount
     return (guarantee_amount, rwa_increment, new_ead)
 
 
@@ -432,7 +433,9 @@ def lookup_fcp_haircut_rate_from_rules(haircut_rules: list[dict], protection: di
     correspondance exacte type + grade + maturité, puis lignes génériques NULL.
     En absence de type de collatéral, fallback 0 % pour compatibilité historique.
     """
-    collateral_type = (protection.get("collateral_type") or protection.get("protection_subtype") or "")
+    collateral_type = (
+        protection.get("collateral_type") or protection.get("protection_subtype") or ""
+    )
     collateral_type = str(collateral_type).strip().upper()
     if not collateral_type:
         return 0.0
@@ -447,17 +450,25 @@ def lookup_fcp_haircut_rate_from_rules(haircut_rules: list[dict], protection: di
             continue
 
         rule_grade_raw = rule.get("collateral_grade")
-        rule_grade = str(rule_grade_raw).strip().upper() if rule_grade_raw not in (None, "") else None
+        rule_grade = (
+            str(rule_grade_raw).strip().upper() if rule_grade_raw not in (None, "") else None
+        )
         if not (rule_grade == grade or rule_grade is None or grade is None):
             continue
 
         rule_maturity_raw = rule.get("residual_maturity")
-        rule_maturity = str(rule_maturity_raw).strip() if rule_maturity_raw not in (None, "") else None
-        if not (rule_maturity == residual_maturity or rule_maturity is None or residual_maturity is None):
+        rule_maturity = (
+            str(rule_maturity_raw).strip() if rule_maturity_raw not in (None, "") else None
+        )
+        if not (
+            rule_maturity == residual_maturity or rule_maturity is None or residual_maturity is None
+        ):
             continue
 
         grade_rank = 0 if rule_grade == grade else 1 if rule_grade is None else 2
-        maturity_rank = 0 if rule_maturity == residual_maturity else 1 if rule_maturity is None else 2
+        maturity_rank = (
+            0 if rule_maturity == residual_maturity else 1 if rule_maturity is None else 2
+        )
         candidate = (grade_rank, maturity_rank, rule)
         if best is None or candidate[:2] < best[:2]:
             best = candidate
@@ -564,7 +575,8 @@ def run_standard_engine(
     # community SA/SA-CCR, où elle n'existe pas) -> None -> traitée en SA. Empeche
     # tout double comptage SA/IRB sans rendre la colonne obligatoire.
     rows = [
-        r for r in rows
+        r
+        for r in rows
         if str(r.get("calculation_approach") or "SA").upper() not in ("IRB-F", "IRB-A")
     ]
 
@@ -584,10 +596,10 @@ def run_standard_engine(
     )
 
     # ── Initialisation des buffers d'insertion ──────────────────────────────────
-    results_batch:     list[tuple] = []   # core_standard_results
-    allocations_batch: list[tuple] = []   # core_protection_allocation
-    trace_buffer:      list[tuple] = []   # rpt_decision_rule_trace (flush groupé)
-    sf_trace_buffer:   list[tuple] = []   # rpt_supporting_factor_trace (flush global)
+    results_batch: list[tuple] = []  # core_standard_results
+    allocations_batch: list[tuple] = []  # core_protection_allocation
+    trace_buffer: list[tuple] = []  # rpt_decision_rule_trace (flush groupé)
+    sf_trace_buffer: list[tuple] = []  # rpt_supporting_factor_trace (flush global)
 
     # ── v3.3.0 (point 5 audit) — Compteurs explicites de fallbacks ──────────
     # Avant v3.3.0 : si aucune règle ne matchait pour CCF ou RW, on retombait
@@ -598,9 +610,9 @@ def run_standard_engine(
     #   - compte les hits dans rpt.rpt_controls (SA_CCF_FALLBACK_HITS / SA_RW_FALLBACK_HITS) ;
     #   - permet un mode strict (échec batch) via config runtime.strict_fallback_mode.
     ccf_fallback_count: int = 0
-    rw_fallback_count: int  = 0
-    ccf_fallback_exposures: list[str] = []   # capture des 50 premiers pour log
-    rw_fallback_exposures:  list[str] = []   # idem
+    rw_fallback_count: int = 0
+    ccf_fallback_exposures: list[str] = []  # capture des 50 premiers pour log
+    rw_fallback_exposures: list[str] = []  # idem
     MAX_LOGGED_FALLBACKS = 50
 
     # ── v3.6.0 — Robustesse CRM : observabilité des protections ignorées ─────
@@ -609,7 +621,7 @@ def run_standard_engine(
     # (aucun effet, aucune trace) → risque de RWA erroné non détecté. On compte
     # et on loggue désormais ces cas.
     crm_ignored_protection_count: int = 0
-    crm_ignored_protections: list[str] = []   # capture des 50 premiers pour log
+    crm_ignored_protections: list[str] = []  # capture des 50 premiers pour log
 
     # ── Préchargements CRM performance v2.8 ─────────────────────────────────
     # 1 SELECT toutes protections, au lieu de 1 SELECT par exposition.
@@ -637,7 +649,7 @@ def run_standard_engine(
     for _row in rows:
         if _is_truthy_flag(_row.get("supporting_sme_flag")):
             _net = max(_f(_row.get("exposure_amount")) - _f(_row.get("provision_amount")), 0.0)
-            _cp  = _row.get("counterparty_id")
+            _cp = _row.get("counterparty_id")
             sme_total_by_obligor[_cp] = sme_total_by_obligor.get(_cp, 0.0) + _net
 
     # ── BOUCLE PRINCIPALE — une iteration par exposition ────────────────────────
@@ -645,20 +657,23 @@ def run_standard_engine(
         exposure_id = r["exposure_id"]
 
         # ── ÉTAPE 1 : Calcul du net après provisions ────────────────────────────
-        gross = _f(r["exposure_amount"])             # Montant brut déclaré
-        prov  = _f(r["provision_amount"])            # Provisions spécifiques
-        net   = max(gross - prov, 0.0)               # Net = max(brut − provisions, 0)
+        gross = _f(r["exposure_amount"])  # Montant brut déclaré
+        prov = _f(r["provision_amount"])  # Provisions spécifiques
+        net = max(gross - prov, 0.0)  # Net = max(brut − provisions, 0)
         # Art.110 CRR3 : l'EAD ne peut être négative
 
         # ── ÉTAPE 2 : CCF — Credit Conversion Factor (Art.111 CRR3) ─────────────
         # Le CCF convertit un engagement hors-bilan en équivalent bilan.
         # Déterminé par le moteur de décision selon product_type_id.
         ccf_decision = evaluate_rule_set(
-            db, batch_id, regulatory_version_id, "CCF",
+            db,
+            batch_id,
+            regulatory_version_id,
+            "CCF",
             {
-                "_context_key":    exposure_id,
+                "_context_key": exposure_id,
                 "product_type_id": r["product_type_id"],
-                "asset_class_id":  r["asset_class_id"],
+                "asset_class_id": r["asset_class_id"],
                 "counterparty_id": r["counterparty_id"],
             },
             trace_buffer=trace_buffer,
@@ -667,7 +682,7 @@ def run_standard_engine(
             ccf = _f(ccf_decision["result_value"])
         else:
             # v3.3.0 (point 5) — Fallback explicite avec log + comptage
-            ccf = 1.0   # bilan = 100% (correctif prudentiel CRR3 Art.111)
+            ccf = 1.0  # bilan = 100% (correctif prudentiel CRR3 Art.111)
             ccf_fallback_count += 1
             if len(ccf_fallback_exposures) < MAX_LOGGED_FALLBACKS:
                 ccf_fallback_exposures.append(str(exposure_id))
@@ -675,22 +690,27 @@ def run_standard_engine(
                     "FALLBACK CCF=1.0 appliqué à exposure_id=%s (product_type=%s, "
                     "asset_class=%s) — aucune règle ref_decision_rules ne correspond. "
                     "Compléter le seed CCF pour éviter ce fallback.",
-                    exposure_id, r.get("product_type_id"), r.get("asset_class_id"),
+                    exposure_id,
+                    r.get("product_type_id"),
+                    r.get("asset_class_id"),
                 )
 
         # ── ÉTAPE 3 : Risk Weight de base (Art.114-136 CRR3) ──────────────────
         provision_coverage_ratio = (prov / gross) if gross > 0 else 0.0
         rw_decision = evaluate_rule_set(
-            db, batch_id, regulatory_version_id, "RISK_WEIGHT",
+            db,
+            batch_id,
+            regulatory_version_id,
+            "RISK_WEIGHT",
             {
-                "_context_key":             exposure_id,
-                "counterparty_id":          r["counterparty_id"],
-                "asset_class_id":           r["asset_class_id"],
+                "_context_key": exposure_id,
+                "counterparty_id": r["counterparty_id"],
+                "asset_class_id": r["asset_class_id"],
                 "credit_quality_step": r.get("credit_quality_step"),
-                "ltv_ratio":                r.get("ltv_ratio"),
-                "exposure_subtype":         r.get("exposure_subtype"),
+                "ltv_ratio": r.get("ltv_ratio"),
+                "exposure_subtype": r.get("exposure_subtype"),
                 "provision_coverage_ratio": provision_coverage_ratio,
-                "delinquent_flag":          _to_flag(r.get("delinquent_flag")),
+                "delinquent_flag": _to_flag(r.get("delinquent_flag")),
             },
             trace_buffer=trace_buffer,
         )
@@ -698,7 +718,7 @@ def run_standard_engine(
             base_rw = _f(rw_decision["result_value"])
         else:
             # v3.3.0 (point 5) — Fallback explicite avec log + comptage
-            base_rw = 1.0   # 100% prudentiel maximum (correctif CRR3 Art.114-136)
+            base_rw = 1.0  # 100% prudentiel maximum (correctif CRR3 Art.114-136)
             rw_fallback_count += 1
             if len(rw_fallback_exposures) < MAX_LOGGED_FALLBACKS:
                 rw_fallback_exposures.append(str(exposure_id))
@@ -706,14 +726,16 @@ def run_standard_engine(
                     "FALLBACK RW=100%% appliqué à exposure_id=%s (asset_class=%s, "
                     "counterparty=%s, CQS=%s) — aucune règle ref_decision_rules ne "
                     "correspond. Compléter le seed RISK_WEIGHT pour éviter ce fallback.",
-                    exposure_id, r.get("asset_class_id"), r.get("counterparty_id"),
+                    exposure_id,
+                    r.get("asset_class_id"),
+                    r.get("counterparty_id"),
                     r.get("credit_quality_step"),
                 )
 
         # ── CALCUL DE L'EAD PRÉ-CRM ────────────────────────────────────────────
-        ead_pre_crm   = net * ccf          # EAD avant atténuation du risque de crédit
-        ead_after_fcp = ead_pre_crm        # EAD courante (réduite par les FCP successifs)
-        total_fcp      = 0.0               # Cumul des montants FCP alloués
+        ead_pre_crm = net * ccf  # EAD avant atténuation du risque de crédit
+        ead_after_fcp = ead_pre_crm  # EAD courante (réduite par les FCP successifs)
+        total_fcp = 0.0  # Cumul des montants FCP alloués
 
         # ── ÉTAPE 4 : CRM — Techniques d'atténuation (Art.193-241 CRR3) ─────────
         # Correctif v2.8 : protections préchargées une fois par batch.
@@ -725,12 +747,12 @@ def run_standard_engine(
         #         seul RW garant retenu pour UFCP multiples (cf. helper).
         # APRÈS : on suit explicitement la portion résiduelle au RW obligor
         #         et on accumule le RWA des portions garanties.
-        ead_at_obligor_rw    = ead_after_fcp   # portion encore au RW de l'obligor
-        rwa_substituted_acc  = 0.0             # cumul RWA des portions garanties
+        ead_at_obligor_rw = ead_after_fcp  # portion encore au RW de l'obligor
+        rwa_substituted_acc = 0.0  # cumul RWA des portions garanties
         # Plus petit RW garant rencontré — utile uniquement pour le rapport
         # (colonne risk_weight_substituted historique). Le calcul du RWA
         # passe désormais par la formule Art.235.
-        min_provider_rw      = base_rw
+        min_provider_rw = base_rw
 
         # ── v3.7.0 — Séquencement CRR funded → unfunded (indépendant du rang) ──
         # La méthode générale ajustée des sûretés impose que le collatéral FUNDED
@@ -745,7 +767,7 @@ def run_standard_engine(
         # Robustesse v3.6.0 conservée : accès défensifs .get + normalisation du
         # type (un "fcp" / " UFCP " n'est plus silencieusement ignoré) ; un type
         # non géré est ignoré mais compté/logué.
-        fcp_protections:  list[dict] = []
+        fcp_protections: list[dict] = []
         ufcp_protections: list[dict] = []
         for p in protections:
             ptype = str(p.get("protection_type") or "").strip().upper()
@@ -761,14 +783,16 @@ def run_standard_engine(
                         "CRM — protection ignorée (type non géré : %r) pour "
                         "exposure_id=%s, protection_id=%s. Types attendus : "
                         "FCP ou UFCP. Vérifier stg.stg_protections.protection_type.",
-                        p.get("protection_type"), exposure_id, p.get("protection_id"),
+                        p.get("protection_type"),
+                        exposure_id,
+                        p.get("protection_id"),
                     )
 
         # ── PASSE 1/2 : FCP (Funded Credit Protection) — réduction d'EAD ───────
         for p in fcp_protections:
-            value         = _f(p.get("protection_value"))
+            value = _f(p.get("protection_value"))
             protection_id = p.get("protection_id")
-            bucket        = p.get("bucket") or "DEFAULT"
+            bucket = p.get("bucket") or "DEFAULT"
 
             # v2.8 : valeur reconnue = valeur brute × (1 − haircut volatilité).
             # v3.5.0 (audit ④) : haircut de change Hfx (Art.224) si mismatch de
@@ -776,16 +800,15 @@ def run_standard_engine(
             #   protection < maturité d'exposition.
             haircut_rate = lookup_fcp_haircut_rate_from_rules(haircut_rules, p)
 
-            exp_ccy  = (str(r.get("currency")).strip().upper() if r.get("currency") else None)
-            prot_ccy = (str(p.get("currency")).strip().upper() if p.get("currency") else None)
+            exp_ccy = str(r.get("currency")).strip().upper() if r.get("currency") else None
+            prot_ccy = str(p.get("currency")).strip().upper() if p.get("currency") else None
             fx_mismatch = bool(exp_ccy and prot_ccy and exp_ccy != prot_ccy)
 
-            mm_factor = maturity_mismatch_factor(
-                r.get("maturity_months"), p.get("maturity_months")
-            )
+            mm_factor = maturity_mismatch_factor(r.get("maturity_months"), p.get("maturity_months"))
 
             recognized_value = compute_recognized_fcp_value(
-                value, haircut_rate,
+                value,
+                haircut_rate,
                 fx_mismatch=fx_mismatch,
                 fx_haircut=crm_fx_haircut,
                 exposure_maturity_months=r.get("maturity_months"),
@@ -803,30 +826,34 @@ def run_standard_engine(
                 effect_type += "_FX"
             if mm_factor < 1.0:
                 effect_type += "_MMM"
-            allocations_batch.append((
-                batch_id, exposure_id, protection_id,
-                bucket, cover, effect_type,
-            ))
+            allocations_batch.append(
+                (
+                    batch_id,
+                    exposure_id,
+                    protection_id,
+                    bucket,
+                    cover,
+                    effect_type,
+                )
+            )
 
         # ── PASSE 2/2 : UFCP (Unfunded) — substitution Art.235 sur l'EAD post-FCP ─
         # Garde-fou v3.7.0 : la base substituable ne peut ni dépasser l'EAD
         # post-FCP ni être négative (robustesse contre une EAD/base incohérente).
         ead_at_obligor_rw = max(0.0, min(ead_at_obligor_rw, ead_after_fcp))
         for p in ufcp_protections:
-            value_raw     = _f(p.get("protection_value"))
+            value_raw = _f(p.get("protection_value"))
             protection_id = p.get("protection_id")
-            bucket        = p.get("bucket") or "DEFAULT"
+            bucket = p.get("bucket") or "DEFAULT"
 
             # ── v3.9.0 (bug 2) — Ajustements CRM de la garantie UFCP ───────────
             # Mismatch de devise (Art.233(3), haircut Hfx) et asymétrie de maturité
             # (Art.239) — symétrie de traitement avec le FCP (v3.5.0). Pas de
             # haircut de volatilité Hc (réservé au collatéral financier).
-            exp_ccy  = (str(r.get("currency")).strip().upper() if r.get("currency") else None)
-            prot_ccy = (str(p.get("currency")).strip().upper() if p.get("currency") else None)
+            exp_ccy = str(r.get("currency")).strip().upper() if r.get("currency") else None
+            prot_ccy = str(p.get("currency")).strip().upper() if p.get("currency") else None
             fx_mismatch = bool(exp_ccy and prot_ccy and exp_ccy != prot_ccy)
-            mm_factor   = maturity_mismatch_factor(
-                r.get("maturity_months"), p.get("maturity_months")
-            )
+            mm_factor = maturity_mismatch_factor(r.get("maturity_months"), p.get("maturity_months"))
             value = compute_recognized_ufcp_value(
                 value_raw,
                 fx_mismatch=fx_mismatch,
@@ -836,26 +863,27 @@ def run_standard_engine(
             )
 
             rw_sub = evaluate_rule_set(
-                db, batch_id, regulatory_version_id, "SUBSTITUTION_RISK_WEIGHT",
+                db,
+                batch_id,
+                regulatory_version_id,
+                "SUBSTITUTION_RISK_WEIGHT",
                 {
-                    "_context_key":    f"{exposure_id}:{protection_id}",
-                    "provider_type":   p.get("provider_type"),
+                    "_context_key": f"{exposure_id}:{protection_id}",
+                    "provider_type": p.get("provider_type"),
                     "protection_type": p.get("protection_type"),
                 },
                 trace_buffer=trace_buffer,
             )
             # v3.6.0 — Durcissement : result_value absent OU NULL → pas de RW
             # garant exploitable → aucune substitution (rw_provider = None).
-            rw_value    = rw_sub.get("result_value") if rw_sub else None
+            rw_value = rw_sub.get("result_value") if rw_sub else None
             rw_provider = _f(rw_value) if rw_value is not None else None
 
-            guarantee_amount, rwa_increment, ead_at_obligor_rw = (
-                apply_ufcp_partial_substitution(
-                    ead_at_obligor_rw=ead_at_obligor_rw,
-                    base_rw=base_rw,
-                    rw_provider=rw_provider,
-                    protection_value=value,   # ← valeur reconnue (Hfx + maturity)
-                )
+            guarantee_amount, rwa_increment, ead_at_obligor_rw = apply_ufcp_partial_substitution(
+                ead_at_obligor_rw=ead_at_obligor_rw,
+                base_rw=base_rw,
+                rw_provider=rw_provider,
+                protection_value=value,  # ← valeur reconnue (Hfx + maturity)
             )
             rwa_substituted_acc += rwa_increment
             if rw_provider is not None and rw_provider < min_provider_rw:
@@ -867,17 +895,23 @@ def run_standard_engine(
                 ufcp_effect += "_FX"
             if mm_factor < 1.0:
                 ufcp_effect += "_MMM"
-            allocations_batch.append((
-                batch_id, exposure_id, protection_id,
-                bucket, guarantee_amount, ufcp_effect,
-            ))
+            allocations_batch.append(
+                (
+                    batch_id,
+                    exposure_id,
+                    protection_id,
+                    bucket,
+                    guarantee_amount,
+                    ufcp_effect,
+                )
+            )
 
         # ── ÉTAPE 5 : RWA pré-supporting factors (Art.235 partielle) ──────────
         # Formule Art.235(2) : RWA = portion couverte × rw_provider
         #                          + portion résiduelle × rw_obligor
         rwa_pre_supporting = (
-            rwa_substituted_acc                      # Σ g_a × rw_provider
-            + ead_at_obligor_rw * base_rw            # (E − Σ g_a) × rw_obligor
+            rwa_substituted_acc  # Σ g_a × rw_provider
+            + ead_at_obligor_rw * base_rw  # (E − Σ g_a) × rw_obligor
         )
 
         # Pour la rétrocompatibilité du tuple de résultat, on calcule un RW
@@ -897,31 +931,33 @@ def run_standard_engine(
             regulatory_version=regulatory_version_id,
             exposure_row=r,
             rwa_pre_supporting=rwa_pre_supporting,
-            preloaded_rules=sf_rules,   # ← CORRECTION v4 : règles déjà en mémoire
+            preloaded_rules=sf_rules,  # ← CORRECTION v4 : règles déjà en mémoire
             trace_buffer=sf_trace_buffer,
             sme_total_exposure=sme_total_by_obligor.get(r["counterparty_id"], 0.0),  # v3.4.0 ⑤
         )
-        rwa_final = sf_result["rwa_final"]   # RWA après application des facteurs PME/Infra
+        rwa_final = sf_result["rwa_final"]  # RWA après application des facteurs PME/Infra
 
         # ── CONSTRUCTION DU TUPLE DE RÉSULTAT ─────────────────────────────────
-        results_batch.append((
-            batch_id,
-            exposure_id,
-            r["counterparty_id"],
-            r["asset_class_id"],
-            r["product_type_id"],
-            gross,                           # Exposition brute avant provisions
-            prov,                            # Provisions spécifiques
-            ead_pre_crm,                     # EAD avant CRM (net × CCF)
-            ead_after_fcp,                   # EAD après allocation FCP
-            total_fcp,                       # Total FCP alloué
-            base_rw,                         # RW de base (avant substitution)
-            substituted_rw,                  # RW après substitution UFCP
-            rwa_pre_supporting,              # RWA avant supporting factors
-            sf_result["multiplier_final"],   # Multiplicateur final (produit des SF appliqués)
-            sf_result["factor_codes"],       # Codes des facteurs appliqués (ex. "SME_SF|INFRA_SF")
-            rwa_final,                       # RWA final (après tous les ajustements)
-        ))
+        results_batch.append(
+            (
+                batch_id,
+                exposure_id,
+                r["counterparty_id"],
+                r["asset_class_id"],
+                r["product_type_id"],
+                gross,  # Exposition brute avant provisions
+                prov,  # Provisions spécifiques
+                ead_pre_crm,  # EAD avant CRM (net × CCF)
+                ead_after_fcp,  # EAD après allocation FCP
+                total_fcp,  # Total FCP alloué
+                base_rw,  # RW de base (avant substitution)
+                substituted_rw,  # RW après substitution UFCP
+                rwa_pre_supporting,  # RWA avant supporting factors
+                sf_result["multiplier_final"],  # Multiplicateur final (produit des SF appliqués)
+                sf_result["factor_codes"],  # Codes des facteurs appliqués (ex. "SME_SF|INFRA_SF")
+                rwa_final,  # RWA final (après tous les ajustements)
+            )
+        )
 
     # ── PERSISTANCE EN BASE (une seule transaction atomique) ────────────────────
     with db.transaction():
@@ -974,7 +1010,7 @@ def run_standard_engine(
         controls_metrics: list[tuple] = []
         if ccf_fallback_count > 0 or rw_fallback_count > 0:
             controls_metrics.append((batch_id, "SA_CCF_FALLBACK_HITS", ccf_fallback_count))
-            controls_metrics.append((batch_id, "SA_RW_FALLBACK_HITS",  rw_fallback_count))
+            controls_metrics.append((batch_id, "SA_RW_FALLBACK_HITS", rw_fallback_count))
         if crm_ignored_protection_count > 0:
             controls_metrics.append(
                 (batch_id, "SA_CRM_IGNORED_PROTECTIONS", crm_ignored_protection_count)
@@ -997,7 +1033,9 @@ def run_standard_engine(
             "(sur %d expositions). Premiers exposure_id concernés : "
             "CCF=%s ; RW=%s. Voir SA_CCF_FALLBACK_HITS / SA_RW_FALLBACK_HITS "
             "dans rpt.rpt_controls.",
-            ccf_fallback_count, rw_fallback_count, len(results_batch),
+            ccf_fallback_count,
+            rw_fallback_count,
+            len(results_batch),
             ccf_fallback_exposures[:5] or "(aucun)",
             rw_fallback_exposures[:5] or "(aucun)",
         )

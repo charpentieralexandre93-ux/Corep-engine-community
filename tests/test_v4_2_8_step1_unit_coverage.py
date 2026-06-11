@@ -70,6 +70,7 @@ class FakeDb:
 
 # ── decision_engine.py --------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -103,41 +104,43 @@ def test_decision_match_operators(value, operator, expected, result):
 
 
 def test_load_rules_with_conditions_groups_rows():
-    db = FakeDb([
-        {
-            "rule_id": 1,
-            "rule_set_id": 10,
-            "priority": 1,
-            "result_key": "RW",
-            "result_value": "0.75",
-            "rule_set_name": "risk_weight",
-            "condition_field": "asset_class_id",
-            "condition_operator": "=",
-            "condition_value": "RETAIL",
-        },
-        {
-            "rule_id": 1,
-            "rule_set_id": 10,
-            "priority": 1,
-            "result_key": "RW",
-            "result_value": "0.75",
-            "rule_set_name": "risk_weight",
-            "condition_field": "country",
-            "condition_operator": "=",
-            "condition_value": "FR",
-        },
-        {
-            "rule_id": 2,
-            "rule_set_id": 10,
-            "priority": 99,
-            "result_key": "RW",
-            "result_value": "1.00",
-            "rule_set_name": "risk_weight",
-            "condition_field": None,
-            "condition_operator": None,
-            "condition_value": None,
-        },
-    ])
+    db = FakeDb(
+        [
+            {
+                "rule_id": 1,
+                "rule_set_id": 10,
+                "priority": 1,
+                "result_key": "RW",
+                "result_value": "0.75",
+                "rule_set_name": "risk_weight",
+                "condition_field": "asset_class_id",
+                "condition_operator": "=",
+                "condition_value": "RETAIL",
+            },
+            {
+                "rule_id": 1,
+                "rule_set_id": 10,
+                "priority": 1,
+                "result_key": "RW",
+                "result_value": "0.75",
+                "rule_set_name": "risk_weight",
+                "condition_field": "country",
+                "condition_operator": "=",
+                "condition_value": "FR",
+            },
+            {
+                "rule_id": 2,
+                "rule_set_id": 10,
+                "priority": 99,
+                "result_key": "RW",
+                "result_value": "1.00",
+                "rule_set_name": "risk_weight",
+                "condition_field": None,
+                "condition_operator": None,
+                "condition_value": None,
+            },
+        ]
+    )
 
     rules = _load_rules_with_conditions(db, "CRR3_V9", "RISK_WEIGHT")
 
@@ -148,19 +151,21 @@ def test_load_rules_with_conditions_groups_rows():
 
 def test_evaluate_rule_set_uses_cache_and_trace_buffer():
     clear_rules_cache()
-    db = FakeDb([
-        {
-            "rule_id": 1,
-            "rule_set_id": 10,
-            "priority": 1,
-            "result_key": "RW",
-            "result_value": "0.75",
-            "rule_set_name": "risk_weight",
-            "condition_field": "asset_class_id",
-            "condition_operator": "=",
-            "condition_value": "RETAIL",
-        }
-    ])
+    db = FakeDb(
+        [
+            {
+                "rule_id": 1,
+                "rule_set_id": 10,
+                "priority": 1,
+                "result_key": "RW",
+                "result_value": "0.75",
+                "rule_set_name": "risk_weight",
+                "condition_field": "asset_class_id",
+                "condition_operator": "=",
+                "condition_value": "RETAIL",
+            }
+        ]
+    )
     trace = []
 
     first = evaluate_rule_set(
@@ -187,6 +192,7 @@ def test_evaluate_rule_set_uses_cache_and_trace_buffer():
 
 
 # ── standard_engine.py --------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     ("value", "expected"),
@@ -264,14 +270,32 @@ def test_recognized_values_include_fx_and_maturity_mismatch():
 
 def test_haircut_lookup_prefers_exact_grade_and_maturity():
     rules = [
-        {"collateral_type": "BOND", "collateral_grade": None, "residual_maturity": None, "haircut_rate": 0.08},
-        {"collateral_type": "BOND", "collateral_grade": "AA", "residual_maturity": None, "haircut_rate": 0.04},
-        {"collateral_type": "BOND", "collateral_grade": "AA", "residual_maturity": "1Y-5Y", "haircut_rate": 0.02},
+        {
+            "collateral_type": "BOND",
+            "collateral_grade": None,
+            "residual_maturity": None,
+            "haircut_rate": 0.08,
+        },
+        {
+            "collateral_type": "BOND",
+            "collateral_grade": "AA",
+            "residual_maturity": None,
+            "haircut_rate": 0.04,
+        },
+        {
+            "collateral_type": "BOND",
+            "collateral_grade": "AA",
+            "residual_maturity": "1Y-5Y",
+            "haircut_rate": 0.02,
+        },
     ]
-    assert lookup_fcp_haircut_rate_from_rules(
-        rules,
-        {"collateral_type": "bond", "collateral_grade": "aa", "maturity_months": 48},
-    ) == 0.02
+    assert (
+        lookup_fcp_haircut_rate_from_rules(
+            rules,
+            {"collateral_type": "bond", "collateral_grade": "aa", "maturity_months": 48},
+        )
+        == 0.02
+    )
 
 
 def test_preload_crm_fx_haircut_fallback_and_valid_value():
@@ -281,6 +305,7 @@ def test_preload_crm_fx_haircut_fallback_and_valid_value():
 
 
 # ── supporting_factors.py -----------------------------------------------------
+
 
 @pytest.mark.parametrize(
     ("factor_code", "expected"),
@@ -352,6 +377,7 @@ def test_apply_supporting_factors_with_preloaded_rules_and_trace_buffer():
 
 # ── saccr_engine.py -----------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("maturity", "expected"),
     [(0.5, 1), (1.0, 1), (1.01, 2), (5.0, 2), (5.01, 3)],
@@ -400,36 +426,42 @@ def test_maturity_factor_unmargined_and_margined_floors():
 
 
 def test_adjusted_notional_sets_class_specific_buckets():
-    ird = _adjusted_notional({
-        "trade_id": "IRD1",
-        "asset_class": "IRD",
-        "notional": 1000.0,
-        "maturity_years": 5.0,
-        "start_date_years": 0.0,
-        "end_date_years": 5.0,
-        "delta": 1.0,
-        "payment_currency": "eur",
-    })
-    fx = _adjusted_notional({
-        "trade_id": "FX1",
-        "asset_class": "FX",
-        "notional": 1000.0,
-        "maturity_years": 1.0,
-        "delta": -1.0,
-        "reference_entity_id": "EUR/USD",
-    })
-    equity = _adjusted_notional({
-        "trade_id": "EQ1",
-        "asset_class": "EQUITY",
-        "notional": 1000.0,
-        "maturity_years": 1.0,
-        "option_type": "CALL",
-        "underlying_price": 100.0,
-        "strike": 100.0,
-        "implied_vol": 0.20,
-        "equity_id": "SX5E",
-        "equity_type": "INDEX",
-    })
+    ird = _adjusted_notional(
+        {
+            "trade_id": "IRD1",
+            "asset_class": "IRD",
+            "notional": 1000.0,
+            "maturity_years": 5.0,
+            "start_date_years": 0.0,
+            "end_date_years": 5.0,
+            "delta": 1.0,
+            "payment_currency": "eur",
+        }
+    )
+    fx = _adjusted_notional(
+        {
+            "trade_id": "FX1",
+            "asset_class": "FX",
+            "notional": 1000.0,
+            "maturity_years": 1.0,
+            "delta": -1.0,
+            "reference_entity_id": "EUR/USD",
+        }
+    )
+    equity = _adjusted_notional(
+        {
+            "trade_id": "EQ1",
+            "asset_class": "EQUITY",
+            "notional": 1000.0,
+            "maturity_years": 1.0,
+            "option_type": "CALL",
+            "underlying_price": 100.0,
+            "strike": 100.0,
+            "implied_vol": 0.20,
+            "equity_id": "SX5E",
+            "equity_type": "INDEX",
+        }
+    )
 
     assert ird["bucket"] == "EUR"
     assert ird["adj_notional"] > 1000.0
@@ -449,11 +481,33 @@ def test_addon_functions_single_bucket_exact_cases():
         "sub_type": "",
     }
     assert math.isclose(_addon_ird([{**base_trade, "asset_class": "IRD"}]), 500.0)
-    assert math.isclose(_addon_fx([{**base_trade, "asset_class": "FX", "bucket": "EUR/USD"}]), 4000.0)
-    assert math.isclose(_addon_credit([{**base_trade, "asset_class": "CREDIT", "bucket": "REF1", "sub_type": "HY"}]), 1000.0)
-    assert math.isclose(_addon_equity([{**base_trade, "asset_class": "EQUITY", "bucket": "AAPL", "sub_type": "SINGLE"}]), 32_000.0)
-    assert math.isclose(_addon_equity([{**base_trade, "asset_class": "EQUITY", "bucket": "SX5E", "sub_type": "INDEX"}]), 20_000.0)
-    assert math.isclose(_addon_commodity([{**base_trade, "asset_class": "COMMODITY", "bucket": "ENERGY", "sub_type": "ENERGY"}]), 18_000.0)
+    assert math.isclose(
+        _addon_fx([{**base_trade, "asset_class": "FX", "bucket": "EUR/USD"}]), 4000.0
+    )
+    assert math.isclose(
+        _addon_credit(
+            [{**base_trade, "asset_class": "CREDIT", "bucket": "REF1", "sub_type": "HY"}]
+        ),
+        1000.0,
+    )
+    assert math.isclose(
+        _addon_equity(
+            [{**base_trade, "asset_class": "EQUITY", "bucket": "AAPL", "sub_type": "SINGLE"}]
+        ),
+        32_000.0,
+    )
+    assert math.isclose(
+        _addon_equity(
+            [{**base_trade, "asset_class": "EQUITY", "bucket": "SX5E", "sub_type": "INDEX"}]
+        ),
+        20_000.0,
+    )
+    assert math.isclose(
+        _addon_commodity(
+            [{**base_trade, "asset_class": "COMMODITY", "bucket": "ENERGY", "sub_type": "ENERGY"}]
+        ),
+        18_000.0,
+    )
 
 
 def test_aggregate_addon_with_correlation_formula():
@@ -469,34 +523,40 @@ def test_calc_multiplier_bounds():
 
 
 def test_compute_pfe_full_fallback_and_native_paths():
-    fallback = _compute_pfe_full([
-        {"trade_id": "L1", "addon": 10.0},
-        {"trade_id": "L2", "addon": 20.0},
-    ], mtm_net=100.0)
+    fallback = _compute_pfe_full(
+        [
+            {"trade_id": "L1", "addon": 10.0},
+            {"trade_id": "L2", "addon": 20.0},
+        ],
+        mtm_net=100.0,
+    )
     assert fallback["pfe_full"] == 30.0
     assert fallback["multiplier"] == 1.0
     assert fallback["pfe_final"] == 30.0
 
-    native = _compute_pfe_full([
-        {
-            "trade_id": "IRD1",
-            "asset_class": "IRD",
-            "notional": 100_000.0,
-            "maturity_years": 1.0,
-            "start_date_years": 0.0,
-            "end_date_years": 1.0,
-            "delta": 1.0,
-            "payment_currency": "EUR",
-        },
-        {
-            "trade_id": "FX1",
-            "asset_class": "FX",
-            "notional": 50_000.0,
-            "maturity_years": 1.0,
-            "delta": 1.0,
-            "reference_entity_id": "EUR/USD",
-        },
-    ], mtm_net=-10.0)
+    native = _compute_pfe_full(
+        [
+            {
+                "trade_id": "IRD1",
+                "asset_class": "IRD",
+                "notional": 100_000.0,
+                "maturity_years": 1.0,
+                "start_date_years": 0.0,
+                "end_date_years": 1.0,
+                "delta": 1.0,
+                "payment_currency": "EUR",
+            },
+            {
+                "trade_id": "FX1",
+                "asset_class": "FX",
+                "notional": 50_000.0,
+                "maturity_years": 1.0,
+                "delta": 1.0,
+                "reference_entity_id": "EUR/USD",
+            },
+        ],
+        mtm_net=-10.0,
+    )
     assert native["addon_ird"] > 0.0
     assert native["addon_fx"] > 0.0
     assert native["pfe_full"] > native["addon_ird"]
@@ -509,18 +569,20 @@ def test_compute_margin_state_legacy_and_csa_paths():
     assert legacy["rc"] == 70.0
     assert legacy["collateral_for_multiplier"] == 30.0
 
-    margined = _compute_margin_state([
-        {
-            "mtm": 100.0,
-            "collateral": 0.0,
-            "vm_received": 20.0,
-            "threshold_amount": 10.0,
-            "mta": 5.0,
-            "nica": 8.0,
-            "csa_id": "CSA-1",
-            "mpor_days": 20,
-        }
-    ])
+    margined = _compute_margin_state(
+        [
+            {
+                "mtm": 100.0,
+                "collateral": 0.0,
+                "vm_received": 20.0,
+                "threshold_amount": 10.0,
+                "mta": 5.0,
+                "nica": 8.0,
+                "csa_id": "CSA-1",
+                "mpor_days": 20,
+            }
+        ]
+    )
     assert margined["csa_present"] is True
     assert margined["rc"] == 80.0
     assert margined["mpor_days"] == 20

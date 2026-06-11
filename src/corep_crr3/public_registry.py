@@ -17,9 +17,7 @@ def get_engine(engine_code: str):
     try:
         return PUBLIC_ENGINES[code]
     except KeyError as exc:
-        raise ValueError(
-            f"Moteur indisponible dans l'édition Community : {engine_code}"
-        ) from exc
+        raise ValueError(f"Moteur indisponible dans l'édition Community : {engine_code}") from exc
 
 
 def main() -> None:

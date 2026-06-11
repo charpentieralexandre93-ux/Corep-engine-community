@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : decision_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.3.4
+VERSION : 4.3.5
 ================================================================================
 
 DESCRIPTION
@@ -74,13 +74,17 @@ En cas de parallélisation future, ajouter threading.Lock().
 """
 
 from __future__ import annotations
+
 import threading
+from typing import cast
+
 from .db import Database
 
 
 # ──────────────────────────────────────────────────────────────────────────────
 # HELPERS DE COMPARAISON
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def _as_float(v):
     """Tente une conversion en float pour les comparaisons numériques (>, <, >=, <=).
@@ -137,10 +141,14 @@ def _match(value, operator: str, expected: str) -> bool:
         left, right = _as_float(value), _as_float(expected)
         if left is None or right is None:
             return False  # Comparaison impossible → non match
-        if operator == ">":  return left > right
-        if operator == ">=": return left >= right
-        if operator == "<":  return left < right
-        if operator == "<=": return left <= right
+        if operator == ">":
+            return left > right
+        if operator == ">=":
+            return left >= right
+        if operator == "<":
+            return left < right
+        if operator == "<=":
+            return left <= right
 
     # Opérateur non reconnu → non match par défaut
     return False
@@ -149,6 +157,7 @@ def _match(value, operator: str, expected: str) -> bool:
 # ──────────────────────────────────────────────────────────────────────────────
 # CHARGEMENT DES RÈGLES DEPUIS LA BASE (anti-N+1)
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def _load_rules_with_conditions(
     db: Database,
@@ -236,21 +245,23 @@ def _load_rules_with_conditions(
         if rid not in rules:
             # Première occurrence de cette règle : initialiser la structure
             rules[rid] = {
-                "rule_id":       rid,
-                "rule_set_id":   row["rule_set_id"],
-                "priority":      row["priority"],
-                "result_key":    row["result_key"],
-                "result_value":  row["result_value"],
+                "rule_id": rid,
+                "rule_set_id": row["rule_set_id"],
+                "priority": row["priority"],
+                "result_key": row["result_key"],
+                "result_value": row["result_value"],
                 "rule_set_name": row["rule_set_name"],
-                "conditions":    [],
+                "conditions": [],
             }
         # Ajouter la condition (NULL si la règle n'a aucune condition → LEFT JOIN)
         if row["condition_field"] is not None:
-            rules[rid]["conditions"].append({
-                "condition_field":    row["condition_field"],
-                "condition_operator": row["condition_operator"],
-                "condition_value":    row["condition_value"],
-            })
+            rules[rid]["conditions"].append(
+                {
+                    "condition_field": row["condition_field"],
+                    "condition_operator": row["condition_operator"],
+                    "condition_value": row["condition_value"],
+                }
+            )
 
     return rules
 
@@ -277,7 +288,7 @@ _rules_cache_lock: threading.Lock = threading.Lock()
 # à chaque appel avec le _context_key courant → cardinalité/contenu inchangés.
 # Le mémo partage le cycle de vie du cache de règles (vidé par clear_rules_cache).
 _decision_memo: dict[tuple, tuple] = {}
-_MEMO_MISS = object()   # sentinelle d'absence (distincte d'un résultat None mémoïsé)
+_MEMO_MISS = object()  # sentinelle d'absence (distincte d'un résultat None mémoïsé)
 
 
 def clear_rules_cache():
@@ -298,10 +309,10 @@ def clear_rules_cache():
         _decision_memo.clear()
 
 
-
 # ──────────────────────────────────────────────────────────────────────────────
 # ÉVALUATION DES RÈGLES
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def evaluate_rule_set(
     db: Database,
@@ -386,20 +397,18 @@ def evaluate_rule_set(
     memo_key = (
         regulatory_version_id,
         target_domain,
-        tuple(sorted(
-            (k, repr(v)) for k, v in context.items() if k != "_context_key"
-        )),
+        tuple(sorted((k, repr(v)) for k, v in context.items() if k != "_context_key")),
     )
     cached = _decision_memo.get(memo_key, _MEMO_MISS)
     if cached is _MEMO_MISS:
         # MISS → scanner les règles (coût O(M)) UNE fois pour cette signature.
         result = None
-        trace_core = None   # (rule_id, rule_set_id, result_key, result_value, match_reason)
+        trace_core = None  # (rule_id, rule_set_id, result_key, result_value, match_reason)
         for rule in rules.values():
             conditions = rule["conditions"]
 
             # ── Évaluation AND de toutes les conditions de la règle ───────────
-            all_match    = True
+            all_match = True
             match_details = []
             for c in conditions:
                 val = context.get(c["condition_field"])
@@ -414,14 +423,17 @@ def evaluate_rule_set(
 
             match_reason = " | ".join(match_details) if match_details else "NO_CONDITIONS"
             result = {
-                "rule_id":      rule["rule_id"],
-                "rule_set_id":  rule["rule_set_id"],
-                "result_key":   rule["result_key"],
+                "rule_id": rule["rule_id"],
+                "rule_set_id": rule["rule_set_id"],
+                "result_key": rule["result_key"],
                 "result_value": rule["result_value"],
             }
             trace_core = (
-                rule["rule_id"], rule["rule_set_id"],
-                rule["result_key"], rule["result_value"], match_reason,
+                rule["rule_id"],
+                rule["rule_set_id"],
+                rule["result_key"],
+                rule["result_value"],
+                match_reason,
             )
             break  # Première règle matchée = priorité la plus haute
 
@@ -430,7 +442,7 @@ def evaluate_rule_set(
         with _rules_cache_lock:
             _decision_memo[memo_key] = (result, trace_core)
     else:
-        result, trace_core = cached
+        result, trace_core = cast(tuple, cached)
 
     # ── Trace émise à CHAQUE appel (cardinalité/contenu inchangés vs avant) ────
     # Le _context_key courant est réinjecté → une trace par objet évalué.

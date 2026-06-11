@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : saccr_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.3.2
+VERSION : 4.3.4
 ================================================================================
 
 CORRECTIONS RÉGLEMENTAIRES v3.4.0 (audit points ② et ③)

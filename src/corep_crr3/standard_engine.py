@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : standard_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.4.2
+VERSION : 4.4.9
 ================================================================================
 
 DESCRIPTION
@@ -34,7 +34,7 @@ Pour chaque exposition chargée dans stg.stg_exposures :
          TERM_LOAN         → CCF = 1.0  (bilan → 100%)
          REVOLVING         → CCF = 0.75
          COMMITMENT        → CCF = 0.40
-         REVOCABLE_COMMIT  → CCF = 0.0  (irrévocable uniquement)
+         REVOCABLE_COMMIT  → CCF = 0.10 (bucket 5 CRR3)
        EAD pré-CRM = net × CCF
 
     3. RISK WEIGHT (RW) — Art.114-136 CRR3
@@ -117,6 +117,133 @@ from .utils import to_float as _f
 # protections CRM ignorées) mais n'était JAMAIS défini au niveau module → tout
 # chemin de warning levait NameError. On le définit selon la convention projet.
 logger = logging.getLogger(__name__)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HELPERS — CREDIT SA FINAL STANDARD v4.4.9
+# ─────────────────────────────────────────────────────────────────────────────
+
+_CCF_BY_ANNEX_I_BUCKET = {
+    "BUCKET_1": 1.00,
+    "BUCKET_2": 0.50,
+    "BUCKET_3": 0.40,
+    "BUCKET_4": 0.20,
+    "BUCKET_5": 0.10,
+    # Cas très encadré : arrangement contractuel non encore accepté par le client.
+    "NOT_ACCEPTED_ZERO_CCF": 0.00,
+}
+
+
+def _norm_code(value) -> str:
+    return str(value or "").strip().upper()
+
+
+def ccf_from_annex_i_bucket(bucket: str | None) -> Optional[float]:
+    """Retourne le CCF CRR3 associé à un bucket Annex I.
+
+    La grille v4.4.9 retient les cinq buckets CRR3 : 100 %, 50 %, 40 %,
+    20 % et 10 %. Le 0 % n'est conservé que pour le cas distinct des
+    arrangements contractuels non encore acceptés par le client, afin d'éviter
+    de traiter tous les engagements révocables comme un équivalent 0 %.
+    """
+    code = _norm_code(bucket)
+    return _CCF_BY_ANNEX_I_BUCKET.get(code)
+
+
+def infer_ccf_bucket(row: dict) -> str | None:
+    """Déduit un bucket CCF réglementaire depuis la ligne d'exposition.
+
+    Priorité :
+      1. `annex_i_bucket` fourni par la source ;
+      2. cas contractuel non accepté par le client ;
+      3. mapping prudent legacy product_type_id.
+    """
+    explicit = _norm_code(row.get("annex_i_bucket"))
+    if explicit:
+        return explicit
+
+    not_accepted = _to_flag(row.get("contractual_arrangement_not_accepted_flag")) == "TRUE"
+    client_acceptance = _to_flag(row.get("client_acceptance_required_flag")) == "TRUE"
+    if not_accepted and client_acceptance:
+        return "NOT_ACCEPTED_ZERO_CCF"
+
+    product = _norm_code(row.get("product_type_id") or row.get("product_type"))
+    if product in {"TERM_LOAN", "BOND", "MORTGAGE", "GUARANTEE", "STANDBY_LC", "ACCEPTANCE", "FORWARD_ASSET"}:
+        return "BUCKET_1"
+    if product in {"PERFORMANCE_BOND", "NIF", "RUF"}:
+        return "BUCKET_2"
+    if product in {"COMMITMENT", "REVOLVING"}:
+        return "BUCKET_3"
+    if product in {"LETTER_OF_CREDIT", "DOCUMENTARY_CREDIT"}:
+        return "BUCKET_4"
+    if product in {"REVOCABLE_COMMITMENT", "UCC", "UNCONDITIONALLY_CANCELLABLE_COMMITMENT"}:
+        return "BUCKET_5"
+    return None
+
+
+def is_currency_mismatch_exposure(row: dict) -> bool:
+    """Détermine si l'exposition entre dans le currency mismatch Art.123a.
+
+    Le moteur reste défensif : le multiplicateur s'applique uniquement si la
+    devise d'exposition diffère de la devise de revenu de l'emprunteur et que
+    l'exposition n'est pas couverte/naturellement hedgée.
+    """
+    exposure_ccy = _norm_code(row.get("exposure_currency") or row.get("currency"))
+    income_ccy = _norm_code(row.get("borrower_income_currency"))
+    hedged = _to_flag(row.get("hedged_currency_mismatch_flag")) == "TRUE"
+    natural_person = _to_flag(row.get("natural_person_flag")) == "TRUE"
+    if not exposure_ccy or not income_ccy or exposure_ccy == income_ccy or hedged:
+        return False
+    asset_class = _norm_code(row.get("asset_class_id"))
+    return natural_person or asset_class in {"RETAIL", "SME_RETAIL", "RESIDENTIAL_MORTGAGE"}
+
+
+def apply_currency_mismatch_multiplier(base_rw: float, mismatch: bool) -> float:
+    """Applique le multiplicateur currency mismatch : ×1,5 plafonné à 150 %."""
+    rw = max(0.0, _f(base_rw))
+    if not mismatch:
+        return rw
+    return min(1.50, rw * 1.50)
+
+
+def ltv_bucket(ltv_ratio) -> str | None:
+    """Bucket LTV lisible pour la trace C07/C09."""
+    if ltv_ratio in (None, ""):
+        return None
+    ltv = _f(ltv_ratio)
+    if ltv <= 0.50:
+        return "LTV_LE_50"
+    if ltv <= 0.60:
+        return "LTV_50_60"
+    if ltv <= 0.80:
+        return "LTV_60_80"
+    if ltv <= 0.90:
+        return "LTV_80_90"
+    if ltv <= 1.00:
+        return "LTV_90_100"
+    return "LTV_GT_100"
+
+
+def infer_rw_bucket(row: dict, applied_rw: float) -> str:
+    """Bucket réglementaire synthétique pour la traçabilité Credit SA."""
+    asset_class = _norm_code(row.get("asset_class_id"))
+    subtype = _norm_code(row.get("exposure_subtype"))
+    rw = round(_f(applied_rw), 4)
+    if asset_class == "EQUITY":
+        if subtype in {"SPECULATIVE", "SPECULATIVE_UNLISTED"} or rw >= 4.0:
+            return "EQUITY_SPECULATIVE_UNLISTED_400"
+        if subtype in {"STRATEGIC", "STRATEGIC_EQUITY"} or abs(rw - 1.5) < 1e-9:
+            return "EQUITY_STRATEGIC_150"
+        return "EQUITY_GENERIC_250"
+    if subtype in {"ADC", "LAND_ACQUISITION_DEVELOPMENT_CONSTRUCTION"}:
+        return "ADC"
+    if subtype == "TRANSADC":
+        return "TRANSADC"
+    if subtype == "PROJECT_FINANCE":
+        return "SPECIALISED_LENDING_PROJECT_FINANCE"
+    if subtype in {"OBJECT_FINANCE", "COMMODITIES_FINANCE", "SPECIALISED_LENDING"}:
+        return f"SPECIALISED_LENDING_{subtype}"
+    return f"RW_{int(round(rw * 10000)):05d}BP"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -653,6 +780,7 @@ def run_standard_engine(
         # ── ÉTAPE 2 : CCF — Credit Conversion Factor (Art.111 CRR3) ─────────────
         # Le CCF convertit un engagement hors-bilan en équivalent bilan.
         # Déterminé par le moteur de décision selon product_type_id.
+        ccf_bucket = infer_ccf_bucket(r)
         ccf_decision = evaluate_rule_set(
             db, batch_id, regulatory_version_id, "CCF",
             {
@@ -660,23 +788,28 @@ def run_standard_engine(
                 "product_type_id": r["product_type_id"],
                 "asset_class_id":  r["asset_class_id"],
                 "counterparty_id": r["counterparty_id"],
+                "annex_i_bucket":  ccf_bucket,
             },
             trace_buffer=trace_buffer,
         )
         if ccf_decision:
             ccf = _f(ccf_decision["result_value"])
         else:
-            # v3.3.0 (point 5) — Fallback explicite avec log + comptage
-            ccf = 1.0   # bilan = 100% (correctif prudentiel CRR3 Art.111)
-            ccf_fallback_count += 1
-            if len(ccf_fallback_exposures) < MAX_LOGGED_FALLBACKS:
-                ccf_fallback_exposures.append(str(exposure_id))
-                logger.warning(
-                    "FALLBACK CCF=1.0 appliqué à exposure_id=%s (product_type=%s, "
-                    "asset_class=%s) — aucune règle ref_decision_rules ne correspond. "
-                    "Compléter le seed CCF pour éviter ce fallback.",
-                    exposure_id, r.get("product_type_id"), r.get("asset_class_id"),
-                )
+            ccf_from_bucket = ccf_from_annex_i_bucket(ccf_bucket)
+            if ccf_from_bucket is not None:
+                ccf = ccf_from_bucket
+            else:
+                # v3.3.0 (point 5) — Fallback explicite avec log + comptage
+                ccf = 1.0   # bilan = 100% (correctif prudentiel CRR3 Art.111)
+                ccf_fallback_count += 1
+                if len(ccf_fallback_exposures) < MAX_LOGGED_FALLBACKS:
+                    ccf_fallback_exposures.append(str(exposure_id))
+                    logger.warning(
+                        "FALLBACK CCF=1.0 appliqué à exposure_id=%s (product_type=%s, "
+                        "asset_class=%s) — aucune règle ref_decision_rules ne correspond. "
+                        "Compléter le seed CCF pour éviter ce fallback.",
+                        exposure_id, r.get("product_type_id"), r.get("asset_class_id"),
+                    )
 
         # ── ÉTAPE 3 : Risk Weight de base (Art.114-136 CRR3) ──────────────────
         provision_coverage_ratio = (prov / gross) if gross > 0 else 0.0
@@ -689,6 +822,11 @@ def run_standard_engine(
                 "credit_quality_step": r.get("credit_quality_step"),
                 "ltv_ratio":                r.get("ltv_ratio"),
                 "exposure_subtype":         r.get("exposure_subtype"),
+                "institution_scra_grade":   r.get("institution_scra_grade"),
+                "short_term_exposure_flag": _to_flag(r.get("short_term_exposure_flag")),
+                "adc_flag":                 _to_flag(r.get("adc_flag")),
+                "ipre_flag":                _to_flag(r.get("ipre_flag")),
+                "transactor_flag":          _to_flag(r.get("transactor_flag")),
                 "provision_coverage_ratio": provision_coverage_ratio,
                 "delinquent_flag":          _to_flag(r.get("delinquent_flag")),
             },
@@ -709,6 +847,14 @@ def run_standard_engine(
                     exposure_id, r.get("asset_class_id"), r.get("counterparty_id"),
                     r.get("credit_quality_step"),
                 )
+
+        currency_mismatch = is_currency_mismatch_exposure(r)
+        currency_mismatch_multiplier = 1.5 if currency_mismatch else 1.0
+        base_rw_before_currency_mismatch = base_rw
+        base_rw = apply_currency_mismatch_multiplier(base_rw, currency_mismatch)
+        rw_bucket = infer_rw_bucket(r, base_rw)
+        if currency_mismatch:
+            rw_bucket = "CURRENCY_MISMATCH"
 
         # ── CALCUL DE L'EAD PRÉ-CRM ────────────────────────────────────────────
         ead_pre_crm   = net * ccf          # EAD avant atténuation du risque de crédit
@@ -921,6 +1067,16 @@ def run_standard_engine(
             sf_result["multiplier_final"],   # Multiplicateur final (produit des SF appliqués)
             sf_result["factor_codes"],       # Codes des facteurs appliqués (ex. "SME_SF|INFRA_SF")
             rwa_final,                       # RWA final (après tous les ajustements)
+            ccf,                             # v4.4.9 — CCF appliqué
+            ccf_bucket,                      # v4.4.9 — bucket Annex I / inferred
+            "DECISION_ENGINE",              # v4.4.9 — source RW
+            rw_bucket,                       # v4.4.9 — bucket RW audit-proof
+            r.get("credit_quality_step"),    # v4.4.9 — CQS utilisé
+            ltv_bucket(r.get("ltv_ratio")),  # v4.4.9 — bucket LTV
+            currency_mismatch_multiplier,    # v4.4.9 — Art.123a
+            ead_at_obligor_rw,               # v4.4.9 — EAD après UFCP résiduelle
+            rwa_pre_supporting,              # v4.4.9 — RWA avant SF explicite
+            rwa_final * 0.08,                # v4.4.9 — exigence 8 %
         ))
 
     # ── PERSISTANCE EN BASE (une seule transaction atomique) ────────────────────
@@ -933,7 +1089,10 @@ def run_standard_engine(
                     batch_id, exposure_id, counterparty_id, asset_class_id, product_type_id,
                     gross_exposure, provision_amount, ead_pre_crm, ead_post_fcp, total_fcp_allocated,
                     risk_weight_base, risk_weight_substituted, rwa_post_crm, supporting_factor_multiplier,
-                    supporting_factor_codes, rwa_final
+                    supporting_factor_codes, rwa_final,
+                    ccf_applied, ccf_bucket, rw_rule_source, rw_bucket, cqs_used, ltv_bucket,
+                    currency_mismatch_multiplier, ead_after_ufcp, rwa_before_supporting_factor,
+                    capital_requirement_8pct
                 ) VALUES %s
                 """,
                 results_batch,

@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 01_seed_credit_standard.sql
--- VERSION : 4.4.2
+-- VERSION : 4.4.4
 -- Moteur risque de crédit standard — CCF, RW discriminants, CRM UFCP/FCP, haircuts, supporting factors.
 -- Forme BCNF : règles, conditions et référentiels séparés par clés naturelles.
 -- =============================================================================
@@ -55,7 +55,7 @@ ON CONFLICT (regulatory_version_id, rule_set_name) DO UPDATE SET
 -- Lettres de crédit documentaires : 20%
 -- Cautions performance : 50%
 -- NIF/RUF : 50%
--- Engagements révocables : 0%
+-- Engagements révocables : 10% (bucket 5 CRR3)
 
 DELETE FROM ref.ref_rule_conditions
 WHERE rule_id IN (
@@ -86,7 +86,7 @@ FROM (VALUES
     ('RS_CCF_V2', 60, 'CCF', '0.40'),
     ('RS_CCF_V2', 70, 'CCF', '0.40'),
     ('RS_CCF_V2', 80, 'CCF', '0.20'),
-    ('RS_CCF_V2', 90, 'CCF', '0.00'),
+    ('RS_CCF_V2', 90, 'CCF', '0.10'),
     ('RS_CCF_V2', 100, 'CCF', '1.00'),
     ('RS_CCF_V2', 110, 'CCF', '0.75'),
     ('RS_CCF_V2', 120, 'CCF', '1.00'),
@@ -178,8 +178,8 @@ FROM (VALUES
     ('RS_RW_V2', 121, 'RISK_WEIGHT', '0.75'),
     ('RS_RW_V2', 122, 'RISK_WEIGHT', '1.00'),
     ('RS_RW_V2', 123, 'RISK_WEIGHT', '1.25'),
-    ('RS_RW_V2', 130, 'RISK_WEIGHT', '1.00'),
-    ('RS_RW_V2', 131, 'RISK_WEIGHT', '2.50'),
+    ('RS_RW_V2', 130, 'RISK_WEIGHT', '2.50'),
+    ('RS_RW_V2', 131, 'RISK_WEIGHT', '4.00'),
     ('RS_RW_V2', 132, 'RISK_WEIGHT', '1.50'),
     ('RS_RW_V2', 140, 'RISK_WEIGHT', '1.00'),
     ('RS_RW_V2', 141, 'RISK_WEIGHT', '0.00'),
@@ -895,3 +895,113 @@ DO UPDATE SET parameter_value = EXCLUDED.parameter_value;
 
 
 COMMIT;
+-- =============================================================================
+-- PATCH v4.4.9 — Credit SA Final Standard corrective overlay
+-- =============================================================================
+-- CRR3 Art.111 : bucketisation hors-bilan explicite. Le bucket 5 est à 10 %.
+-- Rétrocompatibilité : les règles legacy product_type_id restent disponibles si
+-- annex_i_bucket n'est pas alimenté.
+DO $$
+DECLARE
+    rs_id BIGINT;
+    r_id BIGINT;
+BEGIN
+    SELECT rule_set_id INTO rs_id
+    FROM ref.ref_decision_rule_sets
+    WHERE regulatory_version_id = 'CRR3_V9'
+      AND rule_set_name = 'RS_CCF_V2';
+
+    IF rs_id IS NOT NULL THEN
+        -- Supprime les overlays bucket v4.4.9 s'ils existent déjà.
+        DELETE FROM ref.ref_rule_conditions
+        WHERE rule_id IN (SELECT rule_id FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority BETWEEN 1 AND 5);
+        DELETE FROM ref.ref_decision_rules
+        WHERE rule_set_id = rs_id AND priority BETWEEN 1 AND 5;
+
+        INSERT INTO ref.ref_decision_rules (rule_set_id, priority, result_key, result_value)
+        VALUES
+            (rs_id, 1, 'CCF', '1.00'),
+            (rs_id, 2, 'CCF', '0.50'),
+            (rs_id, 3, 'CCF', '0.40'),
+            (rs_id, 4, 'CCF', '0.20'),
+            (rs_id, 5, 'CCF', '0.10');
+
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'annex_i_bucket', '=', 'BUCKET_1'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 1;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'annex_i_bucket', '=', 'BUCKET_2'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 2;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'annex_i_bucket', '=', 'BUCKET_3'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 3;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'annex_i_bucket', '=', 'BUCKET_4'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 4;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'annex_i_bucket', '=', 'BUCKET_5'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 5;
+
+        -- Legacy hardening : les engagements révocables classiques ne tombent plus à 0 %.
+        UPDATE ref.ref_decision_rules
+           SET result_value = '0.10'
+         WHERE rule_set_id = rs_id
+           AND priority = 90
+           AND result_key = 'CCF';
+    END IF;
+END $$;
+
+-- CRR3 Art.133 : equities ordinaires 250 %, speculative unlisted 400 %, strategic 150 %.
+DO $$
+DECLARE
+    rs_id BIGINT;
+BEGIN
+    SELECT rule_set_id INTO rs_id
+    FROM ref.ref_decision_rule_sets
+    WHERE regulatory_version_id = 'CRR3_V9'
+      AND rule_set_name = 'RS_RW_V2';
+
+    IF rs_id IS NOT NULL THEN
+        UPDATE ref.ref_decision_rules SET result_value = '2.50'
+         WHERE rule_set_id = rs_id AND priority = 130 AND result_key = 'RISK_WEIGHT';
+        UPDATE ref.ref_decision_rules SET result_value = '4.00'
+         WHERE rule_set_id = rs_id AND priority = 131 AND result_key = 'RISK_WEIGHT';
+        UPDATE ref.ref_decision_rules SET result_value = '1.50'
+         WHERE rule_set_id = rs_id AND priority = 132 AND result_key = 'RISK_WEIGHT';
+
+        -- Specialised lending / ADC high-level CRR3 grid.
+        DELETE FROM ref.ref_rule_conditions
+        WHERE rule_id IN (SELECT rule_id FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority BETWEEN 54 AND 59);
+        DELETE FROM ref.ref_decision_rules
+        WHERE rule_set_id = rs_id AND priority BETWEEN 54 AND 59;
+
+        INSERT INTO ref.ref_decision_rules (rule_set_id, priority, result_key, result_value)
+        VALUES
+            (rs_id, 54, 'RISK_WEIGHT', '1.30'), -- PROJECT_FINANCE pre-operational / unrated prudentiel
+            (rs_id, 55, 'RISK_WEIGHT', '1.00'), -- OBJECT_FINANCE / COMMODITIES_FINANCE generic
+            (rs_id, 56, 'RISK_WEIGHT', '1.50'), -- ADC generic
+            (rs_id, 57, 'RISK_WEIGHT', '1.00'), -- TRANSADC / qualifying ADC fallback
+            (rs_id, 58, 'RISK_WEIGHT', '1.50'), -- speculative immovable property / high risk
+            (rs_id, 59, 'RISK_WEIGHT', '1.30'); -- specialised lending fallback
+
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'exposure_subtype', '=', 'PROJECT_FINANCE'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 54;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'exposure_subtype', 'IN', 'OBJECT_FINANCE|COMMODITIES_FINANCE'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 55;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'exposure_subtype', 'IN', 'ADC|LAND_ACQUISITION_DEVELOPMENT_CONSTRUCTION'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 56;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'exposure_subtype', '=', 'TRANSADC'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 57;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'exposure_subtype', '=', 'SPECULATIVE_IMMOVABLE_PROPERTY'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 58;
+        INSERT INTO ref.ref_rule_conditions (rule_id, condition_field, condition_operator, condition_value)
+        SELECT rule_id, 'exposure_subtype', '=', 'SPECIALISED_LENDING'
+        FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority = 59;
+    END IF;
+END $$;
+

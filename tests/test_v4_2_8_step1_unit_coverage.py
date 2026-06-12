@@ -522,5 +522,5 @@ def test_compute_margin_state_legacy_and_csa_paths():
         }
     ])
     assert margined["csa_present"] is True
-    assert margined["rc"] == 80.0
+    assert margined["rc"] == 72.0
     assert margined["mpor_days"] == 20

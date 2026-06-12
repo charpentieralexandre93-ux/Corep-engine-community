@@ -1,7 +1,7 @@
 -- =============================================================================
 -- schema_saccr.sql
 -- Moteur SA-CCR — schéma BCNF dédié.
--- VERSION : 4.4.2
+-- VERSION : 4.4.5
 -- =============================================================================
 -- P2 v2.8 : les tables SA-CCR ne sont plus créées dans le schéma commun.
 -- Ce fichier porte désormais la totalité du schéma moteur SA-CCR :
@@ -125,6 +125,22 @@ ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS payment_currency VARCH
 COMMENT ON COLUMN stg.stg_saccr_trades.payment_currency IS
     'Devise de paiement IRD — code ISO 4217. Hedging set SA-CCR pour asset_class=IRD Art.280a.';
 
+-- v4.4.5 — champs SA-CCR final standard : paire FX et reconnaissance collatéral Art.276.
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS pay_currency VARCHAR(3);
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS receive_currency VARCHAR(3);
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS currency_pair VARCHAR(12);
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS collateral_currency VARCHAR(3);
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS collateral_eligible BOOLEAN DEFAULT TRUE;
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS vm_eligible BOOLEAN DEFAULT TRUE;
+ALTER TABLE stg.stg_saccr_trades ADD COLUMN IF NOT EXISTS im_eligible BOOLEAN DEFAULT TRUE;
+COMMENT ON COLUMN stg.stg_saccr_trades.pay_currency IS 'Devise pay leg FX/IRS si disponible.';
+COMMENT ON COLUMN stg.stg_saccr_trades.receive_currency IS 'Devise receive leg FX si disponible.';
+COMMENT ON COLUMN stg.stg_saccr_trades.currency_pair IS 'Paire de devises FX explicite — hedging set Art.280c.';
+COMMENT ON COLUMN stg.stg_saccr_trades.collateral_currency IS 'Devise du collatéral/marge reconnu pour contrôles Art.276.';
+COMMENT ON COLUMN stg.stg_saccr_trades.collateral_eligible IS 'TRUE si le collatéral legacy est reconnu Art.276.';
+COMMENT ON COLUMN stg.stg_saccr_trades.vm_eligible IS 'TRUE si la variation margin est reconnue Art.276.';
+COMMENT ON COLUMN stg.stg_saccr_trades.im_eligible IS 'TRUE si IM/NICA est reconnu Art.276.';
+
 -- -----------------------------------------------------------------------------
 -- 4. Contraintes normalisées propres au moteur
 -- -----------------------------------------------------------------------------
@@ -184,17 +200,51 @@ ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS pfe_multiplier NUME
 ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS pfe_full NUMERIC(18, 4) DEFAULT 0;
 ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS collateral_state JSONB;
 
+-- v4.4.5 — traçabilité finale SA-CCR : add-ons par classe + cap Art.274(3).
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS addon_ird NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS addon_fx NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS addon_credit NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS addon_equity NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS addon_commodity NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS eligible_collateral_value NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS ineligible_collateral_value NUMERIC(18, 4) DEFAULT 0;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS ead_margined NUMERIC(18, 4);
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS ead_unmargined_cap NUMERIC(18, 4);
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS rc_margined NUMERIC(18, 4);
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS rc_unmargined_cap NUMERIC(18, 4);
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS pfe_margined NUMERIC(18, 4);
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS pfe_unmargined_cap NUMERIC(18, 4);
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS cap_applied BOOLEAN DEFAULT FALSE;
+ALTER TABLE core.core_saccr_results ADD COLUMN IF NOT EXISTS final_method VARCHAR(40) DEFAULT 'UNMARGINED';
+
 CREATE INDEX IF NOT EXISTS idx_stg_saccr_trades_csa_id
     ON stg.stg_saccr_trades (csa_id)
     WHERE csa_id IS NOT NULL;
 
+
+
+-- v4.4.5 — Référentiel audit-proof des facteurs supervisory SA-CCR.
+CREATE TABLE IF NOT EXISTS ref.ref_saccr_supervisory_parameters (
+    regulatory_version_id VARCHAR(50) NOT NULL,
+    parameter_group VARCHAR(50) NOT NULL,
+    parameter_name VARCHAR(100) NOT NULL,
+    parameter_value NUMERIC(18, 10) NOT NULL,
+    parameter_type VARCHAR(30) DEFAULT 'REAL',
+    description TEXT,
+    PRIMARY KEY (regulatory_version_id, parameter_group, parameter_name),
+    FOREIGN KEY (regulatory_version_id) REFERENCES ref.ref_regulatory_versions(regulatory_version_id)
+);
+
+COMMENT ON TABLE ref.ref_saccr_supervisory_parameters IS
+    'Paramètres SA-CCR CRR3 auditables : alpha, floor multiplier, supervisory factors, corrélations et epsilon IRD.';
 
 INSERT INTO ref.ref_runtime_parameters
     (regulatory_version_id, parameter_name, parameter_value, parameter_type)
 VALUES
     ('CRR3_V9', 'PATCH_V2_7_APPLIED', '2026-05-01', 'string'),
     ('CRR3_V9', 'PATCH_V2_8_SACCR_SCHEMA_ISOLATED', 'true', 'boolean'),
-    ('CRR3_V9', 'PATCH_V3_0_SACCR_MARGIN_ADVANCED', 'true', 'boolean')
+    ('CRR3_V9', 'PATCH_V3_0_SACCR_MARGIN_ADVANCED', 'true', 'boolean'),
+    ('CRR3_V9', 'PATCH_V4_4_5_SACCR_FINAL_STANDARD', 'true', 'boolean')
 ON CONFLICT (regulatory_version_id, parameter_name)
 DO UPDATE SET parameter_value = EXCLUDED.parameter_value;
 

@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : saccr_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.4.2
+VERSION : 4.4.5
 ================================================================================
 
 CORRECTIONS RÉGLEMENTAIRES v3.4.0 (audit points ② et ③)
@@ -129,7 +129,7 @@ import math
 import logging
 import json
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from scipy.stats import norm
 
@@ -383,11 +383,14 @@ def _adjusted_notional(
         bucket  = str(ccy).upper().strip()
         sub_type = ""
     elif asset_class == "FX":
-        # v3.4.0 — D_i = notional × MF (FX : pas de supervisory duration)
+        # v4.4.5 — D_i = notional × MF, bucket FX = paire de devises explicite.
         adj_notional = notional * mf
-        # bucket = currency pair (encodé dans equity_id ou reference_entity_id)
-        bucket   = str(trade.get("equity_id") or
-                       trade.get("reference_entity_id") or "DEFAULT")
+        pair = trade.get("currency_pair")
+        if not pair:
+            pay = str(trade.get("pay_currency") or trade.get("payment_currency") or "").upper().strip()
+            rec = str(trade.get("receive_currency") or "").upper().strip()
+            pair = f"{pay}{rec}" if pay and rec else None
+        bucket = str(pair or trade.get("equity_id") or trade.get("reference_entity_id") or "DEFAULT").upper().strip()
         sub_type = ""
     elif asset_class == "CREDIT":
         # v3.4.0 (bug ③) — les dérivés de CRÉDIT utilisent la supervisory
@@ -716,27 +719,72 @@ def _calc_multiplier(v: float, pfe_full: float) -> float:
 # P0 v3.2.0 — MARGE / COLLATERAL SA-CCR AVANCÉ
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _compute_margin_state(trades: List[SaccrTradeRow]) -> dict:
-    """Agrège l'état de marge/collatéral d'un netting set.
+def _truthy(value, default: bool = False) -> bool:
+    """Normalise les indicateurs booléens CSV/SQL sans dépendre de l'ingestion."""
+    if value is None or value == "":
+        return default
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().upper() in {"1", "TRUE", "T", "YES", "Y", "OUI", "O"}
 
-    Convention retenue :
-      - `collateral` legacy + VM reçue - VM postée = collatéral variation net ;
-      - NICA explicite si fourni, sinon IM reçue - IM postée ;
-      - RC non margé : max(V - C - NICA, 0) si aucune donnée CSA ;
-      - RC margé : max(V - C, TH + MTA - NICA, 0).
 
-    Cette fonction conserve la rétrocompatibilité : avec uniquement la colonne
-    legacy `collateral`, on retrouve le comportement v2.9.0.
+def _compute_margin_state(
+    trades: List[SaccrTradeRow],
+    *,
+    force_margined: Optional[bool] = None,
+) -> dict:
+    """Agrège l'état de marge/collatéral d'un netting set SA-CCR.
+
+    v4.4.5 — correctif final standard
+    ----------------------------------
+    - RC margé : ``max(CMV - VM - NICA, TH + MTA - NICA, 0)``.
+      La version précédente omettait NICA dans le premier terme.
+    - Cap Art.274(3) préparé via ``force_margined=False`` : le même netting set
+      peut être recalculé comme non margé pour obtenir ``EAD_unmargined``.
+    - Reconnaissance minimale Art.276 : les champs ``collateral_eligible``,
+      ``vm_eligible`` et ``im_eligible`` permettent d'exclure le collatéral non
+      reconnu du RC et du multiplier, tout en traçant l'inéligible.
+
+    Conventions de signe
+    --------------------
+    - VM reçue et IM/NICA reçus réduisent l'exposition de la banque.
+    - VM postée et IM/NICA postés augmentent l'exposition nette.
+    - ``legacy_collateral`` conserve le comportement historique : montant positif
+      de collatéral reçu déjà éligible/ajusté par le système source.
     """
     mtm_net = sum(_f(t.get("mtm", 0.0)) for t in trades)
-    legacy_collateral = sum(_f(t.get("collateral", 0.0)) for t in trades)
-    vm_received = sum(_f(t.get("vm_received", 0.0)) for t in trades)
-    vm_posted = sum(_f(t.get("vm_posted", 0.0)) for t in trades)
-    im_received = sum(_f(t.get("im_received", 0.0)) for t in trades)
-    im_posted = sum(_f(t.get("im_posted", 0.0)) for t in trades)
+
+    eligible_legacy_collateral = 0.0
+    ineligible_collateral = 0.0
+    vm_received = vm_posted = im_received = im_posted = 0.0
+    vm_ineligible = im_ineligible = 0.0
+
+    for t in trades:
+        legacy = _f(t.get("collateral", 0.0))
+        if _truthy(t.get("collateral_eligible"), default=True):
+            eligible_legacy_collateral += legacy
+        else:
+            ineligible_collateral += legacy
+
+        vm_r = _f(t.get("vm_received", 0.0))
+        vm_p = _f(t.get("vm_posted", 0.0))
+        if _truthy(t.get("vm_eligible"), default=True):
+            vm_received += vm_r
+            vm_posted += vm_p
+        else:
+            vm_ineligible += abs(vm_r) + abs(vm_p)
+
+        im_r = _f(t.get("im_received", 0.0))
+        im_p = _f(t.get("im_posted", 0.0))
+        if _truthy(t.get("im_eligible"), default=True):
+            im_received += im_r
+            im_posted += im_p
+        else:
+            im_ineligible += abs(im_r) + abs(im_p)
 
     explicit_nica_values = [t.get("nica") for t in trades if t.get("nica") not in (None, "")]
     if explicit_nica_values:
+        # Le NICA explicite est supposé reconnu/éligible par la source amont.
         nica = sum(_f(v) for v in explicit_nica_values)
     else:
         nica = im_received - im_posted
@@ -744,21 +792,12 @@ def _compute_margin_state(trades: List[SaccrTradeRow]) -> dict:
     threshold = max((_f(t.get("threshold_amount", 0.0)) for t in trades), default=0.0)
     mta = max((_f(t.get("mta", 0.0)) for t in trades), default=0.0)
     mpor_days = max((int(_f(t.get("mpor_days", 10.0)) or 10) for t in trades), default=10)
-    # ── v3.9.0 (bug 1) — Détection FIABLE d'un netting set margé ───────────────
-    # AVANT v3.9.0 : `t.get("threshold_amount") is not None` / `t.get("mta") is not
-    # None`. Or la requête SQL applique COALESCE(threshold_amount, 0) et
-    # COALESCE(mta, 0) → ces champs valent TOUJOURS 0.0 (jamais None) sur le chemin
-    # réel → `csa_present` était TOUJOURS vrai → la branche « non margé » était du
-    # code mort, et le facteur de maturité MARGÉ (≈0,30, Art.279c) s'appliquait à
-    # TOUS les netting sets, y compris non collatéralisés → PFE/EAD sous-estimés.
-    # APRÈS v3.9.0 : on détecte un accord de marge via des SIGNAUX RÉELS, robustes
-    # au COALESCE : identifiant CSA, NICA explicite, ou montant non nul de
-    # threshold / MTA / VM / IM. Un netting set au seul `collateral` legacy (sans
-    # données CSA) reste correctement classé NON margé.
+    mpor_days = max(_MPOR_FLOOR_DAYS, mpor_days)
+
     def _is_set(v) -> bool:
         return v not in (None, "")
 
-    csa_present = any(
+    detected_csa = any(
         _is_set(t.get("csa_id"))
         or _is_set(t.get("nica"))
         or _f(t.get("threshold_amount", 0.0)) != 0.0
@@ -769,21 +808,29 @@ def _compute_margin_state(trades: List[SaccrTradeRow]) -> dict:
         or _f(t.get("im_posted", 0.0)) != 0.0
         for t in trades
     )
+    csa_present = detected_csa if force_margined is None else bool(force_margined)
 
-    net_variation_margin = legacy_collateral + vm_received - vm_posted
+    net_variation_margin = eligible_legacy_collateral + vm_received - vm_posted
+
     if csa_present:
-        rc = max(mtm_net - net_variation_margin, threshold + mta - nica, 0.0)
+        rc = max(
+            mtm_net - net_variation_margin - nica,
+            threshold + mta - nica,
+            0.0,
+        )
+        rc_formula = "MARGINED_MAX_CMV_VM_NICA_TH_MTA_NICA"
     else:
         rc = max(mtm_net - net_variation_margin - nica, 0.0)
+        rc_formula = "UNMARGINED_MAX_CMV_COLLATERAL_NICA"
 
-    # Le multiplier PFE est sensible à l'over-collateralisation. On retient
-    # VM + NICA comme collatéral du multiplicateur, tout en bornant la formule
-    # via _calc_multiplier dans [floor, 1].
     collateral_for_multiplier = net_variation_margin + nica
+    total_ineligible = ineligible_collateral + vm_ineligible + im_ineligible
 
     return {
         "mtm_net": mtm_net,
-        "legacy_collateral": legacy_collateral,
+        "legacy_collateral": eligible_legacy_collateral,
+        "eligible_collateral_value": net_variation_margin + max(nica, 0.0),
+        "ineligible_collateral_value": total_ineligible,
         "vm_received": vm_received,
         "vm_posted": vm_posted,
         "net_variation_margin": net_variation_margin,
@@ -794,9 +841,136 @@ def _compute_margin_state(trades: List[SaccrTradeRow]) -> dict:
         "mta": mta,
         "mpor_days": mpor_days,
         "csa_present": csa_present,
+        "detected_csa": detected_csa,
         "rc": rc,
+        "rc_formula": rc_formula,
         "collateral_for_multiplier": collateral_for_multiplier,
     }
+
+
+def _compute_saccr_exposure_state(
+    trades: List[SaccrTradeRow],
+    *,
+    alpha: float = _ALPHA,
+    force_margined: Optional[bool] = None,
+) -> dict:
+    """Calcule RC/PFE/EAD pour un mode de marge donné.
+
+    Cette granularité permet le cap Art.274(3) : pour un netting set margé,
+    on calcule à la fois l'EAD margée et l'EAD non margée, puis on retient le
+    minimum. Les add-ons sont recalculés avec le bon facteur de maturité
+    margé/non margé.
+    """
+    margin_state = _compute_margin_state(trades, force_margined=force_margined)
+    pfe_breakdown = _compute_pfe_full(
+        trades,
+        margin_state["mtm_net"],
+        collateral_for_multiplier=margin_state["collateral_for_multiplier"],
+        margined=bool(margin_state["csa_present"]),
+        mpor_days=margin_state["mpor_days"],
+    )
+    pfe = pfe_breakdown["pfe_final"]
+    ead = alpha * (margin_state["rc"] + pfe)
+    return {
+        "margin_state": margin_state,
+        "pfe_breakdown": pfe_breakdown,
+        "rc": margin_state["rc"],
+        "pfe": pfe,
+        "ead": ead,
+    }
+
+
+def _apply_margin_cap(
+    trades: List[SaccrTradeRow],
+    *,
+    alpha: float = _ALPHA,
+) -> dict:
+    """Applique le cap Art.274(3) pour les netting sets margés.
+
+    Retourne l'état final utilisé pour RWA + les deux trajectoires auditables :
+    ``margined`` et ``unmargined``. Pour les netting sets non margés, la
+    trajectoire unique est retournée sans cap.
+    """
+    detected = _compute_margin_state(trades)["detected_csa"]
+    if not detected:
+        final = _compute_saccr_exposure_state(trades, alpha=alpha, force_margined=False)
+        return {
+            "final": final,
+            "margined": None,
+            "unmargined": final,
+            "cap_applied": False,
+            "final_method": "UNMARGINED",
+        }
+
+    margined = _compute_saccr_exposure_state(trades, alpha=alpha, force_margined=True)
+    unmargined = _compute_saccr_exposure_state(trades, alpha=alpha, force_margined=False)
+    if unmargined["ead"] < margined["ead"]:
+        final = unmargined
+        method = "ART274_3_UNMARGINED_CAP"
+        cap = True
+    else:
+        final = margined
+        method = "MARGINED"
+        cap = False
+    return {
+        "final": final,
+        "margined": margined,
+        "unmargined": unmargined,
+        "cap_applied": cap,
+        "final_method": method,
+    }
+
+
+def _load_supervisory_parameters(db: Database, regulatory_version_id: str) -> float:
+    """Charge les paramètres SA-CCR depuis ref.ref_saccr_supervisory_parameters.
+
+    Les constantes Python restent un fallback défensif si la table n'existe pas
+    encore (tests unitaires ou base non migrée). En run normal, le bootstrap SQL
+    alimente cette table et rend les facteurs auditables.
+    """
+    alpha = _ALPHA
+    try:
+        rows = db.query(
+            """
+            SELECT parameter_name, parameter_value
+            FROM ref.ref_saccr_supervisory_parameters
+            WHERE regulatory_version_id = %s
+            """,
+            (regulatory_version_id,),
+        )
+    except Exception as exc:  # pragma: no cover - fallback base legacy
+        logger.warning(
+            "SA-CCR : référentiel supervisory non disponible, fallback constantes Python (%s)",
+            exc,
+        )
+        return alpha
+
+    for row in rows:
+        name = str(row.get("parameter_name") or "").upper()
+        value = _f(row.get("parameter_value", 0.0))
+        if name == "ALPHA":
+            alpha = value or alpha
+        elif name == "MULTIPLIER_FLOOR":
+            # Le floor est volontairement global pour les helpers historiques.
+            globals()["_MF_FLOOR"] = value or globals()["_MF_FLOOR"]
+        elif name.startswith("SF_"):
+            key = name[3:]
+            if key in _SF:
+                _SF[key] = value
+        elif name.startswith("RHO_"):
+            key = name[4:]
+            if key in _RHO:
+                _RHO[key] = value
+        elif name.startswith("IRD_EPSILON_"):
+            parts = name.split("_")
+            if len(parts) >= 4:
+                try:
+                    i, j = int(parts[-2]), int(parts[-1])
+                except ValueError:
+                    continue
+                _IRD_EPSILON[(i, j)] = value
+                _IRD_EPSILON[(j, i)] = value
+    return alpha
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -862,6 +1036,13 @@ def run_saccr_engine(
             -- (base v2.6 non patchée), on remonte NULL et le fallback Python
             -- via `currency` ou `ird_currency` prend le relais.
             t.payment_currency,
+            t.pay_currency,
+            t.receive_currency,
+            t.currency_pair,
+            t.collateral_currency,
+            CAST(COALESCE(t.collateral_eligible, TRUE) AS BOOLEAN) AS collateral_eligible,
+            CAST(COALESCE(t.vm_eligible, TRUE) AS BOOLEAN) AS vm_eligible,
+            CAST(COALESCE(t.im_eligible, TRUE) AS BOOLEAN) AS im_eligible,
             -- P0 v3.2.0 — marge/collatéral avancé
             CAST(COALESCE(t.vm_received,         0) AS FLOAT) AS vm_received,
             CAST(COALESCE(t.vm_posted,           0) AS FLOAT) AS vm_posted,
@@ -897,7 +1078,7 @@ def run_saccr_engine(
                 "counterparty_id":   str(t.get("counterparty_id", "")),
             }
 
-    alpha          = _ALPHA
+    alpha          = _load_supervisory_parameters(db, regulatory_version_id)
     trace_buffer:  List[tuple] = []
     results_batch: List[tuple] = []
 
@@ -905,35 +1086,35 @@ def run_saccr_engine(
         ctype = ns_meta[ns_id]["counterparty_type"]
         cpid  = ns_meta[ns_id]["counterparty_id"]
 
-        # ── RC (Art.275) / marge CSA P0 v3.2.0 ─────────────────────────────
-        margin_state = _compute_margin_state(ns_trades)
+        # ── RC/PFE/EAD + cap Art.274(3) ─────────────────────────────────────
+        exposure_state = _apply_margin_cap(ns_trades, alpha=alpha)
+        final_state = exposure_state["final"]
+        margin_state = final_state["margin_state"]
+        pfe_breakdown = final_state["pfe_breakdown"]
         mtm_sum = margin_state["mtm_net"]
-        rc = margin_state["rc"]
-
-        # ── PFE (Art.278-280) ────────────────────────────────────────────────
-        # v3.4.0 — propagation de l'état margé + MPOR pour le facteur de
-        # maturité MF (Art.279c). Un netting set est margé si un CSA est présent.
-        pfe_breakdown = _compute_pfe_full(
-            ns_trades,
-            mtm_sum,
-            collateral_for_multiplier=margin_state["collateral_for_multiplier"],
-            margined=bool(margin_state["csa_present"]),
-            mpor_days=margin_state["mpor_days"],
-        )
-        pfe = pfe_breakdown["pfe_final"]
+        rc = final_state["rc"]
+        pfe = final_state["pfe"]
+        ead = final_state["ead"]
+        margined_state = exposure_state.get("margined")
+        unmargined_state = exposure_state.get("unmargined")
+        ead_margined = margined_state["ead"] if margined_state else None
+        ead_unmargined = unmargined_state["ead"] if unmargined_state else ead
+        rc_margined = margined_state["rc"] if margined_state else None
+        rc_unmargined = unmargined_state["rc"] if unmargined_state else rc
+        pfe_margined = margined_state["pfe"] if margined_state else None
+        pfe_unmargined = unmargined_state["pfe"] if unmargined_state else pfe
 
         logger.debug(
-            "SA-CCR NS=%s  RC=%.2f  PFE_full=%.2f  mult=%.4f  PFE=%.2f  "
+            "SA-CCR NS=%s  method=%s cap=%s RC=%.2f PFE_full=%.2f mult=%.4f PFE=%.2f "
+            "EAD=%.2f EAD_margined=%s EAD_unmargined=%.2f "
             "(IRD=%.2f FX=%.2f CR=%.2f EQ=%.2f CO=%.2f)",
-            ns_id, rc,
-            pfe_breakdown["pfe_full"], pfe_breakdown["multiplier"], pfe,
+            ns_id, exposure_state["final_method"], exposure_state["cap_applied"], rc,
+            pfe_breakdown["pfe_full"], pfe_breakdown["multiplier"], pfe, ead,
+            f"{ead_margined:.2f}" if ead_margined is not None else "n/a", ead_unmargined,
             pfe_breakdown["addon_ird"], pfe_breakdown["addon_fx"],
             pfe_breakdown["addon_credit"], pfe_breakdown["addon_equity"],
             pfe_breakdown["addon_commodity"],
         )
-
-        # ── EAD = α × (RC + PFE) ─────────────────────────────────────────────
-        ead = alpha * (rc + pfe)
 
         # ── Risk Weight via moteur de décision ───────────────────────────────
         rw_decision = evaluate_rule_set(
@@ -944,6 +1125,13 @@ def run_saccr_engine(
         rw  = _f(rw_decision["result_value"]) if rw_decision else 1.0
         rwa = ead * rw
 
+        collateral_state = {
+            "final": margin_state,
+            "margined": margined_state["margin_state"] if margined_state else None,
+            "unmargined": unmargined_state["margin_state"] if unmargined_state else None,
+            "cap_applied": exposure_state["cap_applied"],
+            "final_method": exposure_state["final_method"],
+        }
         results_batch.append((
             batch_id, ns_id, cpid, ctype, rc, pfe, ead, rw, rwa,
             mtm_sum,
@@ -954,7 +1142,22 @@ def run_saccr_engine(
             margin_state["mpor_days"],
             pfe_breakdown["multiplier"],
             pfe_breakdown["pfe_full"],
-            json.dumps(margin_state, default=str),
+            pfe_breakdown["addon_ird"],
+            pfe_breakdown["addon_fx"],
+            pfe_breakdown["addon_credit"],
+            pfe_breakdown["addon_equity"],
+            pfe_breakdown["addon_commodity"],
+            margin_state["eligible_collateral_value"],
+            margin_state["ineligible_collateral_value"],
+            ead_margined,
+            ead_unmargined,
+            rc_margined,
+            rc_unmargined,
+            pfe_margined,
+            pfe_unmargined,
+            exposure_state["cap_applied"],
+            exposure_state["final_method"],
+            json.dumps(collateral_state, default=str),
         ))
 
     # ── Persistance ─────────────────────────────────────────────────────────
@@ -967,7 +1170,14 @@ def run_saccr_engine(
                     rc, pfe, ead, risk_weight, rwa,
                     mtm_net, net_variation_margin, nica,
                     threshold_amount, mta, mpor_days,
-                    pfe_multiplier, pfe_full, collateral_state
+                    pfe_multiplier, pfe_full,
+                    addon_ird, addon_fx, addon_credit, addon_equity, addon_commodity,
+                    eligible_collateral_value, ineligible_collateral_value,
+                    ead_margined, ead_unmargined_cap,
+                    rc_margined, rc_unmargined_cap,
+                    pfe_margined, pfe_unmargined_cap,
+                    cap_applied, final_method,
+                    collateral_state
                 ) VALUES %s
                 """,
                 results_batch,

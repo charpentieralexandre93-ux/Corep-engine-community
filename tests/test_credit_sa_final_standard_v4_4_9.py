@@ -1,4 +1,4 @@
-"""Tests v4.4.9 — Credit SA Final Standard.
+"""Tests v5.0.0 — Credit SA Final Standard.
 
 Ces tests couvrent les corrections P0/P1 du moteur SA partagé Community / Enterprise :
 CCF CRR3 bucket 5 à 10 %, equity Art.133, currency mismatch Art.123a et traces.

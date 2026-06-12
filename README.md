@@ -1,5 +1,10 @@
 # Corep Engine Community v4.3.0
 
+## Release v5.0.0
+
+Baseline majeure Community v5.0.0. Cette version conserve le périmètre fonctionnel finalisé des versions v4.4.x et stabilise le numéro majeur pour publication Git.
+
+
 [![CI](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org)

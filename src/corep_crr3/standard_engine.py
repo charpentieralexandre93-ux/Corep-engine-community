@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : standard_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 4.4.9
+VERSION : 5.0.0
 ================================================================================
 
 DESCRIPTION
@@ -120,7 +120,7 @@ logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HELPERS — CREDIT SA FINAL STANDARD v4.4.9
+# HELPERS — CREDIT SA FINAL STANDARD v5.0.0
 # ─────────────────────────────────────────────────────────────────────────────
 
 _CCF_BY_ANNEX_I_BUCKET = {
@@ -141,7 +141,7 @@ def _norm_code(value) -> str:
 def ccf_from_annex_i_bucket(bucket: str | None) -> Optional[float]:
     """Retourne le CCF CRR3 associé à un bucket Annex I.
 
-    La grille v4.4.9 retient les cinq buckets CRR3 : 100 %, 50 %, 40 %,
+    La grille v5.0.0 retient les cinq buckets CRR3 : 100 %, 50 %, 40 %,
     20 % et 10 %. Le 0 % n'est conservé que pour le cas distinct des
     arrangements contractuels non encore acceptés par le client, afin d'éviter
     de traiter tous les engagements révocables comme un équivalent 0 %.
@@ -1067,16 +1067,16 @@ def run_standard_engine(
             sf_result["multiplier_final"],   # Multiplicateur final (produit des SF appliqués)
             sf_result["factor_codes"],       # Codes des facteurs appliqués (ex. "SME_SF|INFRA_SF")
             rwa_final,                       # RWA final (après tous les ajustements)
-            ccf,                             # v4.4.9 — CCF appliqué
-            ccf_bucket,                      # v4.4.9 — bucket Annex I / inferred
-            "DECISION_ENGINE",              # v4.4.9 — source RW
-            rw_bucket,                       # v4.4.9 — bucket RW audit-proof
-            r.get("credit_quality_step"),    # v4.4.9 — CQS utilisé
-            ltv_bucket(r.get("ltv_ratio")),  # v4.4.9 — bucket LTV
-            currency_mismatch_multiplier,    # v4.4.9 — Art.123a
-            ead_at_obligor_rw,               # v4.4.9 — EAD après UFCP résiduelle
-            rwa_pre_supporting,              # v4.4.9 — RWA avant SF explicite
-            rwa_final * 0.08,                # v4.4.9 — exigence 8 %
+            ccf,                             # v5.0.0 — CCF appliqué
+            ccf_bucket,                      # v5.0.0 — bucket Annex I / inferred
+            "DECISION_ENGINE",              # v5.0.0 — source RW
+            rw_bucket,                       # v5.0.0 — bucket RW audit-proof
+            r.get("credit_quality_step"),    # v5.0.0 — CQS utilisé
+            ltv_bucket(r.get("ltv_ratio")),  # v5.0.0 — bucket LTV
+            currency_mismatch_multiplier,    # v5.0.0 — Art.123a
+            ead_at_obligor_rw,               # v5.0.0 — EAD après UFCP résiduelle
+            rwa_pre_supporting,              # v5.0.0 — RWA avant SF explicite
+            rwa_final * 0.08,                # v5.0.0 — exigence 8 %
         ))
 
     # ── PERSISTANCE EN BASE (une seule transaction atomique) ────────────────────

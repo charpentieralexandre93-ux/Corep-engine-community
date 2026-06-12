@@ -896,7 +896,7 @@ DO UPDATE SET parameter_value = EXCLUDED.parameter_value;
 
 COMMIT;
 -- =============================================================================
--- PATCH v4.4.9 — Credit SA Final Standard corrective overlay
+-- PATCH v5.0.0 — Credit SA Final Standard corrective overlay
 -- =============================================================================
 -- CRR3 Art.111 : bucketisation hors-bilan explicite. Le bucket 5 est à 10 %.
 -- Rétrocompatibilité : les règles legacy product_type_id restent disponibles si
@@ -912,7 +912,7 @@ BEGIN
       AND rule_set_name = 'RS_CCF_V2';
 
     IF rs_id IS NOT NULL THEN
-        -- Supprime les overlays bucket v4.4.9 s'ils existent déjà.
+        -- Supprime les overlays bucket v5.0.0 s'ils existent déjà.
         DELETE FROM ref.ref_rule_conditions
         WHERE rule_id IN (SELECT rule_id FROM ref.ref_decision_rules WHERE rule_set_id = rs_id AND priority BETWEEN 1 AND 5);
         DELETE FROM ref.ref_decision_rules

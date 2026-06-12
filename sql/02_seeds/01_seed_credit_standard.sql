@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 01_seed_credit_standard.sql
--- VERSION : 4.4.0
+-- VERSION : 4.4.2
 -- Moteur risque de crédit standard — CCF, RW discriminants, CRM UFCP/FCP, haircuts, supporting factors.
 -- Forme BCNF : règles, conditions et référentiels séparés par clés naturelles.
 -- =============================================================================

@@ -703,3 +703,95 @@ CREATE INDEX IF NOT EXISTS idx_rpt_supporting_factor_trace_exposure_id ON rpt.rp
 -- L'édition Community ne crée aucun rôle global et n'exige pas CREATEROLE.
 -- Les GRANT éventuels restent sous la responsabilité de l'administrateur de la
 -- base cible afin de fonctionner aussi sur les services PostgreSQL managés.
+
+-- =============================================================================
+-- PATCH v5.0.0 — Credit SA Final Standard staging/result trace columns
+-- Aligne le schéma PostgreSQL Community sur standard_engine.py v5.0.0.
+-- Les ALTER TABLE sont idempotents afin de supporter les installations neuves
+-- comme les bases Community déjà initialisées.
+-- =============================================================================
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS annex_i_bucket VARCHAR(20);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS unconditionally_cancellable_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS contractual_arrangement_not_accepted_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS client_acceptance_required_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS borrower_income_currency VARCHAR(3);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS exposure_currency VARCHAR(3);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS hedged_currency_mismatch_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS natural_person_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS institution_scra_grade VARCHAR(20);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS short_term_exposure_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS original_maturity_months INTEGER;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS due_diligence_override VARCHAR(100);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS property_valuation_amount NUMERIC(18,4);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS property_value_cap_amount NUMERIC(18,4);
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS ipre_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS adc_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS transactor_flag BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE stg.stg_exposures
+    ADD COLUMN IF NOT EXISTS loan_splitting_flag BOOLEAN DEFAULT FALSE;
+
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS ccf_applied NUMERIC(9,4);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS ccf_bucket VARCHAR(20);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS rw_rule_source VARCHAR(100);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS rw_bucket VARCHAR(100);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS cqs_used VARCHAR(20);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS ltv_bucket VARCHAR(50);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS currency_mismatch_multiplier NUMERIC(9,4);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS ead_after_ufcp NUMERIC(18,4);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS rwa_before_supporting_factor NUMERIC(18,4);
+
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS capital_requirement_8pct NUMERIC(18,4);

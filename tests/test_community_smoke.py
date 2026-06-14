@@ -26,7 +26,7 @@ from corep_crr3.standard_engine import (
 
 # --- Version & registre public -------------------------------------------------
 def test_version():
-    assert corep_crr3.__version__ == "5.0.0"
+    assert corep_crr3.__version__ == "5.0.6"
 
 
 def test_registry_is_limited_to_sa_and_saccr():

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "5.0.0"
-description = "Corep Engine Community — v5.0.0 : Standard Approach et SA-CCR Final Standard."
+version = "5.0.6"
+description = "Corep Engine Community — cockpit graphique public SA et SA-CCR."
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [{name = "Alexandre Charpentier"}]
@@ -29,6 +29,7 @@ dev = [
 [project.scripts]
 corep-community = "corep_crr3.public_registry:main"
 corep-community-bootstrap = "corep_crr3.community_bootstrap:main"
+corep-community-gui = "corep_crr3.community_gui:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

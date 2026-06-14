@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 99_post_seed_constraints_community.sql
--- Corep Engine Community v5.0.0 — validation finale SA / SA-CCR
+-- Corep Engine Community v5.0.6 — validation finale SA / SA-CCR
 -- =============================================================================
 -- Ce script ne référence aucun moteur Enterprise. Il vérifie que le bootstrap
 -- public a bien créé le socle requis par les moteurs SA et SA-CCR et remet en

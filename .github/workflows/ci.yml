@@ -45,7 +45,7 @@ jobs:
         run: >-
           python -m pytest -q
           --cov=corep_crr3 --cov-report=term-missing --cov-report=xml
-          --cov-fail-under=61
+          --cov-fail-under=64
 
       - name: pip-audit (report-only)
         continue-on-error: true

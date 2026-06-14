@@ -1,9 +1,4 @@
-# Corep Engine Community v4.3.0
-
-## Release v5.0.0
-
-Baseline majeure Community v5.0.0. Cette version conserve le périmètre fonctionnel finalisé des versions v4.4.x et stabilise le numéro majeur pour publication Git.
-
+# Corep Engine Community v5.0.6
 
 [![CI](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
@@ -14,6 +9,32 @@ Baseline majeure Community v5.0.0. Cette version conserve le périmètre fonctio
 
 - **SA** — approche standard du risque de crédit, CRM et supporting factors ;
 - **SA-CCR** — calcul de l'exposition au risque de contrepartie sur dérivés.
+
+
+## Release v5.0.6 — alignement et non-régression public
+
+La v5.0.6 aligne le versionnement et les garde-fous de build avec la release
+Enterprise sans élargir le périmètre open-core : **SA et SA-CCR uniquement**.
+Les moteurs Enterprise, le stress testing, l'IMA et les schémas privés ne sont
+ni copiés ni importables depuis cette distribution. Les 129 tests Community
+restent verts. Voir `CHANGELOG_v5_0_6.md`.
+
+
+## Interface graphique Community
+
+La v5.0.5 ajoute un centre de contrôle limité au périmètre public SA / SA-CCR.
+Il permet de configurer PostgreSQL, consulter le contrat SQL Community, lancer
+le bootstrap et exécuter les smoke tests sans exposer de composant Enterprise.
+
+```bash
+python scripts/launch_community_gui.py
+# ou, après installation
+corep-community-gui
+```
+
+Sous Windows, utiliser `launch_community_gui.bat`. Les commandes longues sont
+exécutées hors du thread graphique, sérialisées et peuvent être arrêtées depuis
+la console. Voir `CHANGELOG_v5_0_5.md`.
 
 ## Installation
 

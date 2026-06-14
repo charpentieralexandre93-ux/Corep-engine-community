@@ -1,5 +1,4 @@
-# Corep Engine Community v5.0.0 — Major consolidated baseline
+# Corep Engine Community v5.0.0 — Enterprise overlay
 
-- Bump Community `4.4.9 -> 5.0.0`.
-- Consolidated public baseline for Credit SA and SA-CCR Final Standard.
-- Community perimeter remains limited to Standard Approach and SA-CCR.
+- Version alignment with Enterprise v5.0.0.
+- Community perimeter remains SA and SA-CCR only.

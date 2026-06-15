@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : decision_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 5.0.0
+VERSION : 6.0.4
 ================================================================================
 
 DESCRIPTION
@@ -90,7 +90,7 @@ def _as_float(v):
     """
     try:
         return float(v)
-    except Exception:
+    except (TypeError, ValueError):
         return None
 
 
@@ -277,7 +277,6 @@ _rules_cache_lock: threading.Lock = threading.Lock()
 # à chaque appel avec le _context_key courant → cardinalité/contenu inchangés.
 # Le mémo partage le cycle de vie du cache de règles (vidé par clear_rules_cache).
 _decision_memo: dict[tuple, tuple] = {}
-_MEMO_MISS = object()   # sentinelle d'absence (distincte d'un résultat None mémoïsé)
 
 
 def clear_rules_cache():
@@ -390,8 +389,8 @@ def evaluate_rule_set(
             (k, repr(v)) for k, v in context.items() if k != "_context_key"
         )),
     )
-    cached = _decision_memo.get(memo_key, _MEMO_MISS)
-    if cached is _MEMO_MISS:
+    cached = _decision_memo.get(memo_key)
+    if cached is None:
         # MISS → scanner les règles (coût O(M)) UNE fois pour cette signature.
         result = None
         trace_core = None   # (rule_id, rule_set_id, result_key, result_value, match_reason)

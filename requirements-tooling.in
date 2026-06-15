@@ -1,0 +1,10 @@
+ruff
+mypy
+bandit
+types-PyYAML
+types-psycopg2
+build
+pip-audit
+cyclonedx-bom
+setuptools
+wheel

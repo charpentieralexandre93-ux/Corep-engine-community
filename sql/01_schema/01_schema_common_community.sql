@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS meta.batch_run_control (
     reporting_date DATE NOT NULL, -- Date de reporting du batch
     start_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Horodatage de début du batch
     end_timestamp TIMESTAMP WITH TIME ZONE, -- Horodatage de fin du batch
-    status VARCHAR(20) NOT NULL CHECK (status IN ('RUNNING', 'COMPLETED', 'FAILED', 'PENDING')), -- Statut du batch
+    status VARCHAR(40) NOT NULL CHECK (status IN ('RUNNING', 'COMPLETED', 'COMPLETED_WITH_WARNINGS', 'FAILED', 'FAILED_CONTROLS', 'FAILED_RECONCILIATION', 'FAILED_ENGINE', 'PENDING')), -- Statut du batch
     loaded_rows INTEGER CHECK (loaded_rows >= 0), -- Nombre de lignes chargées
     rejected_rows INTEGER CHECK (rejected_rows >= 0), -- Nombre de lignes rejetées
     calculated_rows INTEGER CHECK (calculated_rows >= 0), -- Nombre de lignes calculées
@@ -673,6 +673,30 @@ CREATE TABLE IF NOT EXISTS rpt.rpt_reconciliation (
 COMMENT ON TABLE rpt.rpt_reconciliation IS 'Table des résultats de réconciliation entre différentes sources ou calculs.';
 
 
+-- Table: rpt.rpt_quality_findings
+-- Statuts structurés des contrôles fail-closed (v6.0.1).
+CREATE TABLE IF NOT EXISTS rpt.rpt_quality_findings (
+    batch_id VARCHAR(50) NOT NULL,
+    domain VARCHAR(30) NOT NULL,
+    finding_code VARCHAR(120) NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (
+        status IN ('PASS', 'WARNING', 'FAIL', 'NOT_APPLICABLE', 'NOT_EXECUTED')
+    ),
+    mandatory BOOLEAN NOT NULL DEFAULT TRUE,
+    observed NUMERIC(24, 6),
+    expected NUMERIC(24, 6),
+    gap NUMERIC(24, 6),
+    tolerance NUMERIC(24, 6),
+    message TEXT NOT NULL,
+    details JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    PRIMARY KEY (batch_id, domain, finding_code),
+    FOREIGN KEY (batch_id) REFERENCES meta.batch_run_control(batch_id)
+);
+COMMENT ON TABLE rpt.rpt_quality_findings IS
+'Résultats structurés des quality gates utilisés pour bloquer les batches et exports non conformes.';
+
+
 -- Table: rpt.rpt_supporting_factor_trace
 -- Traçabilité des facteurs de soutien appliqués.
 CREATE TABLE IF NOT EXISTS rpt.rpt_supporting_factor_trace (
@@ -697,101 +721,33 @@ CREATE INDEX IF NOT EXISTS idx_rpt_supporting_factor_trace_exposure_id ON rpt.rp
 
 
 
+-- Migration idempotente v6.0.1 : statuts batch fail-closed.
+DO $$
+DECLARE constraint_name TEXT;
+BEGIN
+    SELECT c.conname INTO constraint_name
+    FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    JOIN pg_namespace n ON n.oid = t.relnamespace
+    WHERE n.nspname = 'meta' AND t.relname = 'batch_run_control'
+      AND c.contype = 'c' AND pg_get_constraintdef(c.oid) ILIKE '%status%';
+    IF constraint_name IS NOT NULL THEN
+        EXECUTE format('ALTER TABLE meta.batch_run_control DROP CONSTRAINT %I', constraint_name);
+    END IF;
+    ALTER TABLE meta.batch_run_control
+        ADD CONSTRAINT chk_batch_run_control_status_v601
+        CHECK (status IN (
+            'RUNNING', 'COMPLETED', 'COMPLETED_WITH_WARNINGS', 'FAILED',
+            'FAILED_CONTROLS', 'FAILED_RECONCILIATION', 'FAILED_ENGINE', 'PENDING'
+        ));
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
+
+
 -- =============================================================================
 -- Privilèges
 -- =============================================================================
 -- L'édition Community ne crée aucun rôle global et n'exige pas CREATEROLE.
 -- Les GRANT éventuels restent sous la responsabilité de l'administrateur de la
 -- base cible afin de fonctionner aussi sur les services PostgreSQL managés.
-
--- =============================================================================
--- PATCH v5.0.0 — Credit SA Final Standard staging/result trace columns
--- Aligne le schéma PostgreSQL Community sur standard_engine.py v5.0.0.
--- Les ALTER TABLE sont idempotents afin de supporter les installations neuves
--- comme les bases Community déjà initialisées.
--- =============================================================================
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS annex_i_bucket VARCHAR(20);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS unconditionally_cancellable_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS contractual_arrangement_not_accepted_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS client_acceptance_required_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS borrower_income_currency VARCHAR(3);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS exposure_currency VARCHAR(3);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS hedged_currency_mismatch_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS natural_person_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS institution_scra_grade VARCHAR(20);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS short_term_exposure_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS original_maturity_months INTEGER;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS due_diligence_override VARCHAR(100);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS property_valuation_amount NUMERIC(18,4);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS property_value_cap_amount NUMERIC(18,4);
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS ipre_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS adc_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS transactor_flag BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE stg.stg_exposures
-    ADD COLUMN IF NOT EXISTS loan_splitting_flag BOOLEAN DEFAULT FALSE;
-
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS ccf_applied NUMERIC(9,4);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS ccf_bucket VARCHAR(20);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS rw_rule_source VARCHAR(100);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS rw_bucket VARCHAR(100);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS cqs_used VARCHAR(20);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS ltv_bucket VARCHAR(50);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS currency_mismatch_multiplier NUMERIC(9,4);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS ead_after_ufcp NUMERIC(18,4);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS rwa_before_supporting_factor NUMERIC(18,4);
-
-ALTER TABLE core.core_standard_results
-    ADD COLUMN IF NOT EXISTS capital_requirement_8pct NUMERIC(18,4);

@@ -137,6 +137,7 @@ def write_sql_manifest(sql_dir: Optional[Path] = None) -> Path:
 
 
 def _resolved_scripts(sql_dir: Path, steps: Sequence[dict[str, str]]) -> list[tuple[Path, dict[str, str]]]:
+    """Execute the resolved scripts helper used by the command workflow."""
     resolved: list[tuple[Path, dict[str, str]]] = []
     missing: list[str] = []
     for step in steps:
@@ -158,6 +159,7 @@ def _resolved_scripts(sql_dir: Path, steps: Sequence[dict[str, str]]) -> list[tu
 
 
 def _ensure_migration_table(db: Database) -> None:
+    """Execute the ensure migration table helper used by the command workflow."""
     db.executescript(
         """
         CREATE SCHEMA IF NOT EXISTS meta;
@@ -172,6 +174,7 @@ def _ensure_migration_table(db: Database) -> None:
 
 
 def _is_applied(db: Database, script_name: str, checksum: str) -> bool:
+    """Execute the is applied helper used by the command workflow."""
     rows = db.query(
         """
         SELECT 1
@@ -185,6 +188,7 @@ def _is_applied(db: Database, script_name: str, checksum: str) -> bool:
 
 
 def _record_applied(db: Database, script_name: str, checksum: str) -> None:
+    """Execute the record applied helper used by the command workflow."""
     db.execute(
         """
         INSERT INTO meta.schema_migrations
@@ -224,10 +228,10 @@ def bootstrap_postgresql(db: Database, sql_dir: Optional[Path] = None) -> int:
         try:
             db.executescript(sql_text)
             _record_applied(db, script_id, checksum)
-        except Exception:
+        except Exception:  # fail-closed: error is re-raised or translated after cleanup
             try:
                 db.rollback()
-            except Exception:
+            except Exception:  # best-effort: cleanup or optional UI action may fail safely
                 pass
             raise
         applied_count += 1
@@ -235,6 +239,7 @@ def bootstrap_postgresql(db: Database, sql_dir: Optional[Path] = None) -> int:
 
 
 def _reset_database(db: Database, sql_dir: Path, confirmation: Optional[str]) -> None:
+    """Execute the reset database helper used by the command workflow."""
     allowed_by_env = os.getenv("COREP_ALLOW_DESTRUCTIVE_RESET") == "1"
     if confirmation != _RESET_CONFIRMATION and not allowed_by_env:
         raise ValueError(
@@ -250,6 +255,7 @@ def _reset_database(db: Database, sql_dir: Path, confirmation: Optional[str]) ->
 
 
 def _build_parser() -> argparse.ArgumentParser:
+    """Build the requested CLI or GUI structure."""
     parser = argparse.ArgumentParser(
         description="Bootstrap PostgreSQL Corep Engine Community — SA et SA-CCR",
     )
@@ -274,6 +280,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    """Run the command entry point and return its process status."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
     args = _build_parser().parse_args(argv)
     try:
@@ -298,7 +305,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             db.close()
         print(f"✓ Bootstrap Community terminé : {count} script(s) appliqué(s).")
         return 0
-    except Exception as exc:
+    except Exception as exc:  # tolerated: optional/legacy path returns a controlled fallback
         logger.error("Bootstrap Community en échec : %s", exc)
         return 1
 

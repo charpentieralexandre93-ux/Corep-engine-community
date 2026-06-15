@@ -1,101 +1,83 @@
-# Corep Engine Community v4.3.0
+# COREP CRR3 Engine Community — v6.0.4
 
-## Release v5.0.0
+Édition publique open-core limitée à **SA crédit + SA-CCR**. Elle contient les fonctions de calcul, le bootstrap PostgreSQL public, les schémas SQL autorisés, une interface graphique de diagnostic et les garde-fous de frontière Community/Enterprise.
 
-Baseline majeure Community v5.0.0. Cette version conserve le périmètre fonctionnel finalisé des versions v4.4.x et stabilise le numéro majeur pour publication Git.
+> Aucun moteur Enterprise n'est inclus : IRB, CVA, liquidité, market risk, titrisations, grands risques, output floor, risque opérationnel et fonds propres restent privés.
 
+## Points d'entrée
 
-[![CI](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml/badge.svg)](https://github.com/charpentieralexandre93-ux/Corep_engine_community/actions/workflows/ci.yml)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org)
+| Usage | Commande |
+|---|---|
+| Afficher le registre public | `corep-community` |
+| Interface graphique Community | `corep-community-gui` ou `python -m corep_crr3.community_gui` |
+| Bootstrap PostgreSQL | `corep-community-bootstrap` |
+| Diagnostic PostgreSQL | `corep-community-health` |
+| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.0.4` |
 
-
-Édition publique volontairement limitée à deux moteurs réglementaires :
-
-- **SA** — approche standard du risque de crédit, CRM et supporting factors ;
-- **SA-CCR** — calcul de l'exposition au risque de contrepartie sur dérivés.
+L'édition Community n'embarque pas l'orchestrateur Enterprise `batch/run_batch.py`. Elle sert de moteur public SA/SA-CCR et de socle d'intégration.
 
 ## Installation
 
-Les **fonctions de calcul pures** (SA, CRM, SA-CCR) ne nécessitent **pas**
-PostgreSQL ni psycopg2 :
+Calculs purs, sans PostgreSQL :
 
 ```bash
-python -m pip install -e ".[dev]"     # base : calcul pur + tests
-python -m pytest -q
-python examples/sa_pure_functions.py  # démonstration sans base de données
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
 corep-community
 ```
 
-Pour exécuter les moteurs complets (`run_standard_engine` / `run_saccr_engine`)
-sur PostgreSQL, ajouter l'extra dédié puis initialiser le schéma Community :
+Avec PostgreSQL et outils de développement :
 
 ```bash
-python -m pip install -e ".[dev,postgres]"
-python -m corep_crr3.community_bootstrap --list
-python -m corep_crr3.community_bootstrap
+python -m pip install -e ".[postgres,dev]"
+export DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME"
+corep-community-bootstrap --list
+corep-community-bootstrap
+corep-community-health
+corep-community-gui
 ```
 
-Reset destructif, réservé à une base locale ou éphémère :
+Sous Windows : `launch_community_gui.bat`.
 
-```bash
-python -m corep_crr3.community_bootstrap --reset --confirm-reset RESET
+## Utilisation Python
+
+```python
+from corep_crr3.standard_engine import ccf_from_annex_i_bucket
+from corep_crr3.saccr_engine import _calc_multiplier
+
+assert ccf_from_annex_i_bucket("BUCKET_5") == 0.10
 ```
 
-Le bootstrap utilise `DATABASE_URL` ou les variables PostgreSQL standard
-`PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER` et `PGPASSWORD`.
+Pour une exécution base de données, importer `run_standard_engine` ou `run_saccr_engine` dans votre propre orchestrateur et fournir une instance `Database` ainsi qu'un `batch_id`.
 
-## Périmètre publié
+## Périmètre public
 
-Le package expose uniquement :
+- SA crédit : CCF, RW, CRM FCP/UFCP, facteurs PME/infrastructure ;
+- SA-CCR : RC, PFE, add-ons taux/change/crédit/actions/commodities ;
+- schémas, seeds et mappings strictement nécessaires à ces deux moteurs ;
+- aucune dépendance runtime obligatoire pour les calculs purs ; `psycopg2-binary` est un extra.
 
-- `standard_engine.py` ;
-- `saccr_engine.py` ;
-- leurs dépendances techniques directes ;
-- un registre public limité à `SA` et `SA_CCR` ;
-- un bootstrap PostgreSQL autonome et un sous-ensemble SQL strictement limité
-  au socle partagé, à SA et à SA-CCR ;
-- des tests unitaires, une CI multi-version et une recette PostgreSQL réelle.
+Notes méthodologiques : [`docs/REGULATORY_METHODOLOGY_INDEX.md`](docs/REGULATORY_METHODOLOGY_INDEX.md). Politique Python : [`docs/PYTHON_COMPATIBILITY.md`](docs/PYTHON_COMPATIBILITY.md).
 
-## Périmètre exclu
+## Preuves qualité v6.0.4
 
-Aucun moteur ni composant Enterprise n'est fourni : IRB, CVA, SFT, FRTB,
-Market Risk, liquidité, IRRBB, risque opérationnel, titrisation, grands
-risques, fonds propres, crypto-actifs, Output Floor, FINREP, DPM/XBRL,
-mappings propriétaires des autres moteurs et orchestration multi-moteurs.
+- `standard_engine.py` byte-identique à l'Enterprise ;
+- refactoring P0 avec unités sous CC 20 ;
+- tests de non-régression SA ;
+- garde AST empêchant l'import de moteurs privés ;
+- politique documentée des exceptions larges ;
+- SBOM CycloneDX avec licence SPDX du runtime PostgreSQL ;
+- CI, manifest SHA-256 et wheel public contrôlé.
 
-## Utilisation
+- Python 3.11 est la baseline reproductible ; 3.9/3.12/3.13 sont des compatibilités best-effort testées en CI ;
+- 100 % des 71 fonctions des modules exposés par les CLI/GUI disposent d’une docstring, avec gate à 85 % ;
+- la couverture de branche de `standard_engine.py` est comparée à la baseline v6.0.2 et publiée dans la preuve de release.
 
-Deux niveaux d'usage :
+Les résultats exacts de cette archive sont consignés dans `RELEASE_REPORT_v6_0_4.md` et `RELEASE_MANIFEST.json`.
 
-- **Fonctions pures (sans base)** : haircuts CRM, substitution UFCP, asymétrie de
-  maturité, facteur de maturité SA-CCR… s'utilisent directement en mémoire
-  (voir `examples/sa_pure_functions.py`). Aucun psycopg2 requis.
-- **Moteurs complets** (`run_standard_engine` / `run_saccr_engine`) : utilisent
-  l'interface `Database`. Les tables, règles, seeds et mappings publics requis
-  sont fournis dans `sql/` et installables avec `community_bootstrap`.
+## Historique et licence
 
-## SQL public et frontière open-core
+Voir [`CHANGELOG_v6_0_4.md`](CHANGELOG_v6_0_4.md) et les autres fichiers `CHANGELOG_v*.md`.
 
-Le contrat `sql/COMMUNITY_SQL_CONTRACT.json` constitue la liste blanche des
-scripts distribués. Il inclut uniquement :
-
-- un socle BCNF public dédié aux deux moteurs, sans objets FINREP ni tables de
-  moteurs privés ;
-- le schéma, les règles et les mappings COREP SA ;
-- le schéma, les règles et les mappings SA-CCR ;
-- la normalisation des conditions et les contraintes finales Community.
-
-Les scripts IRB, SFT, CVA, Liquidité, Market Risk/FRTB, IRRBB, Output Floor,
-DPM/XBRL et autres moteurs Enterprise ne sont ni copiés ni exécutables depuis
-cette édition. Les ressources SQL sont également embarquées dans le package,
-ce qui permet au bootstrap de fonctionner après installation en wheel.
-
-## Licence
-
-Cette publication est proposée sous une licence d'évaluation source-visible.
-Voir `LICENSE-COMMUNITY.md`.
-
-> Certaines versions antérieures du projet ont pu être publiées sous licence
-> MIT. Les droits déjà accordés sur ces versions antérieures ne sont pas
-> révoqués par cette édition.
+Apache License 2.0 : [`LICENSE`](LICENSE), [`LICENSE-COMMUNITY.md`](LICENSE-COMMUNITY.md) et [`NOTICE`](NOTICE).

@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : standard_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 5.0.0
+VERSION : 6.0.4
 ================================================================================
 
 DESCRIPTION
@@ -106,7 +106,8 @@ SORTIE
 
 from __future__ import annotations
 import logging
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Any, Optional
 from .db import Database
 from .decision_engine import evaluate_rule_set, flush_trace_buffer, clear_rules_cache
 from .protection_strategy import load_all_ranked_protections
@@ -353,7 +354,7 @@ def _maturity_bucket(months) -> Optional[str]:
     """Convertit une maturité en mois en bucket de haircut superviseur."""
     try:
         m = float(months)
-    except Exception:
+    except (TypeError, ValueError):
         return None
     if m <= 12:
         return "≤1Y"
@@ -629,77 +630,66 @@ def preload_crm_fx_haircut(db: Database, regulatory_version_id: str) -> float:
     return _CRM_FX_HAIRCUT_DEFAULT
 
 
-def run_standard_engine(
+@dataclass
+class _StandardBuffers:
+    results: list[tuple] = field(default_factory=list)
+    allocations: list[tuple] = field(default_factory=list)
+    decision_traces: list[tuple] = field(default_factory=list)
+    supporting_factor_traces: list[tuple] = field(default_factory=list)
+
+
+@dataclass
+class _StandardFallbackStats:
+    ccf_count: int = 0
+    rw_count: int = 0
+    ignored_protection_count: int = 0
+    ccf_exposures: list[str] = field(default_factory=list)
+    rw_exposures: list[str] = field(default_factory=list)
+    ignored_protections: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class _StandardRuntime:
+    supporting_factor_rules: list[dict[str, Any]]
+    protections_by_exposure: dict[str, list[dict[str, Any]]]
+    haircut_rules: list[dict[str, Any]]
+    crm_fx_haircut: float
+
+
+_MAX_LOGGED_FALLBACKS = 50
+
+
+def _filter_standard_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Conserve les expositions SA et exclut les approches IRB."""
+    return [
+        row
+        for row in rows
+        if str(row.get("calculation_approach") or "SA").upper() not in {"IRB-F", "IRB-A"}
+    ]
+
+
+def _truthy_flag(value: Any) -> bool:
+    return value if isinstance(value, bool) else str(value).strip().upper() in {"TRUE", "YES", "Y", "1"}
+
+
+def _sme_totals_by_obligor(rows: list[dict[str, Any]]) -> dict[str, float]:
+    totals: dict[str, float] = {}
+    for row in rows:
+        if not _truthy_flag(row.get("supporting_sme_flag")):
+            continue
+        net = max(_f(row.get("exposure_amount")) - _f(row.get("provision_amount")), 0.0)
+        counterparty_id = str(row.get("counterparty_id") or "")
+        totals[counterparty_id] = totals.get(counterparty_id, 0.0) + net
+    return totals
+
+
+def _load_standard_runtime(
     db: Database,
     batch_id: str,
     regulatory_version_id: str,
-    reporting_date: str,
-    strict_fallback_mode: bool = False,
-) -> int:
-    """Exécute le calcul SA (Approche Standard) pour toutes les expositions du batch.
-
-    Traite chaque exposition de stg.stg_exposures selon la séquence CRR3 :
-    CCF → EAD pré-CRM → CRM (FCP/UFCP) → RW → RWA → Supporting Factors.
-
-    Paramètres
-    ----------
-    db : Database
-        Instance de connexion PostgreSQL active.
-    batch_id : str
-        Identifiant UUID du batch courant.
-    regulatory_version_id : str
-        Version réglementaire active (ex. "CRR3_V9").
-    reporting_date : str
-        Date de reporting au format ISO (ex. "2026-03-31").
-        Stockée dans core_standard_results pour le partitionnement.
-    strict_fallback_mode : bool (v3.3.0)
-        Si True, lève RuntimeError dès qu'un fallback CCF=1.0 ou RW=100% est
-        appliqué — utile pour les déploiements de production où l'absence
-        d'une règle est une erreur métier qui doit faire échouer le batch.
-        Si False (défaut), les fallbacks sont autorisés mais comptés et
-        loggés en WARNING (avec exposure_id).
-
-    Retourne
-    --------
-    int
-        Nombre d'expositions traitées et insérées dans core.core_standard_results.
-
-    Performances
-    ------------
-    - 1 seule transaction pour tous les INSERTs (results + allocations + traces)
-    - 0 requête SQL dans la boucle principale (cache règles + buffer traces)
-    - Pré-chargement des règles SF avant la boucle (1 SELECT au lieu de N)
-    """
-    # ── Vider le cache de règles (règles fraîches pour ce batch) ───────────────
-    # Garantit que les règles rechargées correspondent bien à la version active.
-    clear_rules_cache()
-
-    # ── Nettoyage des tables (idempotence — re-run du même batch) ──────────────
-    db.execute("DELETE FROM core.core_standard_results           WHERE batch_id = %s", (batch_id,))
-    db.execute("DELETE FROM core.core_protection_allocation       WHERE batch_id = %s", (batch_id,))
-    db.execute("DELETE FROM rpt.rpt_supporting_factor_trace       WHERE batch_id = %s", (batch_id,))
-    # Note : rpt_decision_rule_trace n'est PAS nettoyé ici — d'autres engines
-    # peuvent aussi écrire dans cette table pour le même batch.
-
-    # ── Chargement des expositions depuis le staging ───────────────────────────
-    rows = db.query("SELECT * FROM stg.stg_exposures WHERE batch_id = %s", (batch_id,))
-
-    # ── Routage par approche prudentielle (CRR3 Art.142) ───────────────────────
-    # SA ne traite QUE les expositions standard. Les expositions IRB-F / IRB-A
-    # sont traitées par irb_engine (édition enterprise). Filtre Python plutôt que
-    # SQL : `.get` tolère l'absence de la colonne calculation_approach (édition
-    # community SA/SA-CCR, où elle n'existe pas) -> None -> traitée en SA. Empeche
-    # tout double comptage SA/IRB sans rendre la colonne obligatoire.
-    rows = [
-        r for r in rows
-        if str(r.get("calculation_approach") or "SA").upper() not in ("IRB-F", "IRB-A")
-    ]
-
-    # ── Pré-chargement des règles Supporting Factors (CORRECTION v4) ──────────
-    # AVANT : apply_supporting_factors() chargeait les règles depuis la base
-    #         à CHAQUE appel → N SELECT identiques dans la boucle.
-    # APRÈS : 1 seul SELECT avant la boucle, résultat passé via preloaded_rules.
-    sf_rules = db.query(
+    buffers: _StandardBuffers,
+) -> _StandardRuntime:
+    supporting_factor_rules = db.query(
         """
         SELECT *
         FROM ref.ref_supporting_factor_rules
@@ -709,380 +699,404 @@ def run_standard_engine(
         """,
         (regulatory_version_id,),
     )
-
-    # ── Initialisation des buffers d'insertion ──────────────────────────────────
-    results_batch:     list[tuple] = []   # core_standard_results
-    allocations_batch: list[tuple] = []   # core_protection_allocation
-    trace_buffer:      list[tuple] = []   # rpt_decision_rule_trace (flush groupé)
-    sf_trace_buffer:   list[tuple] = []   # rpt_supporting_factor_trace (flush global)
-
-    # ── v3.3.0 (point 5 audit) — Compteurs explicites de fallbacks ──────────
-    # Avant v3.3.0 : si aucune règle ne matchait pour CCF ou RW, on retombait
-    # silencieusement sur CCF=1.0 (bilan) et RW=100% (prudentiel). Ces
-    # fallbacks sont CORRECTS sur le plan prudentiel mais MASQUENT un manque
-    # de seed que l'utilisateur doit savoir corriger. La v3.3.0 :
-    #   - logue un WARNING avec l'exposure_id à chaque hit ;
-    #   - compte les hits dans rpt.rpt_controls (SA_CCF_FALLBACK_HITS / SA_RW_FALLBACK_HITS) ;
-    #   - permet un mode strict (échec batch) via config runtime.strict_fallback_mode.
-    ccf_fallback_count: int = 0
-    rw_fallback_count: int  = 0
-    ccf_fallback_exposures: list[str] = []   # capture des 50 premiers pour log
-    rw_fallback_exposures:  list[str] = []   # idem
-    MAX_LOGGED_FALLBACKS = 50
-
-    # ── v3.6.0 — Robustesse CRM : observabilité des protections ignorées ─────
-    # Une protection dont le type n'est ni FCP ni UFCP (NULL, faute de frappe,
-    # type non géré) était auparavant SILENCIEUSEMENT ignorée dans la boucle CRM
-    # (aucun effet, aucune trace) → risque de RWA erroné non détecté. On compte
-    # et on loggue désormais ces cas.
-    crm_ignored_protection_count: int = 0
-    crm_ignored_protections: list[str] = []   # capture des 50 premiers pour log
-
-    # ── Préchargements CRM performance v2.8 ─────────────────────────────────
-    # 1 SELECT toutes protections, au lieu de 1 SELECT par exposition.
-    protections_by_exposure = load_all_ranked_protections(
-        db, batch_id, regulatory_version_id, trace_buffer=trace_buffer
+    protections = load_all_ranked_protections(
+        db,
+        batch_id,
+        regulatory_version_id,
+        trace_buffer=buffers.decision_traces,
     )
-    # 1 SELECT référentiel haircuts, au lieu de 1 SELECT par protection FCP.
-    haircut_rules = preload_fcp_haircut_rules(db, regulatory_version_id)
-    # v3.5.0 (audit ④) — haircut de change CRM (Art.224) préchargé une fois.
-    crm_fx_haircut = preload_crm_fx_haircut(db, regulatory_version_id)
+    return _StandardRuntime(
+        supporting_factor_rules=supporting_factor_rules,
+        protections_by_exposure=protections,
+        haircut_rules=preload_fcp_haircut_rules(db, regulatory_version_id),
+        crm_fx_haircut=preload_crm_fx_haircut(db, regulatory_version_id),
+    )
 
-    # ── v3.4.0 (audit ⑤) — Pré-agrégation E* du SME Supporting Factor two-tier ──
-    # Art.501(1) : le seuil de 2,5 M€ (tranche 0,7619 / 0,85) s'apprécie sur
-    # l'exposition TOTALE envers la PME (par obligor / groupe de clients liés),
-    # et non exposition par exposition. On somme donc l'exposition nette
-    # (brut − provisions) des expositions marquées PME-éligibles, par contrepartie.
-    # Le facteur mélangé obtenu est ensuite appliqué uniformément au RWA de
-    # chacune des expositions de l'obligor (cf. supporting_factors.sme_blended_factor).
-    def _is_truthy_flag(v) -> bool:
-        if isinstance(v, bool):
-            return v
-        return str(v).strip().upper() in ("TRUE", "YES", "Y", "1")
 
-    sme_total_by_obligor: dict[str, float] = {}
-    for _row in rows:
-        if _is_truthy_flag(_row.get("supporting_sme_flag")):
-            _net = max(_f(_row.get("exposure_amount")) - _f(_row.get("provision_amount")), 0.0)
-            _cp  = _row.get("counterparty_id")
-            sme_total_by_obligor[_cp] = sme_total_by_obligor.get(_cp, 0.0) + _net
+def _remember(identifier: Any, target: list[str]) -> None:
+    if len(target) < _MAX_LOGGED_FALLBACKS:
+        target.append(str(identifier))
 
-    # ── BOUCLE PRINCIPALE — une iteration par exposition ────────────────────────
-    for r in rows:
-        exposure_id = r["exposure_id"]
 
-        # ── ÉTAPE 1 : Calcul du net après provisions ────────────────────────────
-        gross = _f(r["exposure_amount"])             # Montant brut déclaré
-        prov  = _f(r["provision_amount"])            # Provisions spécifiques
-        net   = max(gross - prov, 0.0)               # Net = max(brut − provisions, 0)
-        # Art.110 CRR3 : l'EAD ne peut être négative
+def _resolve_ccf(
+    db: Database,
+    batch_id: str,
+    regulatory_version_id: str,
+    row: dict[str, Any],
+    trace_buffer: list[tuple],
+    stats: _StandardFallbackStats,
+) -> tuple[float, str | None]:
+    exposure_id = row["exposure_id"]
+    bucket = infer_ccf_bucket(row)
+    decision = evaluate_rule_set(
+        db,
+        batch_id,
+        regulatory_version_id,
+        "CCF",
+        {
+            "_context_key": exposure_id,
+            "product_type_id": row["product_type_id"],
+            "asset_class_id": row["asset_class_id"],
+            "counterparty_id": row["counterparty_id"],
+            "annex_i_bucket": bucket,
+        },
+        trace_buffer=trace_buffer,
+    )
+    if decision:
+        return _f(decision["result_value"]), bucket
+    bucket_value = ccf_from_annex_i_bucket(bucket)
+    if bucket_value is not None:
+        return bucket_value, bucket
+    stats.ccf_count += 1
+    _remember(exposure_id, stats.ccf_exposures)
+    logger.warning(
+        "FALLBACK CCF=1.0 appliqué à exposure_id=%s (product_type=%s, asset_class=%s) — règle absente.",
+        exposure_id,
+        row.get("product_type_id"),
+        row.get("asset_class_id"),
+    )
+    return 1.0, bucket
 
-        # ── ÉTAPE 2 : CCF — Credit Conversion Factor (Art.111 CRR3) ─────────────
-        # Le CCF convertit un engagement hors-bilan en équivalent bilan.
-        # Déterminé par le moteur de décision selon product_type_id.
-        ccf_bucket = infer_ccf_bucket(r)
-        ccf_decision = evaluate_rule_set(
-            db, batch_id, regulatory_version_id, "CCF",
-            {
-                "_context_key":    exposure_id,
-                "product_type_id": r["product_type_id"],
-                "asset_class_id":  r["asset_class_id"],
-                "counterparty_id": r["counterparty_id"],
-                "annex_i_bucket":  ccf_bucket,
-            },
-            trace_buffer=trace_buffer,
+
+def _resolve_base_risk_weight(
+    db: Database,
+    batch_id: str,
+    regulatory_version_id: str,
+    row: dict[str, Any],
+    gross: float,
+    provision: float,
+    trace_buffer: list[tuple],
+    stats: _StandardFallbackStats,
+) -> tuple[float, str, float]:
+    exposure_id = row["exposure_id"]
+    coverage_ratio = provision / gross if gross > 0 else 0.0
+    decision = evaluate_rule_set(
+        db,
+        batch_id,
+        regulatory_version_id,
+        "RISK_WEIGHT",
+        {
+            "_context_key": exposure_id,
+            "counterparty_id": row["counterparty_id"],
+            "asset_class_id": row["asset_class_id"],
+            "credit_quality_step": row.get("credit_quality_step"),
+            "ltv_ratio": row.get("ltv_ratio"),
+            "exposure_subtype": row.get("exposure_subtype"),
+            "institution_scra_grade": row.get("institution_scra_grade"),
+            "short_term_exposure_flag": _to_flag(row.get("short_term_exposure_flag")),
+            "adc_flag": _to_flag(row.get("adc_flag")),
+            "ipre_flag": _to_flag(row.get("ipre_flag")),
+            "transactor_flag": _to_flag(row.get("transactor_flag")),
+            "provision_coverage_ratio": coverage_ratio,
+            "delinquent_flag": _to_flag(row.get("delinquent_flag")),
+        },
+        trace_buffer=trace_buffer,
+    )
+    if decision:
+        base_rw = _f(decision["result_value"])
+    else:
+        base_rw = 1.0
+        stats.rw_count += 1
+        _remember(exposure_id, stats.rw_exposures)
+        logger.warning(
+            "FALLBACK RW=100%% appliqué à exposure_id=%s (asset_class=%s, counterparty=%s, CQS=%s) — règle absente.",
+            exposure_id,
+            row.get("asset_class_id"),
+            row.get("counterparty_id"),
+            row.get("credit_quality_step"),
         )
-        if ccf_decision:
-            ccf = _f(ccf_decision["result_value"])
+    mismatch = is_currency_mismatch_exposure(row)
+    adjusted_rw = apply_currency_mismatch_multiplier(base_rw, mismatch)
+    bucket = "CURRENCY_MISMATCH" if mismatch else infer_rw_bucket(row, adjusted_rw)
+    return adjusted_rw, bucket, 1.5 if mismatch else 1.0
+
+
+def _partition_protections(
+    protections: list[dict[str, Any]],
+    exposure_id: Any,
+    stats: _StandardFallbackStats,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    funded: list[dict[str, Any]] = []
+    unfunded: list[dict[str, Any]] = []
+    for protection in protections:
+        protection_type = str(protection.get("protection_type") or "").strip().upper()
+        if protection_type == "FCP":
+            funded.append(protection)
+        elif protection_type == "UFCP":
+            unfunded.append(protection)
         else:
-            ccf_from_bucket = ccf_from_annex_i_bucket(ccf_bucket)
-            if ccf_from_bucket is not None:
-                ccf = ccf_from_bucket
-            else:
-                # v3.3.0 (point 5) — Fallback explicite avec log + comptage
-                ccf = 1.0   # bilan = 100% (correctif prudentiel CRR3 Art.111)
-                ccf_fallback_count += 1
-                if len(ccf_fallback_exposures) < MAX_LOGGED_FALLBACKS:
-                    ccf_fallback_exposures.append(str(exposure_id))
-                    logger.warning(
-                        "FALLBACK CCF=1.0 appliqué à exposure_id=%s (product_type=%s, "
-                        "asset_class=%s) — aucune règle ref_decision_rules ne correspond. "
-                        "Compléter le seed CCF pour éviter ce fallback.",
-                        exposure_id, r.get("product_type_id"), r.get("asset_class_id"),
-                    )
+            stats.ignored_protection_count += 1
+            _remember(protection.get("protection_id"), stats.ignored_protections)
+            logger.warning(
+                "CRM — protection ignorée (type=%r), exposure_id=%s, protection_id=%s.",
+                protection.get("protection_type"),
+                exposure_id,
+                protection.get("protection_id"),
+            )
+    return funded, unfunded
 
-        # ── ÉTAPE 3 : Risk Weight de base (Art.114-136 CRR3) ──────────────────
-        provision_coverage_ratio = (prov / gross) if gross > 0 else 0.0
-        rw_decision = evaluate_rule_set(
-            db, batch_id, regulatory_version_id, "RISK_WEIGHT",
-            {
-                "_context_key":             exposure_id,
-                "counterparty_id":          r["counterparty_id"],
-                "asset_class_id":           r["asset_class_id"],
-                "credit_quality_step": r.get("credit_quality_step"),
-                "ltv_ratio":                r.get("ltv_ratio"),
-                "exposure_subtype":         r.get("exposure_subtype"),
-                "institution_scra_grade":   r.get("institution_scra_grade"),
-                "short_term_exposure_flag": _to_flag(r.get("short_term_exposure_flag")),
-                "adc_flag":                 _to_flag(r.get("adc_flag")),
-                "ipre_flag":                _to_flag(r.get("ipre_flag")),
-                "transactor_flag":          _to_flag(r.get("transactor_flag")),
-                "provision_coverage_ratio": provision_coverage_ratio,
-                "delinquent_flag":          _to_flag(r.get("delinquent_flag")),
-            },
-            trace_buffer=trace_buffer,
+
+def _currency_mismatch(exposure: dict[str, Any], protection: dict[str, Any]) -> bool:
+    exposure_currency = str(exposure.get("currency") or "").strip().upper()
+    protection_currency = str(protection.get("currency") or "").strip().upper()
+    return bool(exposure_currency and protection_currency and exposure_currency != protection_currency)
+
+
+def _crm_effect(prefix: str, *, fx_mismatch: bool, maturity_factor: float) -> str:
+    effect = prefix
+    if fx_mismatch:
+        effect += "_FX"
+    if maturity_factor < 1.0:
+        effect += "_MMM"
+    return effect
+
+
+def _apply_funded_protections(
+    row: dict[str, Any],
+    protections: list[dict[str, Any]],
+    ead_pre_crm: float,
+    runtime: _StandardRuntime,
+    batch_id: str,
+    allocations: list[tuple],
+) -> tuple[float, float]:
+    ead_after_fcp = ead_pre_crm
+    total_fcp = 0.0
+    exposure_id = row["exposure_id"]
+    for protection in protections:
+        haircut_rate = lookup_fcp_haircut_rate_from_rules(runtime.haircut_rules, protection)
+        mismatch = _currency_mismatch(row, protection)
+        maturity_factor = maturity_mismatch_factor(
+            row.get("maturity_months"), protection.get("maturity_months")
         )
-        if rw_decision:
-            base_rw = _f(rw_decision["result_value"])
-        else:
-            # v3.3.0 (point 5) — Fallback explicite avec log + comptage
-            base_rw = 1.0   # 100% prudentiel maximum (correctif CRR3 Art.114-136)
-            rw_fallback_count += 1
-            if len(rw_fallback_exposures) < MAX_LOGGED_FALLBACKS:
-                rw_fallback_exposures.append(str(exposure_id))
-                logger.warning(
-                    "FALLBACK RW=100%% appliqué à exposure_id=%s (asset_class=%s, "
-                    "counterparty=%s, CQS=%s) — aucune règle ref_decision_rules ne "
-                    "correspond. Compléter le seed RISK_WEIGHT pour éviter ce fallback.",
-                    exposure_id, r.get("asset_class_id"), r.get("counterparty_id"),
-                    r.get("credit_quality_step"),
-                )
-
-        currency_mismatch = is_currency_mismatch_exposure(r)
-        currency_mismatch_multiplier = 1.5 if currency_mismatch else 1.0
-        base_rw_before_currency_mismatch = base_rw
-        base_rw = apply_currency_mismatch_multiplier(base_rw, currency_mismatch)
-        rw_bucket = infer_rw_bucket(r, base_rw)
-        if currency_mismatch:
-            rw_bucket = "CURRENCY_MISMATCH"
-
-        # ── CALCUL DE L'EAD PRÉ-CRM ────────────────────────────────────────────
-        ead_pre_crm   = net * ccf          # EAD avant atténuation du risque de crédit
-        ead_after_fcp = ead_pre_crm        # EAD courante (réduite par les FCP successifs)
-        total_fcp      = 0.0               # Cumul des montants FCP alloués
-
-        # ── ÉTAPE 4 : CRM — Techniques d'atténuation (Art.193-241 CRR3) ─────────
-        # Correctif v2.8 : protections préchargées une fois par batch.
-        protections = protections_by_exposure.get(str(exposure_id), [])
-
-        # ── État UFCP — Substitution PARTIELLE Art.235 CRR3 (PATCH v9) ─────────
-        # AVANT : substituted_rw = min(rw_obligor, rw_provider) appliqué à
-        #         l'EAD ENTIÈRE → biais favorable pour UFCP partielles + un
-        #         seul RW garant retenu pour UFCP multiples (cf. helper).
-        # APRÈS : on suit explicitement la portion résiduelle au RW obligor
-        #         et on accumule le RWA des portions garanties.
-        ead_at_obligor_rw    = ead_after_fcp   # portion encore au RW de l'obligor
-        rwa_substituted_acc  = 0.0             # cumul RWA des portions garanties
-        # Plus petit RW garant rencontré — utile uniquement pour le rapport
-        # (colonne risk_weight_substituted historique). Le calcul du RWA
-        # passe désormais par la formule Art.235.
-        min_provider_rw      = base_rw
-
-        # ── v3.7.0 — Séquencement CRR funded → unfunded (indépendant du rang) ──
-        # La méthode générale ajustée des sûretés impose que le collatéral FUNDED
-        # (FCP) réduise l'exposition AVANT la substitution UNFUNDED (UFCP). On
-        # partitionne donc les protections en DEUX passes, en CONSERVANT l'ordre
-        # allocation_rank À L'INTÉRIEUR de chaque groupe (la liste `protections`
-        # est déjà triée par rang). Avant v3.7.0, un parcours unique en ordre
-        # allocation_rank rendait le RWA DÉPENDANT DE L'ORDRE : si une UFCP
-        # précédait une FCP, la garantie était substituée sur la base PRÉ-FCP,
-        # d'où un double comptage de l'exposition (RWA conservateur mais erroné).
-        #
-        # Robustesse v3.6.0 conservée : accès défensifs .get + normalisation du
-        # type (un "fcp" / " UFCP " n'est plus silencieusement ignoré) ; un type
-        # non géré est ignoré mais compté/logué.
-        fcp_protections:  list[dict] = []
-        ufcp_protections: list[dict] = []
-        for p in protections:
-            ptype = str(p.get("protection_type") or "").strip().upper()
-            if ptype == "FCP":
-                fcp_protections.append(p)
-            elif ptype == "UFCP":
-                ufcp_protections.append(p)
-            else:
-                crm_ignored_protection_count += 1
-                if len(crm_ignored_protections) < MAX_LOGGED_FALLBACKS:
-                    crm_ignored_protections.append(str(p.get("protection_id")))
-                    logger.warning(
-                        "CRM — protection ignorée (type non géré : %r) pour "
-                        "exposure_id=%s, protection_id=%s. Types attendus : "
-                        "FCP ou UFCP. Vérifier stg.stg_protections.protection_type.",
-                        p.get("protection_type"), exposure_id, p.get("protection_id"),
-                    )
-
-        # ── PASSE 1/2 : FCP (Funded Credit Protection) — réduction d'EAD ───────
-        for p in fcp_protections:
-            value         = _f(p.get("protection_value"))
-            protection_id = p.get("protection_id")
-            bucket        = p.get("bucket") or "DEFAULT"
-
-            # v2.8 : valeur reconnue = valeur brute × (1 − haircut volatilité).
-            # v3.5.0 (audit ④) : haircut de change Hfx (Art.224) si mismatch de
-            #   devise, et ajustement maturity mismatch (Art.239) si maturité de
-            #   protection < maturité d'exposition.
-            haircut_rate = lookup_fcp_haircut_rate_from_rules(haircut_rules, p)
-
-            exp_ccy  = (str(r.get("currency")).strip().upper() if r.get("currency") else None)
-            prot_ccy = (str(p.get("currency")).strip().upper() if p.get("currency") else None)
-            fx_mismatch = bool(exp_ccy and prot_ccy and exp_ccy != prot_ccy)
-
-            mm_factor = maturity_mismatch_factor(
-                r.get("maturity_months"), p.get("maturity_months")
-            )
-
-            recognized_value = compute_recognized_fcp_value(
-                value, haircut_rate,
-                fx_mismatch=fx_mismatch,
-                fx_haircut=crm_fx_haircut,
-                exposure_maturity_months=r.get("maturity_months"),
-                protection_maturity_months=p.get("maturity_months"),
-            )
-            cover = min(ead_after_fcp, recognized_value)
-            ead_after_fcp -= cover
-            # Les FCP étant traités AVANT les UFCP, la portion substituable suit
-            # désormais directement l'EAD post-FCP (plus de dépendance à l'ordre).
-            ead_at_obligor_rw = min(ead_at_obligor_rw, ead_after_fcp)
-            total_fcp += cover
-
-            effect_type = "EAD_REDUCTION_HAIRCUT"
-            if fx_mismatch:
-                effect_type += "_FX"
-            if mm_factor < 1.0:
-                effect_type += "_MMM"
-            allocations_batch.append((
-                batch_id, exposure_id, protection_id,
-                bucket, cover, effect_type,
-            ))
-
-        # ── PASSE 2/2 : UFCP (Unfunded) — substitution Art.235 sur l'EAD post-FCP ─
-        # Garde-fou v3.7.0 : la base substituable ne peut ni dépasser l'EAD
-        # post-FCP ni être négative (robustesse contre une EAD/base incohérente).
-        ead_at_obligor_rw = max(0.0, min(ead_at_obligor_rw, ead_after_fcp))
-        for p in ufcp_protections:
-            value_raw     = _f(p.get("protection_value"))
-            protection_id = p.get("protection_id")
-            bucket        = p.get("bucket") or "DEFAULT"
-
-            # ── v3.9.0 (bug 2) — Ajustements CRM de la garantie UFCP ───────────
-            # Mismatch de devise (Art.233(3), haircut Hfx) et asymétrie de maturité
-            # (Art.239) — symétrie de traitement avec le FCP (v3.5.0). Pas de
-            # haircut de volatilité Hc (réservé au collatéral financier).
-            exp_ccy  = (str(r.get("currency")).strip().upper() if r.get("currency") else None)
-            prot_ccy = (str(p.get("currency")).strip().upper() if p.get("currency") else None)
-            fx_mismatch = bool(exp_ccy and prot_ccy and exp_ccy != prot_ccy)
-            mm_factor   = maturity_mismatch_factor(
-                r.get("maturity_months"), p.get("maturity_months")
-            )
-            value = compute_recognized_ufcp_value(
-                value_raw,
-                fx_mismatch=fx_mismatch,
-                fx_haircut=crm_fx_haircut,
-                exposure_maturity_months=r.get("maturity_months"),
-                protection_maturity_months=p.get("maturity_months"),
-            )
-
-            rw_sub = evaluate_rule_set(
-                db, batch_id, regulatory_version_id, "SUBSTITUTION_RISK_WEIGHT",
-                {
-                    "_context_key":    f"{exposure_id}:{protection_id}",
-                    "provider_type":   p.get("provider_type"),
-                    "protection_type": p.get("protection_type"),
-                },
-                trace_buffer=trace_buffer,
-            )
-            # v3.6.0 — Durcissement : result_value absent OU NULL → pas de RW
-            # garant exploitable → aucune substitution (rw_provider = None).
-            rw_value    = rw_sub.get("result_value") if rw_sub else None
-            rw_provider = _f(rw_value) if rw_value is not None else None
-
-            guarantee_amount, rwa_increment, ead_at_obligor_rw = (
-                apply_ufcp_partial_substitution(
-                    ead_at_obligor_rw=ead_at_obligor_rw,
-                    base_rw=base_rw,
-                    rw_provider=rw_provider,
-                    protection_value=value,   # ← valeur reconnue (Hfx + maturity)
-                )
-            )
-            rwa_substituted_acc += rwa_increment
-            if rw_provider is not None and rw_provider < min_provider_rw:
-                min_provider_rw = rw_provider
-
-            # v3.9.0 — traçabilité de l'effet appliqué (parallèle au FCP).
-            ufcp_effect = "RW_SUBSTITUTION"
-            if fx_mismatch:
-                ufcp_effect += "_FX"
-            if mm_factor < 1.0:
-                ufcp_effect += "_MMM"
-            allocations_batch.append((
-                batch_id, exposure_id, protection_id,
-                bucket, guarantee_amount, ufcp_effect,
-            ))
-
-        # ── ÉTAPE 5 : RWA pré-supporting factors (Art.235 partielle) ──────────
-        # Formule Art.235(2) : RWA = portion couverte × rw_provider
-        #                          + portion résiduelle × rw_obligor
-        rwa_pre_supporting = (
-            rwa_substituted_acc                      # Σ g_a × rw_provider
-            + ead_at_obligor_rw * base_rw            # (E − Σ g_a) × rw_obligor
+        recognized_value = compute_recognized_fcp_value(
+            _f(protection.get("protection_value")),
+            haircut_rate,
+            fx_mismatch=mismatch,
+            fx_haircut=runtime.crm_fx_haircut,
+            exposure_maturity_months=row.get("maturity_months"),
+            protection_maturity_months=protection.get("maturity_months"),
         )
-
-        # Pour la rétrocompatibilité du tuple de résultat, on calcule un RW
-        # effectif (RWA / EAD post-FCP) — cohérent avec la sémantique d'une
-        # substitution partielle.
-        if ead_after_fcp > 0:
-            substituted_rw = rwa_pre_supporting / ead_after_fcp
-        else:
-            substituted_rw = base_rw
-
-        # ── ÉTAPE 6 : Supporting Factors (Art.501 CRR3) ───────────────────────
-        # Facteurs réducteurs pour PME et Projets d'infrastructure.
-        # Les règles sont passées pré-chargées (correction v4 — 0 SELECT ici).
-        sf_result = apply_supporting_factors(
-            db=db,
-            batch_id=batch_id,
-            regulatory_version=regulatory_version_id,
-            exposure_row=r,
-            rwa_pre_supporting=rwa_pre_supporting,
-            preloaded_rules=sf_rules,   # ← CORRECTION v4 : règles déjà en mémoire
-            trace_buffer=sf_trace_buffer,
-            sme_total_exposure=sme_total_by_obligor.get(r["counterparty_id"], 0.0),  # v3.4.0 ⑤
-        )
-        rwa_final = sf_result["rwa_final"]   # RWA après application des facteurs PME/Infra
-
-        # ── CONSTRUCTION DU TUPLE DE RÉSULTAT ─────────────────────────────────
-        results_batch.append((
+        cover = min(ead_after_fcp, recognized_value)
+        ead_after_fcp -= cover
+        total_fcp += cover
+        allocations.append((
             batch_id,
             exposure_id,
-            r["counterparty_id"],
-            r["asset_class_id"],
-            r["product_type_id"],
-            gross,                           # Exposition brute avant provisions
-            prov,                            # Provisions spécifiques
-            ead_pre_crm,                     # EAD avant CRM (net × CCF)
-            ead_after_fcp,                   # EAD après allocation FCP
-            total_fcp,                       # Total FCP alloué
-            base_rw,                         # RW de base (avant substitution)
-            substituted_rw,                  # RW après substitution UFCP
-            rwa_pre_supporting,              # RWA avant supporting factors
-            sf_result["multiplier_final"],   # Multiplicateur final (produit des SF appliqués)
-            sf_result["factor_codes"],       # Codes des facteurs appliqués (ex. "SME_SF|INFRA_SF")
-            rwa_final,                       # RWA final (après tous les ajustements)
-            ccf,                             # v5.0.0 — CCF appliqué
-            ccf_bucket,                      # v5.0.0 — bucket Annex I / inferred
-            "DECISION_ENGINE",              # v5.0.0 — source RW
-            rw_bucket,                       # v5.0.0 — bucket RW audit-proof
-            r.get("credit_quality_step"),    # v5.0.0 — CQS utilisé
-            ltv_bucket(r.get("ltv_ratio")),  # v5.0.0 — bucket LTV
-            currency_mismatch_multiplier,    # v5.0.0 — Art.123a
-            ead_at_obligor_rw,               # v5.0.0 — EAD après UFCP résiduelle
-            rwa_pre_supporting,              # v5.0.0 — RWA avant SF explicite
-            rwa_final * 0.08,                # v5.0.0 — exigence 8 %
+            protection.get("protection_id"),
+            protection.get("bucket") or "DEFAULT",
+            cover,
+            _crm_effect("EAD_REDUCTION_HAIRCUT", fx_mismatch=mismatch, maturity_factor=maturity_factor),
         ))
+    return ead_after_fcp, total_fcp
 
-    # ── PERSISTANCE EN BASE (une seule transaction atomique) ────────────────────
+
+def _apply_unfunded_protections(
+    db: Database,
+    row: dict[str, Any],
+    protections: list[dict[str, Any]],
+    ead_after_fcp: float,
+    base_rw: float,
+    runtime: _StandardRuntime,
+    batch_id: str,
+    regulatory_version_id: str,
+    buffers: _StandardBuffers,
+) -> tuple[float, float]:
+    exposure_id = row["exposure_id"]
+    residual_ead = max(0.0, ead_after_fcp)
+    substituted_rwa = 0.0
+    for protection in protections:
+        mismatch = _currency_mismatch(row, protection)
+        maturity_factor = maturity_mismatch_factor(
+            row.get("maturity_months"), protection.get("maturity_months")
+        )
+        recognized_value = compute_recognized_ufcp_value(
+            _f(protection.get("protection_value")),
+            fx_mismatch=mismatch,
+            fx_haircut=runtime.crm_fx_haircut,
+            exposure_maturity_months=row.get("maturity_months"),
+            protection_maturity_months=protection.get("maturity_months"),
+        )
+        decision = evaluate_rule_set(
+            db,
+            batch_id,
+            regulatory_version_id,
+            "SUBSTITUTION_RISK_WEIGHT",
+            {
+                "_context_key": f"{exposure_id}:{protection.get('protection_id')}",
+                "provider_type": protection.get("provider_type"),
+                "protection_type": protection.get("protection_type"),
+            },
+            trace_buffer=buffers.decision_traces,
+        )
+        raw_provider_rw = decision.get("result_value") if decision else None
+        provider_rw = _f(raw_provider_rw) if raw_provider_rw is not None else None
+        guarantee, rwa_increment, residual_ead = apply_ufcp_partial_substitution(
+            ead_at_obligor_rw=residual_ead,
+            base_rw=base_rw,
+            rw_provider=provider_rw,
+            protection_value=recognized_value,
+        )
+        substituted_rwa += rwa_increment
+        buffers.allocations.append((
+            batch_id,
+            exposure_id,
+            protection.get("protection_id"),
+            protection.get("bucket") or "DEFAULT",
+            guarantee,
+            _crm_effect("RW_SUBSTITUTION", fx_mismatch=mismatch, maturity_factor=maturity_factor),
+        ))
+    return residual_ead, substituted_rwa
+
+
+def _build_standard_result(
+    row: dict[str, Any],
+    *,
+    batch_id: str,
+    gross: float,
+    provision: float,
+    ead_pre_crm: float,
+    ead_after_fcp: float,
+    total_fcp: float,
+    base_rw: float,
+    substituted_rw: float,
+    rwa_pre_supporting: float,
+    supporting_factor_result: dict[str, Any],
+    ccf: float,
+    ccf_bucket: str | None,
+    rw_bucket: str,
+    currency_mismatch_multiplier: float,
+    ead_after_ufcp: float,
+) -> tuple:
+    rwa_final = supporting_factor_result["rwa_final"]
+    return (
+        batch_id,
+        row["exposure_id"],
+        row["counterparty_id"],
+        row["asset_class_id"],
+        row["product_type_id"],
+        gross,
+        provision,
+        ead_pre_crm,
+        ead_after_fcp,
+        total_fcp,
+        base_rw,
+        substituted_rw,
+        rwa_pre_supporting,
+        supporting_factor_result["multiplier_final"],
+        supporting_factor_result["factor_codes"],
+        rwa_final,
+        ccf,
+        ccf_bucket,
+        "DECISION_ENGINE",
+        rw_bucket,
+        row.get("credit_quality_step"),
+        ltv_bucket(row.get("ltv_ratio")),
+        currency_mismatch_multiplier,
+        ead_after_ufcp,
+        rwa_pre_supporting,
+        rwa_final * 0.08,
+    )
+
+
+def _process_standard_exposure(
+    db: Database,
+    row: dict[str, Any],
+    *,
+    batch_id: str,
+    regulatory_version_id: str,
+    runtime: _StandardRuntime,
+    buffers: _StandardBuffers,
+    stats: _StandardFallbackStats,
+    sme_total_exposure: float,
+) -> tuple:
+    gross = _f(row["exposure_amount"])
+    provision = _f(row["provision_amount"])
+    net = max(gross - provision, 0.0)
+    ccf, ccf_bucket = _resolve_ccf(
+        db, batch_id, regulatory_version_id, row, buffers.decision_traces, stats
+    )
+    base_rw, rw_bucket, mismatch_multiplier = _resolve_base_risk_weight(
+        db,
+        batch_id,
+        regulatory_version_id,
+        row,
+        gross,
+        provision,
+        buffers.decision_traces,
+        stats,
+    )
+    ead_pre_crm = net * ccf
+    funded, unfunded = _partition_protections(
+        runtime.protections_by_exposure.get(str(row["exposure_id"]), []),
+        row["exposure_id"],
+        stats,
+    )
+    ead_after_fcp, total_fcp = _apply_funded_protections(
+        row, funded, ead_pre_crm, runtime, batch_id, buffers.allocations
+    )
+    ead_after_ufcp, substituted_rwa = _apply_unfunded_protections(
+        db,
+        row,
+        unfunded,
+        ead_after_fcp,
+        base_rw,
+        runtime,
+        batch_id,
+        regulatory_version_id,
+        buffers,
+    )
+    rwa_pre_supporting = substituted_rwa + ead_after_ufcp * base_rw
+    substituted_rw = rwa_pre_supporting / ead_after_fcp if ead_after_fcp > 0 else base_rw
+    supporting_factor_result = apply_supporting_factors(
+        db=db,
+        batch_id=batch_id,
+        regulatory_version=regulatory_version_id,
+        exposure_row=row,
+        rwa_pre_supporting=rwa_pre_supporting,
+        preloaded_rules=runtime.supporting_factor_rules,
+        trace_buffer=buffers.supporting_factor_traces,
+        sme_total_exposure=sme_total_exposure,
+    )
+    return _build_standard_result(
+        row,
+        batch_id=batch_id,
+        gross=gross,
+        provision=provision,
+        ead_pre_crm=ead_pre_crm,
+        ead_after_fcp=ead_after_fcp,
+        total_fcp=total_fcp,
+        base_rw=base_rw,
+        substituted_rw=substituted_rw,
+        rwa_pre_supporting=rwa_pre_supporting,
+        supporting_factor_result=supporting_factor_result,
+        ccf=ccf,
+        ccf_bucket=ccf_bucket,
+        rw_bucket=rw_bucket,
+        currency_mismatch_multiplier=mismatch_multiplier,
+        ead_after_ufcp=ead_after_ufcp,
+    )
+
+
+def _standard_control_metrics(batch_id: str, stats: _StandardFallbackStats) -> list[tuple]:
+    metrics: list[tuple] = []
+    if stats.ccf_count > 0 or stats.rw_count > 0:
+        metrics.extend([
+            (batch_id, "SA_CCF_FALLBACK_HITS", stats.ccf_count),
+            (batch_id, "SA_RW_FALLBACK_HITS", stats.rw_count),
+        ])
+    if stats.ignored_protection_count > 0:
+        metrics.append((batch_id, "SA_CRM_IGNORED_PROTECTIONS", stats.ignored_protection_count))
+    return metrics
+
+
+def _persist_standard_batches(
+    db: Database,
+    batch_id: str,
+    buffers: _StandardBuffers,
+    stats: _StandardFallbackStats,
+) -> None:
     with db.transaction():
-        # Insertion des résultats SA
-        if results_batch:
+        if buffers.results:
             db.executemany(
                 """
                 INSERT INTO core.core_standard_results (
@@ -1095,23 +1109,18 @@ def run_standard_engine(
                     capital_requirement_8pct
                 ) VALUES %s
                 """,
-                results_batch,
+                buffers.results,
             )
-
-        # Insertion des allocations de protection (CRM)
-        if allocations_batch:
+        if buffers.allocations:
             db.executemany(
                 """
                 INSERT INTO core.core_protection_allocation (
-                    batch_id, exposure_id, protection_id,
-                    bucket, allocated_amount, effect_type
+                    batch_id, exposure_id, protection_id, bucket, allocated_amount, effect_type
                 ) VALUES %s
                 """,
-                allocations_batch,
+                buffers.allocations,
             )
-
-        # Flush groupé des traces Supporting Factors (v2.8 : 1 INSERT global)
-        if sf_trace_buffer:
+        if buffers.supporting_factor_traces:
             db.executemany(
                 """
                 INSERT INTO rpt.rpt_supporting_factor_trace (
@@ -1119,26 +1128,11 @@ def run_standard_engine(
                     rwa_before, rwa_after
                 ) VALUES %s
                 """,
-                sf_trace_buffer,
+                buffers.supporting_factor_traces,
             )
-
-        # Flush groupé des traces de décision (CCF, RW, substitution, protection bucket)
-        flush_trace_buffer(db, trace_buffer)
-
-        # v3.3.0 (point 5 audit) — Persistance des compteurs de fallbacks
-        # dans rpt.rpt_controls pour visibilité dans l'export CSV des contrôles.
-        # Insertion conditionnelle pour ne pas dupliquer si déjà présent
-        # (controls.run_controls() ré-écrit ses propres métriques en fin de batch).
-        # v3.6.0 — On persiste aussi le compteur de protections CRM ignorées.
-        controls_metrics: list[tuple] = []
-        if ccf_fallback_count > 0 or rw_fallback_count > 0:
-            controls_metrics.append((batch_id, "SA_CCF_FALLBACK_HITS", ccf_fallback_count))
-            controls_metrics.append((batch_id, "SA_RW_FALLBACK_HITS",  rw_fallback_count))
-        if crm_ignored_protection_count > 0:
-            controls_metrics.append(
-                (batch_id, "SA_CRM_IGNORED_PROTECTIONS", crm_ignored_protection_count)
-            )
-        if controls_metrics:
+        flush_trace_buffer(db, buffers.decision_traces)
+        metrics = _standard_control_metrics(batch_id, stats)
+        if metrics:
             db.executemany(
                 """
                 INSERT INTO rpt.rpt_controls (batch_id, control_name, control_value)
@@ -1146,37 +1140,76 @@ def run_standard_engine(
                 ON CONFLICT (batch_id, control_name) DO UPDATE
                   SET control_value = EXCLUDED.control_value
                 """,
-                controls_metrics,
+                metrics,
             )
 
-    # v3.3.0 — Log de synthèse + gestion du mode strict
-    if ccf_fallback_count > 0 or rw_fallback_count > 0:
+
+def _report_standard_anomalies(
+    stats: _StandardFallbackStats,
+    result_count: int,
+    strict_fallback_mode: bool,
+) -> None:
+    if stats.ccf_count > 0 or stats.rw_count > 0:
         logger.warning(
-            "Standard engine — %d fallback(s) CCF + %d fallback(s) RW détectés "
-            "(sur %d expositions). Premiers exposure_id concernés : "
-            "CCF=%s ; RW=%s. Voir SA_CCF_FALLBACK_HITS / SA_RW_FALLBACK_HITS "
-            "dans rpt.rpt_controls.",
-            ccf_fallback_count, rw_fallback_count, len(results_batch),
-            ccf_fallback_exposures[:5] or "(aucun)",
-            rw_fallback_exposures[:5] or "(aucun)",
+            "Standard engine — %d fallback(s) CCF + %d fallback(s) RW sur %d expositions; CCF=%s; RW=%s.",
+            stats.ccf_count,
+            stats.rw_count,
+            result_count,
+            stats.ccf_exposures[:5] or "(aucun)",
+            stats.rw_exposures[:5] or "(aucun)",
         )
         if strict_fallback_mode:
             raise RuntimeError(
-                f"strict_fallback_mode=True : {ccf_fallback_count} fallback(s) "
-                f"CCF et {rw_fallback_count} fallback(s) RW détectés. Le batch "
-                f"a été arrêté pour préserver l'intégrité du calcul. Compléter "
-                f"les seeds ref.ref_decision_rules avant de relancer."
+                "strict_fallback_mode=True : "
+                f"{stats.ccf_count} fallback(s) CCF et {stats.rw_count} fallback(s) RW détectés."
             )
-
-    # v3.6.0 — Log de synthèse des protections CRM ignorées (type non géré).
-    if crm_ignored_protection_count > 0:
+    if stats.ignored_protection_count > 0:
         logger.warning(
-            "Standard engine — %d protection(s) CRM ignorée(s) (type ni FCP ni "
-            "UFCP). Premiers protection_id concernés : %s. Voir "
-            "SA_CRM_IGNORED_PROTECTIONS dans rpt.rpt_controls. Corriger "
-            "stg.stg_protections.protection_type pour les prendre en compte.",
-            crm_ignored_protection_count,
-            crm_ignored_protections[:5] or "(aucun)",
+            "Standard engine — %d protection(s) CRM ignorée(s); protection_id=%s.",
+            stats.ignored_protection_count,
+            stats.ignored_protections[:5] or "(aucun)",
         )
 
-    return len(results_batch)
+
+def run_standard_engine(
+    db: Database,
+    batch_id: str,
+    regulatory_version_id: str,
+    reporting_date: str,
+    strict_fallback_mode: bool = False,
+) -> int:
+    """Exécute le calcul SA par phases isolées et testables.
+
+    La signature et les écritures SQL restent compatibles avec la v6.0.1.
+    ``reporting_date`` est conservé dans le contrat public, même si le schéma
+    normalisé porte la date au niveau du batch.
+    """
+    del reporting_date
+    clear_rules_cache()
+    db.execute("DELETE FROM core.core_standard_results WHERE batch_id = %s", (batch_id,))
+    db.execute("DELETE FROM core.core_protection_allocation WHERE batch_id = %s", (batch_id,))
+    db.execute("DELETE FROM rpt.rpt_supporting_factor_trace WHERE batch_id = %s", (batch_id,))
+    rows = _filter_standard_rows(
+        db.query("SELECT * FROM stg.stg_exposures WHERE batch_id = %s", (batch_id,))
+    )
+    buffers = _StandardBuffers()
+    stats = _StandardFallbackStats()
+    runtime = _load_standard_runtime(db, batch_id, regulatory_version_id, buffers)
+    sme_totals = _sme_totals_by_obligor(rows)
+    for row in rows:
+        buffers.results.append(
+            _process_standard_exposure(
+                db,
+                row,
+                batch_id=batch_id,
+                regulatory_version_id=regulatory_version_id,
+                runtime=runtime,
+                buffers=buffers,
+                stats=stats,
+                sme_total_exposure=sme_totals.get(str(row.get("counterparty_id") or ""), 0.0),
+            )
+        )
+    _persist_standard_batches(db, batch_id, buffers, stats)
+    _report_standard_anomalies(stats, len(buffers.results), strict_fallback_mode)
+    return len(buffers.results)
+

@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : saccr_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 5.0.0
+VERSION : 6.0.4
 ================================================================================
 
 CORRECTIONS RÉGLEMENTAIRES v3.4.0 (audit points ② et ③)
@@ -125,20 +125,21 @@ SORTIE
 
 from __future__ import annotations
 
-import math
-import logging
 import json
+import logging
+import math
 from collections import defaultdict
-from typing import Dict, List, Tuple, Optional
-
-from scipy.stats import norm
+from statistics import NormalDist
+from typing import Dict, List, Optional, Tuple
 
 from .db import Database
+from .runtime_rules import get_parameter
 from .decision_engine import evaluate_rule_set, flush_trace_buffer
 from .utils import to_float as _f
 from .types import SaccrTradeRow, SaccrAdjNotional, SaccrAddOnBreakdown
 
 logger = logging.getLogger(__name__)
+_NORMAL_DIST = NormalDist()
 
 # ─── Constantes réglementaires ───────────────────────────────────────────────
 _ALPHA     = 1.40    # Art.274(5)
@@ -219,9 +220,9 @@ def _compute_delta(
         return sign
 
     if option_type.upper() == "CALL":
-        raw_delta = float(norm.cdf(d1))
+        raw_delta = float(_NORMAL_DIST.cdf(d1))
     else:  # PUT
-        raw_delta = -float(norm.cdf(-d1))
+        raw_delta = -float(_NORMAL_DIST.cdf(-d1))
 
     return sign * raw_delta
 
@@ -928,7 +929,9 @@ def _load_supervisory_parameters(db: Database, regulatory_version_id: str) -> fl
     encore (tests unitaires ou base non migrée). En run normal, le bootstrap SQL
     alimente cette table et rend les facteurs auditables.
     """
-    alpha = _ALPHA
+    # Scalar alpha is centralized in the versioned runtime registry.  The
+    # dedicated supervisory table remains the source for asset-class factors.
+    alpha = float(get_parameter(db, regulatory_version_id, "DEFAULT_ALPHA_SACCR", _ALPHA))
     try:
         rows = db.query(
             """
@@ -1004,7 +1007,7 @@ def run_saccr_engine(
     db.execute("DELETE FROM core.core_saccr_results WHERE batch_id = %s", (batch_id,))
 
     # ── Chargement de tous les trades du batch ───────────────────────────────
-    all_trades: List[SaccrTradeRow] = db.query(  # type: ignore[assignment]
+    all_trades: List[SaccrTradeRow] = db.query(
         """
         SELECT
             t.trade_id,

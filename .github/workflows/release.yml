@@ -1,44 +1,52 @@
-name: Release
+name: Community Release
 
 on:
   push:
     tags: ["v*"]
 
 permissions:
-  contents: write       # créer la Release
-  id-token: write       # attestation de provenance (Sigstore/OIDC)
+  contents: write
+  id-token: write
   attestations: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.11"
-
-      - name: Build (wheel + sdist)
+      - name: Vérifier tag, contrat et intégrité
         run: |
-          python -m pip install --upgrade pip build
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          test "$TAG_VERSION" = "6.0.4"
+          python tools/check_release_contract.py
+          PYTHONPATH=src python -m corep_crr3.release_integrity \
+            --root . --manifest RELEASE_MANIFEST.json --version "$TAG_VERSION"
+      - name: Build wheel et sdist
+        env:
+          SOURCE_DATE_EPOCH: "1767225600"
+        run: |
+          python -m pip install --upgrade pip build pip-audit cyclonedx-bom
           python -m build
-
-      - name: SBOM CycloneDX
-        continue-on-error: true
+          python tools/verify_public_wheel.py dist/*.whl
+      - name: Audit et SBOM
         run: |
-          python -m pip install -e . cyclonedx-bom
-          cyclonedx-py environment -o sbom.cdx.json || cyclonedx-py -o sbom.cdx.json
-
-      - name: Attestation de provenance (SLSA / Sigstore)
-        continue-on-error: true
-        uses: actions/attest-build-provenance@v1
+          python -m pip install dist/*.whl
+          pip-audit
+          cyclonedx-py environment -o sbom.cdx.json
+          python tools/enrich_sbom_licenses.py sbom.cdx.json --required-lock requirements-runtime-py311-linux.lock --strict
+          sha256sum dist/* sbom.cdx.json > SHA256SUMS.txt
+      - name: Attestation de provenance
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32
         with:
           subject-path: "dist/*"
-
-      - name: Créer la Release GitHub (artefacts + notes auto)
-        uses: softprops/action-gh-release@v2
+      - name: Publier la release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         with:
           files: |
             dist/*
             sbom.cdx.json
+            SHA256SUMS.txt
           generate_release_notes: true

@@ -1,0 +1,39 @@
+{
+  "documented": 71,
+  "functions": 71,
+  "minimum_percent": 85.0,
+  "modules": {
+    "src/corep_crr3/community_bootstrap.py": {
+      "documented": 14,
+      "functions": 14,
+      "missing": [],
+      "percent": 100.0
+    },
+    "src/corep_crr3/community_gui.py": {
+      "documented": 36,
+      "functions": 36,
+      "missing": [],
+      "percent": 100.0
+    },
+    "src/corep_crr3/operational_readiness.py": {
+      "documented": 7,
+      "functions": 7,
+      "missing": [],
+      "percent": 100.0
+    },
+    "src/corep_crr3/public_registry.py": {
+      "documented": 5,
+      "functions": 5,
+      "missing": [],
+      "percent": 100.0
+    },
+    "src/corep_crr3/release_integrity.py": {
+      "documented": 9,
+      "functions": 9,
+      "missing": [],
+      "percent": 100.0
+    }
+  },
+  "percent": 100.0,
+  "status": "PASSED"
+}

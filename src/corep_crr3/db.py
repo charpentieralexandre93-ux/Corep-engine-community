@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : db.py
 PROJET  : COREP Engine CRR3
-VERSION : 5.0.0
+VERSION : 6.0.4
 ================================================================================
 
 PATCH v6 — THREAD-SAFETY
@@ -94,22 +94,26 @@ RÉFÉRENCE
 """
 
 from __future__ import annotations
-import os
+
 import contextlib
 import logging
-from typing import Generator, Optional
+import os
+from typing import Any, Generator, Optional
 
 # Import paresseux : les fonctions de calcul pures (SA, SA-CCR, CRM…) n'ont pas
 # besoin de PostgreSQL. On tolère donc l'absence de psycopg2 à l'import du module ;
 # l'erreur n'est levée qu'au moment d'une connexion réelle (cf. _require_psycopg2).
+psycopg2: Any
 try:
-    import psycopg2
+    import psycopg2 as _psycopg2
     import psycopg2.extras
     import psycopg2.pool
-    _PSYCOPG2_IMPORT_ERROR = None
 except Exception as _exc:  # ModuleNotFoundError ou échec de chargement natif
-    psycopg2 = None  # type: ignore[assignment]
-    _PSYCOPG2_IMPORT_ERROR = _exc
+    psycopg2 = None
+    _PSYCOPG2_IMPORT_ERROR: Optional[BaseException] = _exc
+else:
+    psycopg2 = _psycopg2
+    _PSYCOPG2_IMPORT_ERROR = None
 
 
 # -----------------------------------------------------------------------------
@@ -241,7 +245,7 @@ class Database:
       implémenté dans les scripts CLI (run_batch.py, bootstrap.py, etc.).
     """
 
-    def __init__(self, dsn: str = None, *, conn=None):
+    def __init__(self, dsn: Optional[str] = None, *, conn: Any = None):
         """Initialise et ouvre la connexion à PostgreSQL.
 
         Paramètres
@@ -340,7 +344,7 @@ class Database:
         try:
             yield                  # Exécution du bloc with
             self.conn.commit()     # Validation si pas d'exception
-        except Exception:
+        except Exception:  # fail-closed: error is re-raised or translated after cleanup
             self.conn.rollback()   # Annulation en cas d'erreur
             raise                  # Re-lever pour que l'appelant gère
 
@@ -542,7 +546,7 @@ class DatabasePool:
     Chaque thread obtient une connexion dédiée — pas de partage de curseur.
     """
 
-    def __init__(self, dsn: str = None, minconn: int = 1, maxconn: int = 10):
+    def __init__(self, dsn: Optional[str] = None, minconn: int = 1, maxconn: int = 10):
         _require_psycopg2()
         resolved_dsn = dsn or build_dsn_from_env()
         self._pool = psycopg2.pool.ThreadedConnectionPool(
@@ -582,7 +586,7 @@ class DatabasePool:
             # NE PAS appeler conn.close() — putconn() remet la connexion en pool
             try:
                 conn.rollback()   # Annuler toute transaction pendante avant restitution
-            except Exception:
+            except Exception:  # best-effort: cleanup or optional UI action may fail safely
                 pass
             self._pool.putconn(conn)
 
@@ -601,31 +605,42 @@ class DatabasePool:
 # ──────────────────────────────────────────────────────────────────────────────
 # LECTURE TOLÉRANTE AUX RELATIONS ABSENTES (helper transverse — v4.1.2)
 # ──────────────────────────────────────────────────────────────────────────────
-def safe_read(db, sql: str, params: tuple = (), default=None):
-    """Exécute un SELECT en isolant ses échecs de la transaction courante.
+_OPTIONAL_RELATION_SQLSTATES = frozenset({"42P01", "42703"})  # undefined_table / undefined_column
 
-    Sur un sous-ensemble de moteurs (base fraîche), une table ou une colonne d'un
-    moteur désactivé peut être absente. Un SELECT direct lèverait alors une
-    erreur qui met la transaction PostgreSQL en échec (``InFailedSqlTransaction``)
-    et fait planter toute écriture en aval. ``safe_read`` :
 
-      1. tente la lecture et renvoie son résultat (``list[dict]``) ;
-      2. en cas d'échec, **annule la transaction** (``rollback``) pour la rendre
-         de nouveau utilisable, puis renvoie ``default``.
+def _is_optional_relation_error(exc: BaseException) -> bool:
+    """Return True only for PostgreSQL missing-table/missing-column errors."""
+    current: Optional[BaseException] = exc
+    visited: set[int] = set()
+    while current is not None and id(current) not in visited:
+        visited.add(id(current))
+        if str(getattr(current, "pgcode", "")) in _OPTIONAL_RELATION_SQLSTATES:
+            return True
+        current = current.__cause__ or current.__context__
+    return False
 
-    Couvre table absente ET colonne absente (contrairement à un simple test
-    d'existence de table via ``to_regclass``). C'est l'unique point de robustesse
-    partagé par la réconciliation, les contrôles, l'export CSV et le snapshot des
-    règles (auparavant : deux mécanismes distincts).
 
-    Le ``rollback`` est lui-même protégé : un objet ``db`` dépourvu de méthode
-    ``rollback`` (faux objets de test) ne provoque pas d'erreur.
+def safe_read(db: Any, sql: str, params: tuple[Any, ...] = (), default: Any = None) -> Any:
+    """Execute an optional-schema SELECT without masking operational defects.
+
+    Only PostgreSQL ``undefined_table`` (42P01) and ``undefined_column`` (42703)
+    are tolerated. Syntax errors, permission failures, connection loss and all
+    other defects are re-raised so a regulatory batch fails closed.
     """
     try:
         return db.query(sql, params)
-    except Exception:
+    except Exception as exc:  # fail-closed: error is re-raised or translated after cleanup
+        if not _is_optional_relation_error(exc):
+            raise
         try:
             db.rollback()
-        except Exception:
-            pass
+        except Exception:  # fail-closed: error is re-raised or translated after cleanup
+            logger.exception("Rollback impossible après absence de relation optionnelle")
+            raise
+        logger.info(
+            "Lecture optionnelle ignorée (SQLSTATE=%s): %s",
+            getattr(exc, "pgcode", "unknown"),
+            exc,
+        )
         return default
+

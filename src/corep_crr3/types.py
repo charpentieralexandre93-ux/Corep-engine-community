@@ -4,11 +4,14 @@ Ce fichier est volontairement limité aux contrats de données SA-CCR.
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional
-try:
-    from typing import TypedDict, NotRequired, Literal
-except ImportError:
-    from typing_extensions import TypedDict, NotRequired, Literal
+
+import sys
+from typing import Dict, List, Literal, Optional, TypedDict
+
+if sys.version_info >= (3, 11):
+    from typing import NotRequired
+else:  # pragma: no cover - chemin Python 3.9/3.10
+    from typing_extensions import NotRequired
 
 class SaccrTradeRow(TypedDict, total=False):
     """Ligne stg.stg_saccr_trades — v7 : champs complets pour calcul PFE natif."""

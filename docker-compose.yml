@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16-bookworm
+    image: postgres:16-bookworm@sha256:da514b7d293c5e9126503f85ecd835f4fb0942a77e012fe74f016c114c3e25b8
     environment:
       POSTGRES_USER: corep_user
       POSTGRES_PASSWORD: ${PGPASSWORD:?PGPASSWORD must be set}
@@ -32,6 +32,7 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+    restart: "no"
 
 volumes:
   corep-community-db:

@@ -10,6 +10,7 @@ CycloneDX distinguishes a single SPDX identifier (``license.id``) from a
 compound SPDX expression (``expression``). This module keeps those two forms
 separate and never stores an expression in ``license.id``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -72,7 +73,7 @@ def _metadata_license(name: str) -> str | None:
     for classifier in package.get_all("Classifier", []):
         prefix = "License :: OSI Approved :: "
         if classifier.startswith(prefix):
-            resolved = _CLASSIFIER_TO_SPDX.get(classifier[len(prefix):])
+            resolved = _CLASSIFIER_TO_SPDX.get(classifier[len(prefix) :])
             if resolved:
                 return resolved
     return None
@@ -145,8 +146,7 @@ def enrich(payload: dict[str, Any], required_names: Iterable[str] = ()) -> tuple
         for name in required
         if name not in seen
         or not any(
-            _normalise(str(component.get("name") or "")) == name
-            and _component_license_ids(component)
+            _normalise(str(component.get("name") or "")) == name and _component_license_ids(component)
             for component in components
             if isinstance(component, dict)
         )

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate a machine-readable, auditable release evidence bundle."""
+
 from __future__ import annotations
 
 import argparse
@@ -121,18 +122,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--edition", required=True, choices=("ENTERPRISE", "COMMUNITY"))
     parser.add_argument("--version", required=True)
-    parser.add_argument(
-        "--postgres-e2e", required=True, choices=("PASSED", "FAILED", "NOT_EXECUTED")
-    )
+    parser.add_argument("--postgres-e2e", required=True, choices=("PASSED", "FAILED", "NOT_EXECUTED"))
     parser.add_argument("--test-summary", required=True)
     parser.add_argument("--coverage-percent", type=float)
     parser.add_argument("--postgres-version")
     parser.add_argument("--manifest", type=Path, default=Path("RELEASE_MANIFEST.json"))
     parser.add_argument("--artifact", type=Path)
     parser.add_argument("--sbom", type=Path)
-    parser.add_argument(
-        "--dependency-audit", default="NOT_EXECUTED", choices=("PASSED", "FAILED", "NOT_EXECUTED")
-    )
+    parser.add_argument("--dependency-audit", default="NOT_EXECUTED", choices=("PASSED", "FAILED", "NOT_EXECUTED"))
     parser.add_argument("--branch-coverage-report", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)

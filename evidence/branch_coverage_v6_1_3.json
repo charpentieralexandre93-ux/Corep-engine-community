@@ -1,6 +1,6 @@
 {
   "coverage_tool": "7.13.3",
-  "generated_at": "2026-06-15T17:54:08.407037+00:00",
+  "generated_at": "2026-06-19T20:19:46.918602+00:00",
   "modules": {
     "standard_engine.py": {
       "baseline_branch_percent": 56.35,
@@ -15,10 +15,10 @@
     }
   },
   "overall": {
-    "branch_percent": 65.06,
-    "statement_percent": 73.32
+    "branch_percent": 64.17,
+    "statement_percent": 72.96
   },
-  "product_version": "6.0.4",
+  "product_version": "6.1.3",
   "regressions": {},
   "schema_version": 1,
   "status": "PASSED"

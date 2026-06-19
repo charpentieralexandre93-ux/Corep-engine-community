@@ -1,4 +1,4 @@
-"""Release contract for the generated Community v6.2.0 source project."""
+"""Release contract for the generated Community v6.2.1 source project."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ def test_public_product_entry_points_and_version_are_explicit() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     init_py = (ROOT / "src/corep_crr3/__init__.py").read_text(encoding="utf-8")
-    assert 'version = "6.2.0"' in pyproject
-    assert '__version__ = "6.2.0"' in init_py
-    assert readme.startswith("# COREP CRR3 Engine Community — v6.2.0\n")
+    assert 'version = "6.2.1"' in pyproject
+    assert '__version__ = "6.2.1"' in init_py
+    assert readme.startswith("# COREP CRR3 Engine Community — v6.2.1\n")
     assert "corep-community-gui" in readme
     assert "corep-community-bootstrap" in readme
     assert "Apache License 2.0" in readme
@@ -59,6 +59,6 @@ def test_public_branch_baseline_covers_product_surface() -> None:
     import json
 
     payload = json.loads((ROOT / "evidence/coverage_baseline_v6_2_0.json").read_text(encoding="utf-8"))
-    assert payload["product_version"] == "6.2.0"
+    assert payload["product_version"] == "6.2.1"
     assert set(payload["modules"]) == {"standard_engine.py", "saccr_engine.py", "community_gui.py"}
     assert payload["modules"]["community_gui.py"]["branch_percent"] >= 60

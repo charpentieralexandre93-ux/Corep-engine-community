@@ -3,7 +3,7 @@
 ================================================================================
 BENCHMARK : bench_pure_kernels.py
 PROJET    : COREP Engine CRR3
-VERSION   : 6.2.0
+VERSION   : 6.2.1
 ================================================================================
 
 Micro-benchmark des NOYAUX DE CALCUL PURS (CRM / SA / SA-CCR), sans base de

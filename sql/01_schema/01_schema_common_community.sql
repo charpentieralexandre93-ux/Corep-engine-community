@@ -501,12 +501,35 @@ CREATE TABLE IF NOT EXISTS core.core_standard_results (
     supporting_factor_multiplier NUMERIC(9, 4) CHECK (supporting_factor_multiplier >= 0),
     supporting_factor_codes TEXT,
     rwa_final NUMERIC(18, 4) CHECK (rwa_final >= 0),
+
+    ccf_applied NUMERIC(9, 4) CHECK (ccf_applied >= 0),
+    ccf_bucket VARCHAR(50),
+    rw_rule_source VARCHAR(50),
+    rw_bucket VARCHAR(100),
+    cqs_used INTEGER,
+    ltv_bucket VARCHAR(50),
+    currency_mismatch_multiplier NUMERIC(9, 4) CHECK (currency_mismatch_multiplier >= 0),
+    ead_after_ufcp NUMERIC(18, 4) CHECK (ead_after_ufcp >= 0),
+    rwa_before_supporting_factor NUMERIC(18, 4) CHECK (rwa_before_supporting_factor >= 0),
+    capital_requirement_8pct NUMERIC(18, 4) CHECK (capital_requirement_8pct >= 0),
     PRIMARY KEY (batch_id, exposure_id),
     FOREIGN KEY (batch_id) REFERENCES meta.batch_run_control(batch_id),
     FOREIGN KEY (counterparty_id) REFERENCES ref.ref_counterparties(counterparty_id),
     FOREIGN KEY (asset_class_id) REFERENCES ref.ref_asset_classes(asset_class_id),
     FOREIGN KEY (product_type_id) REFERENCES ref.ref_product_types(product_type_id)
 );
+-- Migration idempotente v6.2.1 : colonnes de traçabilité SA.
+ALTER TABLE core.core_standard_results
+    ADD COLUMN IF NOT EXISTS ccf_applied NUMERIC(9, 4) CHECK (ccf_applied >= 0),
+    ADD COLUMN IF NOT EXISTS ccf_bucket VARCHAR(50),
+    ADD COLUMN IF NOT EXISTS rw_rule_source VARCHAR(50),
+    ADD COLUMN IF NOT EXISTS rw_bucket VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS cqs_used INTEGER,
+    ADD COLUMN IF NOT EXISTS ltv_bucket VARCHAR(50),
+    ADD COLUMN IF NOT EXISTS currency_mismatch_multiplier NUMERIC(9, 4) CHECK (currency_mismatch_multiplier >= 0),
+    ADD COLUMN IF NOT EXISTS ead_after_ufcp NUMERIC(18, 4) CHECK (ead_after_ufcp >= 0),
+    ADD COLUMN IF NOT EXISTS rwa_before_supporting_factor NUMERIC(18, 4) CHECK (rwa_before_supporting_factor >= 0),
+    ADD COLUMN IF NOT EXISTS capital_requirement_8pct NUMERIC(18, 4) CHECK (capital_requirement_8pct >= 0);
 COMMENT ON TABLE core.core_standard_results IS 'Table des résultats standardisés des calculs de risque de crédit, normalisée en BCNF et partitionnée.';
 COMMENT ON COLUMN core.core_standard_results.batch_id IS 'Clé étrangère: Identifiant du batch ayant généré ces résultats.';
 COMMENT ON COLUMN core.core_standard_results.exposure_id IS 'Identifiant unique de l''exposition analysée.';

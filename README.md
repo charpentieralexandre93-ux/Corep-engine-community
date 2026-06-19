@@ -1,4 +1,4 @@
-# COREP CRR3 Engine Community — v6.2.0
+# COREP CRR3 Engine Community — v6.2.1
 
 Édition publique open-core limitée à **SA crédit + SA-CCR**. Elle contient les fonctions de calcul, le bootstrap PostgreSQL public, les schémas SQL autorisés, une interface graphique de diagnostic et les garde-fous de frontière Community/Enterprise.
 
@@ -12,7 +12,7 @@
 | Interface graphique Community | `corep-community-gui` ou `python -m corep_crr3.community_gui` |
 | Bootstrap PostgreSQL | `corep-community-bootstrap` |
 | Diagnostic PostgreSQL | `corep-community-health` |
-| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.2.0` |
+| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.2.1` |
 
 L'édition Community n'embarque pas l'orchestrateur Enterprise `batch/run_batch.py`. Elle sert de moteur public SA/SA-CCR et de socle d'intégration.
 

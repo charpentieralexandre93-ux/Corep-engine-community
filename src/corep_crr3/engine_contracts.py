@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : engine_contracts.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.2.0
+VERSION : 6.2.1
 ================================================================================
 
 Contrat d'exécution commun des moteurs réglementaires.

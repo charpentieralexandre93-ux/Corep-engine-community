@@ -17,6 +17,7 @@ env:
   SOURCE_DATE_EPOCH: "1781481600"
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
 
+  PGPASSWORD: "corep_password"
 jobs:
   quality:
     name: Qualité statique et intégrité
@@ -36,7 +37,7 @@ jobs:
           python tools/check_release_contract.py
           python tools/bump_version.py --check
           python -m corep_crr3.release_integrity \
-            --root . --manifest RELEASE_MANIFEST.json --version 6.2.0
+            --root . --manifest RELEASE_MANIFEST.json --version 6.2.1
       - name: Politique des exceptions larges
         run: python tools/check_broad_exception_policy.py
       - name: Ruff complet et complexité
@@ -83,11 +84,11 @@ jobs:
         run: >-
           python tools/branch_coverage_delta.py coverage.json
           --baseline evidence/coverage_baseline_v6_2_0.json
-          --version 6.2.0
+          --version 6.2.1
           --module standard_engine.py
           --module saccr_engine.py
           --module community_gui.py
-          --output evidence/branch_coverage_v6_2_0.json
+          --output evidence/branch_coverage_v6_2_1.json
       - name: Publier la couverture
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -96,7 +97,7 @@ jobs:
           path: |
             coverage.xml
             coverage.json
-            evidence/branch_coverage_v6_2_0.json
+            evidence/branch_coverage_v6_2_1.json
           if-no-files-found: warn
 
   performance:
@@ -116,12 +117,12 @@ jobs:
         run: >-
           PYTHONPATH=src python benchmarks/bench_pure_kernels.py
           --iterations 50000 --min-calls-per-second 5000
-          --json-output evidence/performance_v6_2_0.json
+          --json-output evidence/performance_v6_2_1.json
       - name: Publier la preuve de performance
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: community-performance
-          path: evidence/performance_v6_2_0.json
+          path: evidence/performance_v6_2_1.json
           if-no-files-found: error
 
   supply-chain:
@@ -183,7 +184,7 @@ jobs:
       - name: Vérifier le manifeste
         run: >-
           PYTHONPATH=src python -m corep_crr3.release_integrity
-          --root . --manifest RELEASE_MANIFEST.json --version 6.2.0
+          --root . --manifest RELEASE_MANIFEST.json --version 6.2.1
       - name: Build reproductible A
         run: python -m build --wheel --no-isolation --outdir dist-a
       - name: Build reproductible B
@@ -194,14 +195,14 @@ jobs:
         run: |
           python tools/build_source_archive.py --root . \
             --output /tmp/corep-community-source-a.zip \
-            --prefix Corep_engine_community_v6.2.0
+            --prefix Corep_engine_community_v6.2.1
           python tools/build_source_archive.py --root . \
             --output /tmp/corep-community-source-b.zip \
-            --prefix Corep_engine_community_v6.2.0
+            --prefix Corep_engine_community_v6.2.1
           test "$(sha256sum /tmp/corep-community-source-a.zip | cut -d' ' -f1)" = \
                "$(sha256sum /tmp/corep-community-source-b.zip | cut -d' ' -f1)"
           python tools/build_source_archive.py --verify /tmp/corep-community-source-a.zip \
-            --prefix Corep_engine_community_v6.2.0
+            --prefix Corep_engine_community_v6.2.1
       - name: Vérifier les empreintes et le wheel public
         run: |
           sha256sum dist-a/*.whl dist-b/*.whl
@@ -264,7 +265,7 @@ jobs:
             SUMMARY="PostgreSQL Community E2E failed; see postgres_e2e.log"
           fi
           python tools/generate_release_evidence.py \
-            --edition COMMUNITY --version 6.2.0 \
+            --edition COMMUNITY --version 6.2.1 \
             --postgres-e2e "$STATUS" --postgres-version "PostgreSQL 16" \
             --test-summary "$SUMMARY" \
             --manifest RELEASE_MANIFEST.json \
@@ -303,7 +304,7 @@ jobs:
           docker compose run --rm --no-deps --entrypoint corep-community-health app \
             --output-dir /app/output --min-free-mb 0 --skip-database
           docker compose run --rm --no-deps --entrypoint python app \
-            -c "import corep_crr3; assert corep_crr3.__version__ == '6.2.0'"
+            -c "import corep_crr3; assert corep_crr3.__version__ == '6.2.1'"
       - name: Bootstrap et readiness via Docker Compose
         shell: bash
         run: |

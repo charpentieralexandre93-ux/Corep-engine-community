@@ -303,12 +303,12 @@
       "dependsOn": [
         "requirements-L3"
       ],
-      "ref": "pkg:pypi/corep-crr3-community@6.0.4"
+      "ref": "pkg:pypi/corep-crr3-community@6.2.0"
     }
   ],
   "metadata": {
     "component": {
-      "bom-ref": "pkg:pypi/corep-crr3-community@6.0.4",
+      "bom-ref": "pkg:pypi/corep-crr3-community@6.2.0",
       "licenses": [
         {
           "license": {
@@ -320,18 +320,18 @@
       "properties": [
         {
           "name": "corep.release.baseline",
-          "value": "complete source archive v6.0.2"
+          "value": "complete source archive v6.2.0"
         },
         {
           "name": "corep.release.scope",
-          "value": "P2 compatibility, docstrings and branch-coverage evidence"
+          "value": "release gating, Docker CI and deterministic source archives"
         }
       ],
-      "purl": "pkg:pypi/corep-crr3-community@6.0.4",
+      "purl": "pkg:pypi/corep-crr3-community@6.2.0",
       "type": "application",
-      "version": "6.0.4"
+      "version": "6.2.0"
     },
-    "timestamp": "2026-06-15T17:55:33.325457+00:00",
+    "timestamp": "2026-06-19T00:00:00+00:00",
     "tools": {
       "components": [
         {
@@ -435,7 +435,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:9cb9d7aa-761a-4360-a4aa-7a7d659f28ae",
+  "serialNumber": "urn:uuid:7f0459ec-a22e-4f2a-9de5-93594492c8fe",
   "specVersion": "1.6",
   "version": 1
 }

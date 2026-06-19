@@ -23,8 +23,7 @@ PUBLIC_ENGINES = {
 
 # Nouveau contrat normalisé, additif et sans rupture de PUBLIC_ENGINES.
 PUBLIC_REGULATORY_ENGINES = {
-    code: FunctionEngineAdapter(function, name=code)
-    for code, function in PUBLIC_ENGINES.items()
+    code: FunctionEngineAdapter(function, name=code) for code, function in PUBLIC_ENGINES.items()
 }
 
 
@@ -39,9 +38,7 @@ def get_engine(engine_code: str):
     try:
         return PUBLIC_ENGINES[code]
     except KeyError as exc:
-        raise ValueError(
-            f"Moteur indisponible dans l'édition Community : {engine_code}"
-        ) from exc
+        raise ValueError(f"Moteur indisponible dans l'édition Community : {engine_code}") from exc
 
 
 def get_regulatory_engine(engine_code: str) -> RegulatoryEngine:
@@ -50,9 +47,7 @@ def get_regulatory_engine(engine_code: str) -> RegulatoryEngine:
     try:
         return PUBLIC_REGULATORY_ENGINES[code]
     except KeyError as exc:
-        raise ValueError(
-            f"Moteur indisponible dans l'édition Community : {engine_code}"
-        ) from exc
+        raise ValueError(f"Moteur indisponible dans l'édition Community : {engine_code}") from exc
 
 
 def run_engine(

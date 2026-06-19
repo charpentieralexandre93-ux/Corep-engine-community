@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : db.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.2.0
 ================================================================================
 
 PATCH v6 — THREAD-SAFETY
@@ -98,18 +98,22 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
+from collections.abc import Mapping
 from typing import Any, Generator, Optional
 
 # Import paresseux : les fonctions de calcul pures (SA, SA-CCR, CRM…) n'ont pas
 # besoin de PostgreSQL. On tolère donc l'absence de psycopg2 à l'import du module ;
 # l'erreur n'est levée qu'au moment d'une connexion réelle (cf. _require_psycopg2).
 psycopg2: Any
+_psycopg2_make_dsn: Any = None
 try:
     import psycopg2 as _psycopg2
-    import psycopg2.extras
-    import psycopg2.pool
+    from psycopg2 import extras as _psycopg2_extras  # noqa: F401
+    from psycopg2 import pool as _psycopg2_pool  # noqa: F401
+    from psycopg2.extensions import make_dsn as _psycopg2_make_dsn
 except Exception as _exc:  # ModuleNotFoundError ou échec de chargement natif
     psycopg2 = None
+    _psycopg2_make_dsn = None
     _PSYCOPG2_IMPORT_ERROR: Optional[BaseException] = _exc
 else:
     psycopg2 = _psycopg2
@@ -150,11 +154,12 @@ def _require_psycopg2() -> None:
 
 
 def _resolve_pgpassword() -> Optional[str]:
-    """Résout le mot de passe PostgreSQL sans le coder en dur (hook coffre-fort).
+    """Résout un secret PostgreSQL avec bornes d'exécution explicites.
 
-    Ordre : ``PGPASSWORD`` (direct) → ``PGPASSWORD_FILE`` (chemin d'un fichier
-    secret, ex. monté par Vault / un Secret Manager) → ``PGPASSWORD_CMD``
-    (commande dont la sortie standard est le secret). Renvoie ``None`` si aucun.
+    Priorité : ``PGPASSWORD`` → ``PGPASSWORD_FILE`` → ``PGPASSWORD_CMD``.
+    La commande opérateur est exécutée sans shell, avec timeout et limite de
+    taille pour éviter qu'un fournisseur de secret bloqué ou bavard ne suspende
+    indéfiniment un batch réglementaire.
     """
     direct = os.getenv("PGPASSWORD")
     if direct:
@@ -162,19 +167,47 @@ def _resolve_pgpassword() -> Optional[str]:
     path = os.getenv("PGPASSWORD_FILE")
     if path and os.path.isfile(path):
         with open(path, "r", encoding="utf-8") as handle:
-            return handle.read().strip() or None
+            secret = handle.read(16_385)
+        if len(secret.encode("utf-8")) > 16_384:
+            raise RuntimeError("PGPASSWORD_FILE dépasse la limite de 16 KiB")
+        return secret.strip() or None
     command = os.getenv("PGPASSWORD_CMD")
     if command:
         import shlex
-        # Commande fournie par l'opérateur via env, sans shell implicite.
         import subprocess  # nosec B404
-        # Arguments splittés via shlex, sans shell=True.
+
+        try:
+            timeout = float(os.getenv("COREP_PGPASSWORD_CMD_TIMEOUT", "5"))
+        except ValueError:
+            timeout = 5.0
+        timeout = min(max(timeout, 0.1), 60.0)
         result = subprocess.run(  # nosec B603
             shlex.split(command),
-            capture_output=True, text=True, check=True,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=timeout,
         )
-        return result.stdout.strip() or None
+        secret = result.stdout.strip()
+        if len(secret.encode("utf-8")) > 16_384:
+            raise RuntimeError("PGPASSWORD_CMD dépasse la limite de 16 KiB")
+        return secret or None
     return None
+
+
+def _quote_conninfo_value(value: object) -> str:
+    """Échappe une valeur libpq lorsque psycopg2 n'est pas importable."""
+    text = str(value)
+    if text and not any(char.isspace() for char in text) and not ({"'", "\\"} & set(text)):
+        return text
+    return "'" + text.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+
+def _build_conninfo(parameters: Mapping[str, object]) -> str:
+    clean = {key: str(value) for key, value in parameters.items() if value not in (None, "")}
+    if _psycopg2_make_dsn is not None:
+        return str(_psycopg2_make_dsn(**clean))
+    return " ".join(f"{key}={_quote_conninfo_value(value)}" for key, value in clean.items())
 
 
 # -----------------------------------------------------------------------------
@@ -183,18 +216,7 @@ def _resolve_pgpassword() -> Optional[str]:
 def build_dsn_from_env(
     default: str = "dbname=corep_crr3 user=corep_user host=localhost port=5432",
 ) -> str:
-    """Construit un DSN PostgreSQL en respectant l'ordre de priorité standard.
-
-    Ordre de résolution :
-      1. ``DATABASE_URL`` (variable d'environnement) → renvoyée telle quelle.
-      2. Variables PostgreSQL standard ``PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD``
-         → assemblées en DSN format `key=value`. Au moins ``PGDATABASE`` ET
-         ``PGUSER`` doivent être renseignés pour que ce mode soit retenu.
-      3. ``default`` → fallback localhost (utile pour les tests / smoke tests).
-
-    Cette fonction NE LIT PAS ``config_postgresql.yaml`` : le câblage YAML est
-    fait dans ``run_batch.py`` qui passe explicitement le DSN à ``Database()``.
-    """
+    """Construit un DSN depuis l'environnement avec échappement libpq sûr."""
     database_url = os.getenv("DATABASE_URL")
     if database_url:
         return database_url
@@ -202,18 +224,43 @@ def build_dsn_from_env(
     pgdatabase = os.getenv("PGDATABASE")
     pguser = os.getenv("PGUSER")
     if pgdatabase and pguser:
-        parts = [
-            f"host={os.getenv('PGHOST', 'localhost')}",
-            f"port={os.getenv('PGPORT', '5432')}",
-            f"dbname={pgdatabase}",
-            f"user={pguser}",
-        ]
-        pgpassword = _resolve_pgpassword()
-        if pgpassword:
-            parts.append(f"password={pgpassword}")
-        return " ".join(parts)
-
+        return _build_conninfo(
+            {
+                "host": os.getenv("PGHOST", "localhost"),
+                "port": os.getenv("PGPORT", "5432"),
+                "dbname": pgdatabase,
+                "user": pguser,
+                "password": _resolve_pgpassword(),
+            }
+        )
     return default
+
+
+def build_dsn_from_config(
+    database_config: Optional[Mapping[str, object]],
+    default: str = "dbname=corep_crr3 user=corep_user host=localhost port=5432",
+) -> str:
+    """Résout le DSN unique utilisé par le batch.
+
+    Priorité : URL complète, variables PostgreSQL standard, configuration YAML,
+    puis fallback. Le mot de passe YAML vide est remplacé par le fournisseur de
+    secret standard afin d'éviter les implémentations divergentes.
+    """
+    if os.getenv("DATABASE_URL") or (os.getenv("PGDATABASE") and os.getenv("PGUSER")):
+        return build_dsn_from_env(default)
+    config = dict(database_config or {})
+    if config.get("dbname") and config.get("user"):
+        return _build_conninfo(
+            {
+                "host": config.get("host", "localhost"),
+                "port": config.get("port", 5432),
+                "dbname": config["dbname"],
+                "user": config["user"],
+                "password": config.get("password") or _resolve_pgpassword(),
+            }
+        )
+    return default
+
 
 logger = logging.getLogger(__name__)
 
@@ -264,11 +311,11 @@ class Database:
         """
         if conn is not None:
             # Connexion fournie externement (depuis DatabasePool)
-            self.dsn  = None
+            self.dsn = None
             self.conn = conn
         else:
             _require_psycopg2()
-            self.dsn  = dsn or build_dsn_from_env()
+            self.dsn = dsn or build_dsn_from_env()
             self.conn = psycopg2.connect(self.dsn)
 
         # Désactivation de l'autocommit : les transactions sont gérées explicitement.
@@ -342,11 +389,11 @@ class Database:
             le rollback.
         """
         try:
-            yield                  # Exécution du bloc with
-            self.conn.commit()     # Validation si pas d'exception
+            yield  # Exécution du bloc with
+            self.conn.commit()  # Validation si pas d'exception
         except Exception:  # fail-closed: error is re-raised or translated after cleanup
-            self.conn.rollback()   # Annulation en cas d'erreur
-            raise                  # Re-lever pour que l'appelant gère
+            self.conn.rollback()  # Annulation en cas d'erreur
+            raise  # Re-lever pour que l'appelant gère
 
     # ──────────────────────────────────────────────────────────────────────────
     # COMMANDES DML (Data Manipulation Language)
@@ -432,9 +479,7 @@ class Database:
         batchs. Sans effet sur le contenu inséré.
         """
         with self.conn.cursor() as cur:
-            psycopg2.extras.execute_values(
-                cur, sql, params_seq, page_size=_EXECUTE_VALUES_PAGE_SIZE
-            )
+            psycopg2.extras.execute_values(cur, sql, params_seq, page_size=_EXECUTE_VALUES_PAGE_SIZE)
             return cur
 
     # ──────────────────────────────────────────────────────────────────────────
@@ -506,6 +551,7 @@ class Database:
 # PATCH v6 : POOL DE CONNEXIONS THREAD-SAFE
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 class DatabasePool:
     """Pool de connexions PostgreSQL thread-safe pour usage concurrent.
 
@@ -549,12 +595,8 @@ class DatabasePool:
     def __init__(self, dsn: Optional[str] = None, minconn: int = 1, maxconn: int = 10):
         _require_psycopg2()
         resolved_dsn = dsn or build_dsn_from_env()
-        self._pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn, maxconn, resolved_dsn
-        )
-        logger.info(
-            "DatabasePool initialisé : minconn=%d maxconn=%d", minconn, maxconn
-        )
+        self._pool = psycopg2.pool.ThreadedConnectionPool(minconn, maxconn, resolved_dsn)
+        logger.info("DatabasePool initialisé : minconn=%d maxconn=%d", minconn, maxconn)
 
     @contextlib.contextmanager
     def acquire(self) -> Generator[Database, None, None]:
@@ -578,14 +620,14 @@ class DatabasePool:
             Si toutes les connexions du pool sont déjà empruntées (maxconn atteint).
         """
         conn = self._pool.getconn()
-        db   = Database(conn=conn)
+        db = Database(conn=conn)
         try:
             yield db
         finally:
             # Restitution inconditionnelle (même en cas d'exception dans le with)
             # NE PAS appeler conn.close() — putconn() remet la connexion en pool
             try:
-                conn.rollback()   # Annuler toute transaction pendante avant restitution
+                conn.rollback()  # Annuler toute transaction pendante avant restitution
             except Exception:  # best-effort: cleanup or optional UI action may fail safely
                 pass
             self._pool.putconn(conn)
@@ -643,4 +685,3 @@ def safe_read(db: Any, sql: str, params: tuple[Any, ...] = (), default: Any = No
             exc,
         )
         return default
-

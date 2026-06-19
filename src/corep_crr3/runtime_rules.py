@@ -5,6 +5,7 @@ switches and scalar parameters that must be auditable by regulatory version.
 Missing *rows* may use an explicit caller-provided default; database/schema
 errors are never hidden.
 """
+
 from __future__ import annotations
 
 from typing import Any, Mapping, TypeVar, cast

@@ -1,0 +1,658 @@
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	﻿2026-06-19T21:41:17.1202684Z ##[group]Run export PGPASSWORD=corep_password
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1203566Z ^[[36;1mexport PGPASSWORD=corep_password^[[0m
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1204254Z ^[[36;1mdocker compose build --pull app^[[0m
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1204948Z ^[[36;1mIMAGE_ID="$(docker compose images -q app)"^[[0m
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1205640Z ^[[36;1mtest -n "$IMAGE_ID"^[[0m
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1206554Z ^[[36;1mtest "$(docker image inspect --format '{{.Config.User}}' "$IMAGE_ID")" = "10001:10001"^[[0m
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1347685Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1348539Z env:
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1349328Z   SOURCE_DATE_EPOCH: 1781481600
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1349918Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.1350487Z ##[endgroup]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:17.8726084Z #1 [internal] load local bake definitions
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.0206495Z #1 reading from stdin 455B done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.0209705Z #1 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2334380Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2335893Z #2 [internal] load build definition from Dockerfile
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2337396Z #2 transferring dockerfile: 1.67kB 0.0s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2338373Z #2 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2339002Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2339560Z #3 [auth] docker/dockerfile:pull token for registry-1.docker.io
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2340699Z #3 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2341099Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.2341846Z #4 resolve image config for docker-image://docker.io/docker/dockerfile:1
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.3801146Z #4 DONE 0.3s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4841968Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4845446Z #5 docker-image://docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4847564Z #5 resolve docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89 done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4849669Z #5 extracting sha256:50ba52cd6a2c01eaf1a9efbedc7c75b5da5e3965c1586001c722980487a73fd7
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4851799Z #5 sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89 9.08kB / 9.08kB done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4853773Z #5 sha256:e82bbc85c3cb06cf2a5a27b058208b43984448acbcd6a832cd1491933d4376dd 1.13kB / 1.13kB done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4855909Z #5 sha256:1a998cca4d41cfecafb1989342c5e7378bc992589af7d47510c4b854bebfc7d7 1.33kB / 1.33kB done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.4857908Z #5 sha256:50ba52cd6a2c01eaf1a9efbedc7c75b5da5e3965c1586001c722980487a73fd7 14.36MB / 14.36MB 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.6419911Z #5 extracting sha256:50ba52cd6a2c01eaf1a9efbedc7c75b5da5e3965c1586001c722980487a73fd7 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.6421143Z #5 DONE 0.2s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.6421686Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.6422533Z #6 [internal] load metadata for docker.io/library/python:3.11-slim-bookworm@sha256:e2d3af735aff6eeee600b1933bedd99da6645fedf572cc12ef4cc1331f2ceebe
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8035036Z #6 ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8035253Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8035462Z #7 [auth] library/python:pull token for registry-1.docker.io
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8035861Z #7 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8902589Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8915183Z #6 [internal] load metadata for docker.io/library/python:3.11-slim-bookworm@sha256:e2d3af735aff6eeee600b1933bedd99da6645fedf572cc12ef4cc1331f2ceebe
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:18.8918247Z #6 DONE 0.2s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.0477231Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.0478033Z #8 [internal] load .dockerignore
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.0479046Z #8 transferring context: 224B done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.0479647Z #8 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5675546Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5676367Z #9 [internal] load build context
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5676946Z #9 transferring context: 1.03MB 0.0s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5677369Z #9 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5677567Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5678303Z #10 [builder 1/4] FROM docker.io/library/python:3.11-slim-bookworm@sha256:e2d3af735aff6eeee600b1933bedd99da6645fedf572cc12ef4cc1331f2ceebe
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5679950Z #10 resolve docker.io/library/python:3.11-slim-bookworm@sha256:e2d3af735aff6eeee600b1933bedd99da6645fedf572cc12ef4cc1331f2ceebe done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5681274Z #10 sha256:7237fb5647075d5b67784103960a41d781e645fede8922045846bcab31742125 5.50kB / 5.50kB done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5682850Z #10 sha256:b9136609bef0128191aa157637b98dd7b98e52154ca60c18258d65957a01c6d0 27.26MB / 28.24MB 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5683954Z #10 sha256:3b15a9af3ce9dca0ec432e6229e7aae95609e606f1ef9f95b4c19b23f6ad166a 3.52MB / 3.52MB 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5685061Z #10 sha256:e41f0d1d4d40434120fb03de33a21e996231fee745c678ae03ba5ba90ebe9286 14.68MB / 15.93MB 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5686123Z #10 sha256:343de842e5ff6986cc8cc5d1358e3f3ee74702c6c89fd1462d42a9d9227844db 249B / 249B 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5687200Z #10 sha256:e2d3af735aff6eeee600b1933bedd99da6645fedf572cc12ef4cc1331f2ceebe 9.13kB / 9.13kB done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.5688279Z #10 sha256:4740c55e5718c9181cd9cbfa1e13a0c045185ddcf748d6e7a49b3442faec1a53 1.75kB / 1.75kB done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.7077061Z #10 sha256:b9136609bef0128191aa157637b98dd7b98e52154ca60c18258d65957a01c6d0 28.24MB / 28.24MB 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.7078614Z #10 sha256:e41f0d1d4d40434120fb03de33a21e996231fee745c678ae03ba5ba90ebe9286 15.93MB / 15.93MB 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:19.7080511Z #10 extracting sha256:b9136609bef0128191aa157637b98dd7b98e52154ca60c18258d65957a01c6d0 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:20.6233849Z #10 extracting sha256:b9136609bef0128191aa157637b98dd7b98e52154ca60c18258d65957a01c6d0 1.0s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:20.7656473Z #10 extracting sha256:3b15a9af3ce9dca0ec432e6229e7aae95609e606f1ef9f95b4c19b23f6ad166a 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:20.9574884Z #10 extracting sha256:3b15a9af3ce9dca0ec432e6229e7aae95609e606f1ef9f95b4c19b23f6ad166a 0.1s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:20.9576118Z #10 extracting sha256:e41f0d1d4d40434120fb03de33a21e996231fee745c678ae03ba5ba90ebe9286 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.6222126Z #10 extracting sha256:e41f0d1d4d40434120fb03de33a21e996231fee745c678ae03ba5ba90ebe9286 0.7s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.6223245Z #10 extracting sha256:343de842e5ff6986cc8cc5d1358e3f3ee74702c6c89fd1462d42a9d9227844db
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8444031Z #10 extracting sha256:343de842e5ff6986cc8cc5d1358e3f3ee74702c6c89fd1462d42a9d9227844db done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8445164Z #10 DONE 2.2s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8445317Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8445878Z #11 [builder 2/4] WORKDIR /build
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8446170Z #11 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8446293Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8446509Z #12 [builder 3/4] COPY . /build
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8446788Z #12 DONE 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8446892Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8447750Z #13 [runtime 2/8] RUN apt-get update  && apt-get install -y --no-install-recommends libpq5  && rm -rf /var/lib/apt/lists/*  && groupadd --gid 10001 corep  && useradd --uid 10001 --gid corep --create-home --shell /usr/sbin/nologin corep
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.8459317Z #13 0.203 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.9890655Z #13 0.218 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.9900008Z #13 0.219 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.9901031Z #13 0.282 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:21.9901986Z #13 0.347 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:22.2035245Z #13 0.411 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [312 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:22.8470053Z #13 1.204 Fetched 9363 kB in 1s (9276 kB/s)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:23.3336647Z #13 1.204 Reading package lists...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:23.8105549Z #13 1.710 Reading package lists...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:23.9526932Z #13 2.179 Building dependency tree...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.0621941Z #13 2.311 Reading state information...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.0622860Z #13 2.420 The following additional packages will be installed:
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2333026Z #13 2.421   libldap-2.5-0 libsasl2-2 libsasl2-modules-db
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2333929Z #13 2.422 Recommended packages:
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2334741Z #13 2.422   libldap-common libsasl2-modules
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2335551Z #13 2.463 The following NEW packages will be installed:
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2336725Z #13 2.464   libldap-2.5-0 libpq5 libsasl2-2 libsasl2-modules-db
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2337578Z #13 2.493 0 upgraded, 4 newly installed, 0 to remove and 0 not upgraded.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2338334Z #13 2.493 Need to get 460 kB of archives.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2339429Z #13 2.493 After this operation, 1703 kB of additional disk space will be used.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2340658Z #13 2.493 Get:1 http://deb.debian.org/debian bookworm/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg-10 [20.3 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2341965Z #13 2.495 Get:2 http://deb.debian.org/debian bookworm/main amd64 libsasl2-2 amd64 2.1.28+dfsg-10 [59.7 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2343198Z #13 2.497 Get:3 http://deb.debian.org/debian bookworm/main amd64 libldap-2.5-0 amd64 2.5.13+dfsg-5 [183 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2344594Z #13 2.498 Get:4 http://deb.debian.org/debian-security bookworm-security/main amd64 libpq5 amd64 15.18-0+deb12u1 [197 kB]
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.2345998Z #13 2.592 debconf: delaying package configuration, since apt-utils is not installed
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3611924Z #13 2.613 Fetched 460 kB in 0s (15.4 MB/s)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3612730Z #13 2.626 Selecting previously unselected package libsasl2-modules-db:amd64.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3613460Z #13 2.626 (Reading database ... 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3613924Z (Reading database ... 5%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3614612Z (Reading database ... 10%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3614938Z (Reading database ... 15%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3615250Z (Reading database ... 20%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3615546Z (Reading database ... 25%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3615845Z (Reading database ... 30%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3616178Z (Reading database ... 35%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3616531Z (Reading database ... 40%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3616891Z (Reading database ... 45%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3617237Z (Reading database ... 50%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3617572Z (Reading database ... 55%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3618292Z (Reading database ... 60%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3618611Z (Reading database ... 65%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3619179Z (Reading database ... 70%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3619530Z (Reading database ... 75%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3619870Z (Reading database ... 80%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3620201Z (Reading database ... 85%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3620551Z (Reading database ... 90%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3620870Z (Reading database ... 95%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3621204Z (Reading database ... 100%
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3621722Z (Reading database ... 6695 files and directories currently installed.)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3622515Z #13 2.633 Preparing to unpack .../libsasl2-modules-db_2.1.28+dfsg-10_amd64.deb ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3623271Z #13 2.634 Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3623971Z #13 2.655 Selecting previously unselected package libsasl2-2:amd64.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3624677Z #13 2.656 Preparing to unpack .../libsasl2-2_2.1.28+dfsg-10_amd64.deb ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3625340Z #13 2.658 Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3625990Z #13 2.685 Selecting previously unselected package libldap-2.5-0:amd64.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3626740Z #13 2.687 Preparing to unpack .../libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3627426Z #13 2.688 Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.3628047Z #13 2.718 Selecting previously unselected package libpq5:amd64.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4801337Z #13 2.720 Preparing to unpack .../libpq5_15.18-0+deb12u1_amd64.deb ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4803422Z #13 2.723 Unpacking libpq5:amd64 (15.18-0+deb12u1) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4804204Z #13 2.755 Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4804940Z #13 2.757 Setting up libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4805681Z #13 2.760 Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4806425Z #13 2.762 Setting up libpq5:amd64 (15.18-0+deb12u1) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4807199Z #13 2.765 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4807862Z #13 DONE 2.8s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4808039Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4811136Z #14 [builder 4/4] RUN python -m pip install --no-cache-dir -c constraints-py311.txt build wheel setuptools  && PYTHONPATH=src python -m corep_crr3.release_integrity       --root /build --manifest RELEASE_MANIFEST.json --version "$(PYTHONPATH=src python -c 'from corep_crr3 import __version__; print(__version__)')"  && python -m build --wheel --no-isolation  && python tools/verify_public_wheel.py dist/*.whl
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4814137Z #14 1.498 Collecting build
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4814779Z #14 1.536   Downloading build-1.5.0-py3-none-any.whl.metadata (5.7 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4815515Z #14 1.564 Collecting wheel
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4816028Z #14 1.568   Downloading wheel-0.46.3-py3-none-any.whl.metadata (2.4 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4816763Z #14 1.719 Collecting setuptools
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4817502Z #14 1.723   Downloading setuptools-82.0.1-py3-none-any.whl.metadata (6.5 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4818333Z #14 1.752 Collecting packaging>=24.0 (from build)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4819450Z #14 1.755   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4820269Z #14 1.767 Collecting pyproject_hooks (from build)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4821094Z #14 1.770   Downloading pyproject_hooks-1.2.0-py3-none-any.whl.metadata (1.3 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4821982Z #14 1.805 Downloading build-1.5.0-py3-none-any.whl (26 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4822741Z #14 1.810 Downloading wheel-0.46.3-py3-none-any.whl (30 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4823523Z #14 1.814 Downloading setuptools-82.0.1-py3-none-any.whl (1.0 MB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4825150Z #14 1.829    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.0/1.0 MB 75.9 MB/s eta 0:00:00
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4826028Z #14 1.834 Downloading packaging-26.2-py3-none-any.whl (100 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4827012Z #14 1.836    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.2/100.2 kB 332.1 MB/s eta 0:00:00
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4828327Z #14 1.841 Downloading pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4829421Z #14 1.944 Installing collected packages: setuptools, pyproject_hooks, packaging, wheel, build
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4830363Z #14 1.944   Attempting uninstall: setuptools
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4830905Z #14 1.946     Found existing installation: setuptools 79.0.1
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4831459Z #14 1.978     Uninstalling setuptools-79.0.1:
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4832000Z #14 1.996       Successfully uninstalled setuptools-79.0.1
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4832685Z #14 2.693   Attempting uninstall: wheel
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4833218Z #14 2.695     Found existing installation: wheel 0.45.1
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4833859Z #14 2.700     Uninstalling wheel-0.45.1:
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.4834320Z #14 2.704       Successfully uninstalled wheel-0.45.1
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.5851702Z #14 2.773 Successfully installed build-1.5.0 packaging-26.2 pyproject_hooks-1.2.0 setuptools-82.0.1 wheel-0.46.3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.5853656Z #14 2.774 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.5855127Z #14 2.867 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.5855418Z #14 2.867 [notice] A new release of pip is available: 24.0 -> 26.1.2
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.5855831Z #14 2.867 [notice] To update, run: pip install --upgrade pip
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:24.9155303Z #14 3.197 OK: COMMUNITY 6.2.0, 182 artefacts vérifiés
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.1721093Z #14 3.454 * Getting build dependencies for wheel...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.6371107Z #14 3.919 running egg_info
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7775059Z #14 3.920 creating src/corep_crr3_community.egg-info
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7775922Z #14 3.922 writing src/corep_crr3_community.egg-info/PKG-INFO
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7776639Z #14 3.923 writing dependency_links to src/corep_crr3_community.egg-info/dependency_links.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7777293Z #14 3.923 writing entry points to src/corep_crr3_community.egg-info/entry_points.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7777848Z #14 3.923 writing requirements to src/corep_crr3_community.egg-info/requires.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7778684Z #14 3.924 writing top-level names to src/corep_crr3_community.egg-info/top_level.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7779465Z #14 3.924 writing manifest file 'src/corep_crr3_community.egg-info/SOURCES.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7779951Z #14 3.929 reading manifest file 'src/corep_crr3_community.egg-info/SOURCES.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7780350Z #14 3.929 reading manifest template 'MANIFEST.in'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7780660Z #14 3.932 adding license file 'LICENSE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7780966Z #14 3.932 adding license file 'LICENSE-COMMUNITY.md'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7781274Z #14 3.932 adding license file 'NOTICE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7781645Z #14 3.933 writing manifest file 'src/corep_crr3_community.egg-info/SOURCES.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:25.7782038Z #14 4.059 * Building wheel...
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.2371942Z #14 4.519 running bdist_wheel
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3516510Z #14 4.524 running build
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3517125Z #14 4.524 running build_py
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3517589Z #14 4.524 creating build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3518316Z #14 4.525 copying src/corep_crr3/engine_contracts.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3519346Z #14 4.525 copying src/corep_crr3/supporting_factors.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3520113Z #14 4.525 copying src/corep_crr3/protection_strategy.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3520829Z #14 4.526 copying src/corep_crr3/operational_readiness.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3521617Z #14 4.526 copying src/corep_crr3/public_registry.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3522299Z #14 4.526 copying src/corep_crr3/__init__.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3522980Z #14 4.526 copying src/corep_crr3/runtime_rules.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3523692Z #14 4.526 copying src/corep_crr3/release_integrity.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3524860Z #14 4.527 copying src/corep_crr3/utils.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3525550Z #14 4.527 copying src/corep_crr3/saccr_engine.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3526300Z #14 4.527 copying src/corep_crr3/community_bootstrap.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3526989Z #14 4.528 copying src/corep_crr3/community_gui.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3527675Z #14 4.528 copying src/corep_crr3/decision_engine.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3528338Z #14 4.528 copying src/corep_crr3/db.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3529153Z #14 4.529 copying src/corep_crr3/standard_engine.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3529811Z #14 4.529 copying src/corep_crr3/types.py -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3530344Z #14 4.530 running egg_info
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3530901Z #14 4.531 writing src/corep_crr3_community.egg-info/PKG-INFO
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3531691Z #14 4.532 writing dependency_links to src/corep_crr3_community.egg-info/dependency_links.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3532478Z #14 4.532 writing entry points to src/corep_crr3_community.egg-info/entry_points.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3533232Z #14 4.532 writing requirements to src/corep_crr3_community.egg-info/requires.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3534031Z #14 4.533 writing top-level names to src/corep_crr3_community.egg-info/top_level.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3534770Z #14 4.537 reading manifest file 'src/corep_crr3_community.egg-info/SOURCES.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3535383Z #14 4.538 reading manifest template 'MANIFEST.in'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3535908Z #14 4.540 adding license file 'LICENSE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3536458Z #14 4.540 adding license file 'LICENSE-COMMUNITY.md'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3536986Z #14 4.540 adding license file 'NOTICE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3537645Z #14 4.542 writing manifest file 'src/corep_crr3_community.egg-info/SOURCES.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3538325Z #14 4.544 copying src/corep_crr3/py.typed -> build/lib/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3539548Z #14 4.544 creating build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3540013Z #14 4.544 copying src/corep_crr3/sql/00_reset_database_dev_ONLY.sql -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3540691Z #14 4.545 creating build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3541222Z #14 4.545 copying src/corep_crr3/sql/01_schema/01_schema_common_community.sql -> build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3541941Z #14 4.545 copying src/corep_crr3/sql/01_schema/03_schema_bcnf_integrity_patch.sql -> build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3542701Z #14 4.546 copying src/corep_crr3/sql/01_schema/02_schema_domain_normalization_community.sql -> build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3543288Z #14 4.546 creating build/lib/corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3543865Z #14 4.546 copying src/corep_crr3/sql/01_schema/engines/schema_saccr.sql -> build/lib/corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3544659Z #14 4.546 copying src/corep_crr3/sql/01_schema/engines/schema_credit_standard.sql -> build/lib/corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3545230Z #14 4.547 creating build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3545760Z #14 4.547 copying src/corep_crr3/sql/03_mapping/99_mapping_conditions_bcnf.sql -> build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3546496Z #14 4.547 copying src/corep_crr3/sql/03_mapping/01_mapping_credit_standard_community.sql -> build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3547207Z #14 4.547 copying src/corep_crr3/sql/03_mapping/02_mapping_saccr.sql -> build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3547700Z #14 4.548 creating build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3548191Z #14 4.548 copying src/corep_crr3/sql/02_seeds/01_seed_credit_standard.sql -> build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3549096Z #14 4.548 copying src/corep_crr3/sql/02_seeds/02_seed_saccr.sql -> build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3550203Z #14 4.549 copying src/corep_crr3/sql/02_seeds/00_seed_common_reference_community.sql -> build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3551264Z #14 4.549 creating build/lib/corep_crr3/sql/04_post_seed
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3552186Z #14 4.549 copying src/corep_crr3/sql/04_post_seed/99_post_seed_constraints_community.sql -> build/lib/corep_crr3/sql/04_post_seed
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3553121Z #14 4.549 copying src/corep_crr3/sql/ACTIVE_SQL_MANIFEST.txt -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3553686Z #14 4.550 copying src/corep_crr3/sql/COMMUNITY_SQL_CONTRACT.json -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3554227Z #14 4.550 copying src/corep_crr3/sql/README_SQL_COMMUNITY.md -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3554780Z #14 4.550 copying src/corep_crr3/sql/00_reset_database_dev_ONLY.sql -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3555310Z #14 4.551 copying src/corep_crr3/sql/ACTIVE_SQL_MANIFEST.txt -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3555833Z #14 4.551 copying src/corep_crr3/sql/COMMUNITY_SQL_CONTRACT.json -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3556371Z #14 4.551 copying src/corep_crr3/sql/README_SQL_COMMUNITY.md -> build/lib/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3556988Z #14 4.552 copying src/corep_crr3/sql/01_schema/01_schema_common_community.sql -> build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3557732Z #14 4.552 copying src/corep_crr3/sql/01_schema/02_schema_domain_normalization_community.sql -> build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3558477Z #14 4.552 copying src/corep_crr3/sql/01_schema/03_schema_bcnf_integrity_patch.sql -> build/lib/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3559343Z #14 4.553 copying src/corep_crr3/sql/03_mapping/01_mapping_credit_standard_community.sql -> build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3560080Z #14 4.553 copying src/corep_crr3/sql/03_mapping/02_mapping_saccr.sql -> build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3560759Z #14 4.553 copying src/corep_crr3/sql/03_mapping/99_mapping_conditions_bcnf.sql -> build/lib/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3561484Z #14 4.554 copying src/corep_crr3/sql/02_seeds/00_seed_common_reference_community.sql -> build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3562349Z #14 4.554 copying src/corep_crr3/sql/02_seeds/01_seed_credit_standard.sql -> build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3562972Z #14 4.554 copying src/corep_crr3/sql/02_seeds/02_seed_saccr.sql -> build/lib/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3563649Z #14 4.555 copying src/corep_crr3/sql/04_post_seed/99_post_seed_constraints_community.sql -> build/lib/corep_crr3/sql/04_post_seed
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3564438Z #14 4.555 copying src/corep_crr3/sql/01_schema/engines/schema_credit_standard.sql -> build/lib/corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3565202Z #14 4.556 copying src/corep_crr3/sql/01_schema/engines/schema_saccr.sql -> build/lib/corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3565768Z #14 4.556 warning: build_py: byte-compiling is disabled, skipping.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3566098Z #14 4.556 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3566344Z #14 4.559 installing to build/bdist.linux-x86_64/wheel
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3566646Z #14 4.559 running install
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3566884Z #14 4.564 running install_lib
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3567155Z #14 4.565 creating build/bdist.linux-x86_64/wheel
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3567512Z #14 4.565 creating build/bdist.linux-x86_64/wheel/corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3567910Z #14 4.566 creating build/bdist.linux-x86_64/wheel/corep_crr3/resources
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3568360Z #14 4.566 creating build/bdist.linux-x86_64/wheel/corep_crr3/resources/legal
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3569322Z #14 4.566 copying build/lib/corep_crr3/resources/legal/LICENSE-COMMUNITY.md -> build/bdist.linux-x86_64/wheel/./corep_crr3/resources/legal
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3570179Z #14 4.566 copying build/lib/corep_crr3/resources/legal/LICENSE -> build/bdist.linux-x86_64/wheel/./corep_crr3/resources/legal
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3570951Z #14 4.567 copying build/lib/corep_crr3/resources/legal/NOTICE -> build/bdist.linux-x86_64/wheel/./corep_crr3/resources/legal
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3571710Z #14 4.567 creating build/bdist.linux-x86_64/wheel/corep_crr3/resources/release
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3572418Z #14 4.567 copying build/lib/corep_crr3/resources/release/RELEASE_MANIFEST.json -> build/bdist.linux-x86_64/wheel/./corep_crr3/resources/release
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3573198Z #14 4.567 copying build/lib/corep_crr3/engine_contracts.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3573727Z #14 4.568 creating build/bdist.linux-x86_64/wheel/corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3574335Z #14 4.568 copying build/lib/corep_crr3/sql/00_reset_database_dev_ONLY.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3575064Z #14 4.568 copying build/lib/corep_crr3/sql/README_SQL_COMMUNITY.md -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3575639Z #14 4.569 creating build/bdist.linux-x86_64/wheel/corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3576306Z #14 4.569 copying build/lib/corep_crr3/sql/01_schema/01_schema_common_community.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3577185Z #14 4.569 copying build/lib/corep_crr3/sql/01_schema/03_schema_bcnf_integrity_patch.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3577890Z #14 4.569 creating build/bdist.linux-x86_64/wheel/corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3578585Z #14 4.570 copying build/lib/corep_crr3/sql/01_schema/engines/schema_saccr.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3579762Z #14 4.570 copying build/lib/corep_crr3/sql/01_schema/engines/schema_credit_standard.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/01_schema/engines
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3580726Z #14 4.570 copying build/lib/corep_crr3/sql/01_schema/02_schema_domain_normalization_community.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/01_schema
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3581439Z #14 4.570 creating build/bdist.linux-x86_64/wheel/corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3582119Z #14 4.570 copying build/lib/corep_crr3/sql/03_mapping/99_mapping_conditions_bcnf.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3583183Z #14 4.571 copying build/lib/corep_crr3/sql/03_mapping/01_mapping_credit_standard_community.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3584060Z #14 4.571 copying build/lib/corep_crr3/sql/03_mapping/02_mapping_saccr.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/03_mapping
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3584839Z #14 4.571 copying build/lib/corep_crr3/sql/COMMUNITY_SQL_CONTRACT.json -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3585433Z #14 4.572 creating build/bdist.linux-x86_64/wheel/corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3586081Z #14 4.572 copying build/lib/corep_crr3/sql/02_seeds/01_seed_credit_standard.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3586891Z #14 4.572 copying build/lib/corep_crr3/sql/02_seeds/02_seed_saccr.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3587724Z #14 4.572 copying build/lib/corep_crr3/sql/02_seeds/00_seed_common_reference_community.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/02_seeds
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3588543Z #14 4.573 copying build/lib/corep_crr3/sql/ACTIVE_SQL_MANIFEST.txt -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3589241Z #14 4.573 creating build/bdist.linux-x86_64/wheel/corep_crr3/sql/04_post_seed
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3589972Z #14 4.573 copying build/lib/corep_crr3/sql/04_post_seed/99_post_seed_constraints_community.sql -> build/bdist.linux-x86_64/wheel/./corep_crr3/sql/04_post_seed
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3590779Z #14 4.573 copying build/lib/corep_crr3/supporting_factors.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3591436Z #14 4.574 copying build/lib/corep_crr3/protection_strategy.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3592260Z #14 4.574 copying build/lib/corep_crr3/operational_readiness.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3592918Z #14 4.574 copying build/lib/corep_crr3/public_registry.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3593527Z #14 4.574 copying build/lib/corep_crr3/py.typed -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3594099Z #14 4.575 copying build/lib/corep_crr3/__init__.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3594696Z #14 4.575 copying build/lib/corep_crr3/runtime_rules.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3595340Z #14 4.575 copying build/lib/corep_crr3/release_integrity.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3595939Z #14 4.575 copying build/lib/corep_crr3/utils.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3596514Z #14 4.576 copying build/lib/corep_crr3/saccr_engine.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3597153Z #14 4.576 copying build/lib/corep_crr3/community_bootstrap.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3597797Z #14 4.576 copying build/lib/corep_crr3/community_gui.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3598426Z #14 4.577 copying build/lib/corep_crr3/decision_engine.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3599226Z #14 4.577 copying build/lib/corep_crr3/db.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3599817Z #14 4.577 copying build/lib/corep_crr3/standard_engine.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3600412Z #14 4.577 copying build/lib/corep_crr3/types.py -> build/bdist.linux-x86_64/wheel/./corep_crr3
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3600912Z #14 4.578 warning: install_lib: byte-compiling is disabled, skipping.
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3601249Z #14 4.578 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3601451Z #14 4.578 running install_egg_info
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3601988Z #14 4.579 Copying src/corep_crr3_community.egg-info to build/bdist.linux-x86_64/wheel/./corep_crr3_community-6.2.0-py3.11.egg-info
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3602682Z #14 4.580 running install_scripts
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3603099Z #14 4.582 creating build/bdist.linux-x86_64/wheel/corep_crr3_community-6.2.0.dist-info/WHEEL
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3603869Z #14 4.582 creating '/build/dist/.tmp-xeu_sq2b/corep_crr3_community-6.2.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3604465Z #14 4.583 adding 'corep_crr3/__init__.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3604780Z #14 4.583 adding 'corep_crr3/community_bootstrap.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3605111Z #14 4.584 adding 'corep_crr3/community_gui.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3605412Z #14 4.585 adding 'corep_crr3/db.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3605697Z #14 4.586 adding 'corep_crr3/decision_engine.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3606010Z #14 4.587 adding 'corep_crr3/engine_contracts.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3606345Z #14 4.587 adding 'corep_crr3/operational_readiness.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3606683Z #14 4.588 adding 'corep_crr3/protection_strategy.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3607002Z #14 4.588 adding 'corep_crr3/public_registry.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3607306Z #14 4.588 adding 'corep_crr3/py.typed'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3607601Z #14 4.589 adding 'corep_crr3/release_integrity.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3608018Z #14 4.589 adding 'corep_crr3/runtime_rules.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3608322Z #14 4.591 adding 'corep_crr3/saccr_engine.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3608624Z #14 4.592 adding 'corep_crr3/standard_engine.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3609163Z #14 4.593 adding 'corep_crr3/supporting_factors.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3609475Z #14 4.593 adding 'corep_crr3/types.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3609737Z #14 4.593 adding 'corep_crr3/utils.py'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3610037Z #14 4.594 adding 'corep_crr3/resources/legal/LICENSE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3610414Z #14 4.594 adding 'corep_crr3/resources/legal/LICENSE-COMMUNITY.md'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3610790Z #14 4.595 adding 'corep_crr3/resources/legal/NOTICE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3611303Z #14 4.595 adding 'corep_crr3/resources/release/RELEASE_MANIFEST.json'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3611714Z #14 4.596 adding 'corep_crr3/sql/00_reset_database_dev_ONLY.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3612089Z #14 4.596 adding 'corep_crr3/sql/ACTIVE_SQL_MANIFEST.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3612450Z #14 4.596 adding 'corep_crr3/sql/COMMUNITY_SQL_CONTRACT.json'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3612803Z #14 4.597 adding 'corep_crr3/sql/README_SQL_COMMUNITY.md'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3613187Z #14 4.598 adding 'corep_crr3/sql/01_schema/01_schema_common_community.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3613673Z #14 4.598 adding 'corep_crr3/sql/01_schema/02_schema_domain_normalization_community.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3614168Z #14 4.599 adding 'corep_crr3/sql/01_schema/03_schema_bcnf_integrity_patch.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3614629Z #14 4.599 adding 'corep_crr3/sql/01_schema/engines/schema_credit_standard.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3615062Z #14 4.600 adding 'corep_crr3/sql/01_schema/engines/schema_saccr.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3615513Z #14 4.600 adding 'corep_crr3/sql/02_seeds/00_seed_common_reference_community.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3615967Z #14 4.601 adding 'corep_crr3/sql/02_seeds/01_seed_credit_standard.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3616355Z #14 4.602 adding 'corep_crr3/sql/02_seeds/02_seed_saccr.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3616784Z #14 4.602 adding 'corep_crr3/sql/03_mapping/01_mapping_credit_standard_community.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3617244Z #14 4.602 adding 'corep_crr3/sql/03_mapping/02_mapping_saccr.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3617685Z #14 4.603 adding 'corep_crr3/sql/03_mapping/99_mapping_conditions_bcnf.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3618161Z #14 4.603 adding 'corep_crr3/sql/04_post_seed/99_post_seed_constraints_community.sql'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3618632Z #14 4.604 adding 'corep_crr3_community-6.2.0.dist-info/licenses/LICENSE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3619415Z #14 4.604 adding 'corep_crr3_community-6.2.0.dist-info/licenses/LICENSE-COMMUNITY.md'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3619924Z #14 4.604 adding 'corep_crr3_community-6.2.0.dist-info/licenses/NOTICE'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3620347Z #14 4.605 adding 'corep_crr3_community-6.2.0.dist-info/METADATA'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3620731Z #14 4.605 adding 'corep_crr3_community-6.2.0.dist-info/WHEEL'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3621272Z #14 4.605 adding 'corep_crr3_community-6.2.0.dist-info/entry_points.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3621694Z #14 4.605 adding 'corep_crr3_community-6.2.0.dist-info/top_level.txt'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3622091Z #14 4.606 adding 'corep_crr3_community-6.2.0.dist-info/RECORD'
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3622440Z #14 4.606 removing build/bdist.linux-x86_64/wheel
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.3622830Z #14 4.634 Successfully built corep_crr3_community-6.2.0-py3-none-any.whl
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.5066206Z #14 4.789 OK: corep_crr3_community-6.2.0-py3-none-any.whl reste public SA/SA-CCR et embarque ses preuves de release
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.6791202Z #14 DONE 4.8s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.6791658Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.6791896Z #15 [runtime 3/8] COPY --from=builder /build/dist/*.whl /tmp/wheels/
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8579539Z #15 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8579824Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8580200Z #16 [runtime 4/8] COPY constraints-py311.txt /app/constraints-py311.txt
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8580620Z #16 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8580767Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8581093Z #17 [runtime 5/8] COPY requirements-runtime-py311-linux.lock /app/requirements-runtime-py311-linux.lock
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8581606Z #17 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8581724Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:26.8582383Z #18 [runtime 6/8] RUN python -m pip install --no-cache-dir --require-hashes -r /app/requirements-runtime-py311-linux.lock  && python -m pip install --no-cache-dir --no-deps /tmp/wheels/*.whl  && rm -rf /tmp/wheels
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.1653694Z #18 1.457 Collecting psycopg2-binary==2.9.11 (from -r /app/requirements-runtime-py311-linux.lock (line 6))
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.2938102Z #18 1.495   Downloading psycopg2_binary-2.9.11-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.2939320Z #18 1.544      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.2/4.2 MB 89.7 MB/s eta 0:00:00
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.2940128Z #18 1.586 Installing collected packages: psycopg2-binary
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.4587222Z #18 1.668 Successfully installed psycopg2-binary-2.9.11
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.4588315Z #18 1.669 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.4589776Z #18 1.751 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.4590205Z #18 1.751 [notice] A new release of pip is available: 24.0 -> 26.1.2
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:28.4590711Z #18 1.751 [notice] To update, run: pip install --upgrade pip
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.7823527Z #18 3.075 Processing /tmp/wheels/corep_crr3_community-6.2.0-py3-none-any.whl
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.9265227Z #18 3.080 Installing collected packages: corep-crr3-community
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.9265769Z #18 3.127 Successfully installed corep-crr3-community-6.2.0
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.9266764Z #18 3.128 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.9267701Z #18 3.219 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.9267990Z #18 3.219 [notice] A new release of pip is available: 24.0 -> 26.1.2
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:29.9268419Z #18 3.219 [notice] To update, run: pip install --upgrade pip
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1627979Z #18 DONE 3.3s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1628452Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1628625Z #19 [runtime 7/8] WORKDIR /app
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1631276Z #19 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1631471Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1631789Z #20 [runtime 8/8] RUN mkdir -p /app/output && chown -R corep:corep /app
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.1632358Z #20 DONE 0.1s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.3145922Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.3146542Z #21 exporting to image
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:30.3146985Z #21 exporting layers
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0151139Z #21 exporting layers 0.9s done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0446766Z #21 writing image sha256:f924aee1efb1f6a480e04e6e3f977853b5a025cb45b7a46e657e2076ee52a149 done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0447564Z #21 naming to docker.io/library/corep-engine-community-app done
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0448465Z #21 DONE 0.9s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0448671Z 
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0449036Z #22 resolving provenance for metadata file
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0449447Z #22 DONE 0.0s
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.0449767Z  app  Built
+Docker Community one-shot et PostgreSQL	Construire et contrôler l'image	2026-06-19T21:41:31.1324539Z ##[error]Process completed with exit code 1.
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	﻿2026-06-19T21:41:31.1393074Z ##[group]Run docker compose down --volumes --remove-orphans
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.1393545Z ^[[36;1mdocker compose down --volumes --remove-orphans^[[0m
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.1428010Z shell: /usr/bin/bash -e {0}
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.1428276Z env:
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.1428485Z   SOURCE_DATE_EPOCH: 1781481600
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.1428970Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.1429252Z ##[endgroup]
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.2089803Z error while interpolating services.db.environment.POSTGRES_PASSWORD: required variable PGPASSWORD is missing a value: PGPASSWORD must be set
+Docker Community one-shot et PostgreSQL	Nettoyer Docker Compose	2026-06-19T21:41:31.2111089Z ##[error]Process completed with exit code 1.
+postgres-e2e	E2E PostgreSQL détaillé	﻿2026-06-19T21:41:48.6385999Z ##[group]Run mkdir -p output
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6386344Z ^[[36;1mmkdir -p output^[[0m
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6386598Z ^[[36;1mset -o pipefail^[[0m
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6387058Z ^[[36;1mpython -m pytest -vv -s tests/test_postgresql_community_e2e.py 2>&1 | tee output/postgres_e2e.log^[[0m
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6423529Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6423900Z env:
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6424123Z   SOURCE_DATE_EPOCH: 1781481600
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6424415Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6425019Z   DATABASE_URL: ***localhost:5432/corep_crr3
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6425324Z   RUN_POSTGRES_E2E: 1
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6425565Z   RUN_POSTGRES_E2E_RESET: 1
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6425821Z   COREP_ALLOW_DESTRUCTIVE_RESET: 1
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6426169Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6426615Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6427039Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6427467Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6427853Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6428245Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:48.6428585Z ##[endgroup]
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.1271433Z ============================= test session starts ==============================
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.1272543Z platform linux -- Python 3.11.15, pytest-9.0.2, pluggy-1.6.0 -- /opt/hostedtoolcache/Python/3.11.15/x64/bin/python
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.1273349Z cachedir: .pytest_cache
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.1273928Z rootdir: /home/runner/work/Corep-engine-community/Corep-engine-community
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.1274593Z configfile: pyproject.toml
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.1274999Z plugins: cov-7.0.0
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.2566597Z collecting ... collected 1 item
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.2567041Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6648862Z tests/test_postgresql_community_e2e.py::test_community_bootstrap_then_sa_and_saccr_engines FAILED
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6649592Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6650084Z =================================== FAILURES ===================================
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6650580Z ______________ test_community_bootstrap_then_sa_and_saccr_engines ______________
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6650969Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6651211Z     def test_community_bootstrap_then_sa_and_saccr_engines():
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6651742Z         import psycopg2
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6652096Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6652497Z         from corep_crr3.db import Database, build_dsn_from_env
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6653095Z         from corep_crr3.saccr_engine import run_saccr_engine
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6653714Z         from corep_crr3.standard_engine import run_standard_engine
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6654231Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6654686Z         if isinstance(getattr(psycopg2, "connect", None), Mock):
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6655660Z             pytest.fail("psycopg2 réel requis pour RUN_POSTGRES_E2E=1")
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6656246Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6656553Z         env = os.environ.copy()
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6657180Z         env["PYTHONPATH"] = str(PROJECT_ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6658142Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6658645Z         bootstrap_command = [sys.executable, "-m", "corep_crr3.community_bootstrap"]
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6659335Z         if os.getenv("RUN_POSTGRES_E2E_RESET") == "1":
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6660161Z             bootstrap_command.extend(["--reset", "--confirm-reset", "RESET"])
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6660784Z         bootstrap = _run(bootstrap_command, env)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6661320Z         assert bootstrap.returncode == 0, bootstrap.stdout
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6661796Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6662108Z         db = Database(build_dsn_from_env())
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6662555Z         batch_id = "COMMUNITY_E2E_428"
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6662974Z         reporting_date = "2026-06-30"
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6663359Z         try:
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6663711Z             with db.transaction():
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6664609Z                 db.execute("DELETE FROM meta.batch_run_control WHERE batch_id = %s", (batch_id,))
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6665269Z                 db.execute(
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6665632Z                     """
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6666023Z                     INSERT INTO meta.batch_run_control (
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6666441Z                         batch_id, regulatory_version_id, reporting_date, status,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6666859Z                         loaded_rows, rejected_rows, calculated_rows, notes
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6667276Z                     ) VALUES (%s, 'CRR3_V9', %s, 'RUNNING', 2, 0, 0, 'Community E2E')
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6667634Z                     """,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6667892Z                     (batch_id, reporting_date),
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6668173Z                 )
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6668382Z                 db.execute(
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6668619Z                     """
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6668863Z                     INSERT INTO stg.stg_exposures (
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6669233Z                         batch_id, exposure_id, counterparty_id, asset_class_id,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6669837Z                         product_type_id, calculation_approach, exposure_amount,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6670355Z                         provision_amount, guarantee_amount, currency,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6670763Z                         maturity_months, credit_quality_step, delinquent_flag,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6671152Z                         supporting_sme_flag, supporting_infra_flag
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6671461Z                     ) VALUES (
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6671758Z                         %s, 'EXP_COMMUNITY_1', 'CP_CORP_01', 'CORPORATE',
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6672133Z                         'TERM_LOAN', 'SA', 100000, 5000, 0, 'EUR',
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6672456Z                         36, 'UNRATED', FALSE, FALSE, FALSE
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6672746Z                     )
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6672961Z                     """,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6673194Z                     (batch_id,),
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6673441Z                 )
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6673648Z                 db.execute(
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6673876Z                     """
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6674138Z                     INSERT INTO stg.stg_saccr_trades (
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6674505Z                         batch_id, trade_id, netting_set_id, asset_class_id,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6674928Z                         mtm, addon, collateral, counterparty_id, asset_class,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6675329Z                         notional, delta, maturity_years, start_date_years,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6675697Z                         end_date_years, payment_currency
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6675993Z                     ) VALUES (
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6676302Z                         %s, 'TRD_COMMUNITY_1', 'NS_COMMUNITY_1', 'CORPORATE',
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6676646Z                         1000, 0, 0, 'CP_CORP_01', 'FX',
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6676939Z                         250000, 1, 1, 0, 1, 'EUR'
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6677215Z                     )
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6677457Z                     """,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6677744Z                     (batch_id,),
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6678156Z                 )
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6678358Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6678755Z >           sa_count = run_standard_engine(db, batch_id, "CRR3_V9", reporting_date, strict_fallback_mode=True)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6679273Z                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6679525Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6679824Z tests/test_postgresql_community_e2e.py:106: 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6680192Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6680611Z src/corep_crr3/standard_engine.py:1217: in run_standard_engine
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6681011Z     _persist_standard_batches(db, batch_id, buffers, stats)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6681427Z src/corep_crr3/standard_engine.py:1107: in _persist_standard_batches
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6681984Z     db.executemany(
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6682226Z src/corep_crr3/db.py:482: in executemany
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6682681Z     psycopg2.extras.execute_values(cur, sql, params_seq, page_size=_EXECUTE_VALUES_PAGE_SIZE)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6683176Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6683506Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6683646Z cur = <cursor object at 0x7f65175f4a90; closed: -1>
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6684501Z sql = b'\n                INSERT INTO core.core_standard_results (\n                    batch_id, exposure_id, counterparty_...before_supporting_factor,\n                    capital_requirement_8pct\n                ) VALUES %s\n                '
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6685494Z argslist = [('COMMUNITY_E2E_428', 'EXP_COMMUNITY_1', 'CP_CORP_01', 'CORPORATE', 'TERM_LOAN', 100000.0, ...)]
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6686036Z template = b'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6686411Z page_size = 1000, fetch = False
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6686585Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6686812Z     def execute_values(cur, sql, argslist, template=None, page_size=100, fetch=False):
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6687328Z         '''Execute a statement using :sql:`VALUES` with a sequence of parameters.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6687689Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6687928Z         :param cur: the cursor to use to execute the query.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6688226Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6688507Z         :param sql: the query to execute. It must contain a single ``%s``
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6688934Z             placeholder, which will be replaced by a `VALUES list`__.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6689339Z             Example: ``"INSERT INTO mytable (id, f1, f2) VALUES %s"``.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6689841Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6690266Z         :param argslist: sequence of sequences or dictionaries with the arguments
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6690733Z             to send to the query. The type and content must be consistent with
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6691089Z             *template*.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6691314Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6691594Z         :param template: the snippet to merge to every item in *argslist* to
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6691976Z             compose the query.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6692212Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6692508Z             - If the *argslist* items are sequences it should contain positional
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6692962Z               placeholders (e.g. ``"(%s, %s, %s)"``, or ``"(%s, %s, 42)``" if there
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6693333Z               are constants value...).
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6693584Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6693846Z             - If the *argslist* items are mappings it should contain named
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6694234Z               placeholders (e.g. ``"(%(id)s, %(f1)s, 42)"``).
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6694520Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6694811Z             If not specified, assume the arguments are sequence and use a simple
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6695254Z             positional template (i.e.  ``(%s, %s, ...)``), with the number of
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6695682Z             placeholders sniffed by the first element in *argslist*.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6695999Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6696286Z         :param page_size: maximum number of *argslist* items to include in every
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6696947Z             statement. If there are more items the function will execute more than
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6697333Z             one statement.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6697561Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6697863Z         :param fetch: if `!True` return the query results into a list (like in a
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6698330Z             `~cursor.fetchall()`).  Useful for queries with :sql:`RETURNING`
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6698674Z             clause.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6698876Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6699208Z         .. __: https://www.postgresql.org/docs/current/static/queries-values.html
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6699588Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6700121Z         After the execution of the function the `cursor.rowcount` property will
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6700645Z         **not** contain a total result.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6700903Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6701190Z         While :sql:`INSERT` is an obvious candidate for this function it is
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6701642Z         possible to use it with other statements, for example::
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6701966Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6702165Z             >>> cur.execute(
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6702479Z             ... "create table test (id int primary key, v1 int, v2 int)")
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6702802Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6703013Z             >>> execute_values(cur,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6703316Z             ... "INSERT INTO test (id, v1, v2) VALUES %s",
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6703631Z             ... [(1, 2, 3), (4, 5, 6), (7, 8, 9)])
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6703896Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6704086Z             >>> execute_values(cur,
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6704435Z             ... """UPDATE test SET v1 = data.v1 FROM (VALUES %s) AS data (id, v1)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6704803Z             ... WHERE test.id = data.id""",
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6705079Z             ... [(1, 20), (4, 50)])
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6705312Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6705549Z             >>> cur.execute("select * from test order by id")
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6705878Z             >>> cur.fetchall()
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6706134Z             [(1, 20, 3), (4, 50, 6), (7, 8, 9)])
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6706396Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6706610Z         '''
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6706827Z         from psycopg2.sql import Composable
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6707126Z         if isinstance(sql, Composable):
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6707407Z             sql = sql.as_string(cur)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6707662Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6707943Z         # we can't just use sql % vals because vals is bytes: if sql is bytes
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6708400Z         # there will be some decoding error because of stupid codec used, and Py3
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6708782Z         # doesn't implement % on bytes.
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6709056Z         if not isinstance(sql, bytes):
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6709394Z             sql = sql.encode(_ext.encodings[cur.connection.encoding])
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6709957Z         pre, post = _split_sql(sql)
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6710209Z     
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6710412Z         result = [] if fetch else None
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6710724Z         for page in _paginate(argslist, page_size=page_size):
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6711046Z             if template is None:
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6711362Z                 template = b'(' + b','.join([b'%s'] * len(page[0])) + b')'
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6711708Z             parts = pre[:]
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6711946Z             for args in page:
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6712227Z                 parts.append(cur.mogrify(template, args))
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6712536Z                 parts.append(b',')
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6712795Z             parts[-1:] = post
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6892939Z >           cur.execute(b''.join(parts))
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6893832Z E           psycopg2.errors.UndefinedColumn: column "ccf_applied" of relation "core_standard_results" does not exist
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6894602Z E           LINE 7:                     ccf_applied, ccf_bucket, rw_rule_source,...
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6894982Z E                                       ^
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6895404Z 
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6895751Z /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/psycopg2/extras.py:1299: UndefinedColumn
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6896321Z =========================== short test summary info ============================
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6897220Z FAILED tests/test_postgresql_community_e2e.py::test_community_bootstrap_then_sa_and_saccr_engines - psycopg2.errors.UndefinedColumn: column "ccf_applied" of relation "core_standard_results" does not exist
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6898075Z LINE 7:                     ccf_applied, ccf_bucket, rw_rule_source,...
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6898405Z                             ^
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.6898703Z ============================== 1 failed in 0.54s ===============================
+postgres-e2e	E2E PostgreSQL détaillé	2026-06-19T21:41:49.7191457Z ##[error]Process completed with exit code 1.
+postgres-e2e	Appliquer le verdict PostgreSQL	﻿2026-06-19T21:41:50.4347850Z ##[group]Run test "failure" = "success"
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4348218Z ^[[36;1mtest "failure" = "success"^[[0m
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4382263Z shell: /usr/bin/bash -e {0}
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4382539Z env:
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4382764Z   SOURCE_DATE_EPOCH: 1781481600
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4383043Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4383633Z   DATABASE_URL: ***localhost:5432/corep_crr3
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4383952Z   RUN_POSTGRES_E2E: 1
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4384208Z   RUN_POSTGRES_E2E_RESET: 1
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4384481Z   COREP_ALLOW_DESTRUCTIVE_RESET: 1
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4384829Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4385284Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4385722Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4386123Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4386536Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4386967Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4387311Z ##[endgroup]
+postgres-e2e	Appliquer le verdict PostgreSQL	2026-06-19T21:41:50.4446527Z ##[error]Process completed with exit code 1.

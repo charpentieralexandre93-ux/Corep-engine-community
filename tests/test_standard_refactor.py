@@ -48,8 +48,23 @@ def test_partition_protections_is_order_stable_and_counts_unknown() -> None:
 
 def test_sme_totals_are_aggregated_by_obligor() -> None:
     rows = [
-        {"counterparty_id": "A", "supporting_sme_flag": True, "exposure_amount": 100, "provision_amount": 10},
-        {"counterparty_id": "A", "supporting_sme_flag": "Y", "exposure_amount": 50, "provision_amount": 0},
-        {"counterparty_id": "B", "supporting_sme_flag": False, "exposure_amount": 999, "provision_amount": 0},
+        {
+            "counterparty_id": "A",
+            "supporting_sme_flag": True,
+            "exposure_amount": 100,
+            "provision_amount": 10,
+        },
+        {
+            "counterparty_id": "A",
+            "supporting_sme_flag": "Y",
+            "exposure_amount": 50,
+            "provision_amount": 0,
+        },
+        {
+            "counterparty_id": "B",
+            "supporting_sme_flag": False,
+            "exposure_amount": 999,
+            "provision_amount": 0,
+        },
     ]
     assert sa._sme_totals_by_obligor(rows) == {"A": 140.0}

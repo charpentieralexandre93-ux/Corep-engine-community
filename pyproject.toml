@@ -4,22 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "6.0.4"
+version = "6.2.1"
 description = "Corep Engine Community — cockpit graphique public SA et SA-CCR."
 readme = "README.md"
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.11,<3.14"
 authors = [{name = "Alexandre Charpentier"}]
 license = "Apache-2.0"
 license-files = ["LICENSE", "LICENSE-COMMUNITY.md", "NOTICE"]
 # Dépendances de base : suffisantes pour les fonctions de calcul PURES (SA, SA-CCR).
 # psycopg2 n'est PAS requis pour le calcul — uniquement pour l'exécution sur une
 # base PostgreSQL réelle (extra `postgres`).
-dependencies = [
-  "typing-extensions>=4.0; python_version < '3.11'",
-]
+dependencies = []
 
 [project.optional-dependencies]
-postgres = ["psycopg2-binary>=2.9.0"]
+postgres = ["psycopg2-binary>=2.9.0"]  # dev/test ; en prod préférer le paquet source psycopg2 (audit P2-2)
 dev = [
   "pytest>=7.0",
   "pytest-cov>=4.0",
@@ -56,26 +54,45 @@ pythonpath = ["src"]
 [tool.coverage.run]
 source = ["corep_crr3"]
 branch = true
-omit = ["*/tests/*", "*/community_gui.py"]
+omit = ["*/tests/*"]
 
 [tool.coverage.report]
 show_missing = true
 
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.11"
 ignore_missing_imports = true
 no_implicit_optional = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 strict_equality = true
 
+# v6.1.1 (audit P1-2) — noyau typé bloquant sur les moteurs de calcul partagés
+# (byte-identiques à l'édition Enterprise, signatures intégralement annotées).
+# Corps à confirmer par un run mypy CI (non rejouable hors ligne lors du patch).
+[[tool.mypy.overrides]]
+module = [
+    "corep_crr3.runtime_rules",
+    "corep_crr3.engine_contracts",
+    "corep_crr3.utils",
+    "corep_crr3.standard_engine",
+    "corep_crr3.saccr_engine",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+
 [tool.bandit]
 exclude_dirs = ["tests"]
 skips = ["B101"]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
+target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E9", "F63", "F7", "F82"]
+select = ["E", "F", "W", "I", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20

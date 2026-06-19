@@ -1,0 +1,43 @@
+{
+  "average_calls_per_second": 1635966,
+  "iterations": 50000,
+  "kernels": [
+    {
+      "calls_per_s": 791601,
+      "elapsed_s": 0.0632,
+      "iterations": 50000,
+      "kernel": "compute_recognized_fcp_value",
+      "ns_per_call": 1263.3
+    },
+    {
+      "calls_per_s": 1841620,
+      "elapsed_s": 0.0272,
+      "iterations": 50000,
+      "kernel": "apply_ufcp_partial_substitution",
+      "ns_per_call": 543.0
+    },
+    {
+      "calls_per_s": 1704539,
+      "elapsed_s": 0.0293,
+      "iterations": 50000,
+      "kernel": "maturity_mismatch_factor",
+      "ns_per_call": 586.7
+    },
+    {
+      "calls_per_s": 445513,
+      "elapsed_s": 0.1122,
+      "iterations": 50000,
+      "kernel": "lookup_fcp_haircut_rate_from_rules",
+      "ns_per_call": 2244.6
+    },
+    {
+      "calls_per_s": 3396557,
+      "elapsed_s": 0.0147,
+      "iterations": 50000,
+      "kernel": "saccr_maturity_factor",
+      "ns_per_call": 294.4
+    }
+  ],
+  "minimum_calls_per_second": 5000,
+  "status": "PASSED"
+}

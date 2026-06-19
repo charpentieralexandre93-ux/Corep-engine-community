@@ -1,4 +1,4 @@
-# COREP CRR3 Engine Community — v6.0.4
+# COREP CRR3 Engine Community — v6.2.1
 
 Édition publique open-core limitée à **SA crédit + SA-CCR**. Elle contient les fonctions de calcul, le bootstrap PostgreSQL public, les schémas SQL autorisés, une interface graphique de diagnostic et les garde-fous de frontière Community/Enterprise.
 
@@ -12,7 +12,7 @@
 | Interface graphique Community | `corep-community-gui` ou `python -m corep_crr3.community_gui` |
 | Bootstrap PostgreSQL | `corep-community-bootstrap` |
 | Diagnostic PostgreSQL | `corep-community-health` |
-| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.0.4` |
+| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.2.1` |
 
 L'édition Community n'embarque pas l'orchestrateur Enterprise `batch/run_batch.py`. Elle sert de moteur public SA/SA-CCR et de socle d'intégration.
 
@@ -60,24 +60,29 @@ Pour une exécution base de données, importer `run_standard_engine` ou `run_sac
 
 Notes méthodologiques : [`docs/REGULATORY_METHODOLOGY_INDEX.md`](docs/REGULATORY_METHODOLOGY_INDEX.md). Politique Python : [`docs/PYTHON_COMPATIBILITY.md`](docs/PYTHON_COMPATIBILITY.md).
 
-## Preuves qualité v6.0.4
+## Preuves qualité v6.2.0
 
-- `standard_engine.py` byte-identique à l'Enterprise ;
-- refactoring P0 avec unités sous CC 20 ;
-- tests de non-régression SA ;
-- garde AST empêchant l'import de moteurs privés ;
-- politique documentée des exceptions larges ;
-- SBOM CycloneDX avec licence SPDX du runtime PostgreSQL ;
-- CI, manifest SHA-256 et wheel public contrôlé.
+- **178 tests réussis**, avec une recette PostgreSQL exécutée exclusivement en CI ;
+- couverture officielle incluant le GUI Community : **67,99 %**, dont **63,53 %** de branches ;
+- GUI Community couvert à **55,01 %** grâce à des tests headless de configuration, logs, processus et événements ;
+- Ruff complet `E/F/W/I/C90`, formatage déterministe, Bandit et politique des exceptions bloquants ;
+- Mypy valide les **16 modules** publics ;
+- baseline de branche sur `standard_engine.py`, `saccr_engine.py` et `community_gui.py` ;
+- benchmark JSON des noyaux SA/SA-CCR/CRM avec budget minimal bloquant ;
+- frontière AST et wheel public limités à SA et SA-CCR ;
+- CI Python 3.11 / 3.12 / 3.13, PostgreSQL 16, Docker non-root, audit runtime et artefacts reproductibles ;
+- **72/72 fonctions CLI/GUI documentées**.
 
-- Python 3.11 est la baseline reproductible ; 3.9/3.12/3.13 sont des compatibilités best-effort testées en CI ;
-- 100 % des 71 fonctions des modules exposés par les CLI/GUI disposent d’une docstring, avec gate à 85 % ;
-- la couverture de branche de `standard_engine.py` est comparée à la baseline v6.0.2 et publiée dans la preuve de release.
+Python 3.11 reste la baseline reproductible hashée ; Python 3.12 et 3.13 sont testés en compatibilité CI.
 
-Les résultats exacts de cette archive sont consignés dans `RELEASE_REPORT_v6_0_4.md` et `RELEASE_MANIFEST.json`.
+Les résultats exacts de cette archive sont consignés dans `RELEASE_REPORT_v6_2_0.md` et `RELEASE_MANIFEST.json`.
+
+## Docker
+
+L’image Community exécute `corep-community` comme **commande one-shot** de diagnostic et se termine normalement. Utilisez `docker compose run --rm app`; l’image n’est pas présentée comme un service HTTP permanent.
 
 ## Historique et licence
 
-Voir [`CHANGELOG_v6_0_4.md`](CHANGELOG_v6_0_4.md) et les autres fichiers `CHANGELOG_v*.md`.
+Voir [`CHANGELOG_v6_2_0.md`](CHANGELOG_v6_2_0.md) et les autres fichiers `CHANGELOG_v*.md`.
 
 Apache License 2.0 : [`LICENSE`](LICENSE), [`LICENSE-COMMUNITY.md`](LICENSE-COMMUNITY.md) et [`NOTICE`](NOTICE).

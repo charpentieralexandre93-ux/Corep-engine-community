@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : protection_strategy.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.2.1
 ================================================================================
 
 DESCRIPTION
@@ -59,8 +59,9 @@ DÉPENDANCES
 """
 
 from __future__ import annotations
-from .decision_engine import evaluate_rule_set
+
 from .db import Database
+from .decision_engine import evaluate_rule_set
 
 
 def _allocation_rank_sort_value(value) -> int:
@@ -89,16 +90,19 @@ def _enrich_protection_bucket(
     exposure_id = protection.get("exposure_id")
     protection_id = protection.get("protection_id")
     context = {
-        "_context_key":       f"{exposure_id}:{protection_id}",
-        "protection_type":    protection.get("protection_type"),
-        "provider_type":      protection.get("provider_type"),
-        "collateral_type":    protection.get("collateral_type"),
-        "collateral_grade":   protection.get("collateral_grade"),
-        "issuer_type":        protection.get("issuer_type") or protection.get("provider_type"),
+        "_context_key": f"{exposure_id}:{protection_id}",
+        "protection_type": protection.get("protection_type"),
+        "provider_type": protection.get("provider_type"),
+        "collateral_type": protection.get("collateral_type"),
+        "collateral_grade": protection.get("collateral_grade"),
+        "issuer_type": protection.get("issuer_type") or protection.get("provider_type"),
         "protection_subtype": protection.get("protection_subtype"),
     }
     decision = evaluate_rule_set(
-        db, batch_id, regulatory_version, "PROTECTION_BUCKET",
+        db,
+        batch_id,
+        regulatory_version,
+        "PROTECTION_BUCKET",
         context,
         trace_buffer=trace_buffer,
     )
@@ -146,9 +150,7 @@ def load_all_ranked_protections(
 
     grouped: dict[str, list[dict]] = {}
     for row in rows:
-        enriched = _enrich_protection_bucket(
-            db, batch_id, regulatory_version, row, trace_buffer=trace_buffer
-        )
+        enriched = _enrich_protection_bucket(db, batch_id, regulatory_version, row, trace_buffer=trace_buffer)
         grouped.setdefault(str(row.get("exposure_id")), []).append(enriched)
 
     # Double garde-fou pour les mocks/tests qui ne respectent pas toujours le ORDER BY.
@@ -186,9 +188,4 @@ def load_ranked_protections(
         (batch_id, exposure_id),
     )
 
-    return [
-        _enrich_protection_bucket(
-            db, batch_id, regulatory_version, row, trace_buffer=trace_buffer
-        )
-        for row in rows
-    ]
+    return [_enrich_protection_bucket(db, batch_id, regulatory_version, row, trace_buffer=trace_buffer) for row in rows]

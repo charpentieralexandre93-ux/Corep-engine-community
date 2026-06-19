@@ -1,4 +1,5 @@
 """Deterministic source/runtime manifest generation and verification."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,9 +14,23 @@ from typing import Any, Iterable, Optional, Sequence
 
 _SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 _EXCLUDED_PARTS = {
-    ".git", ".pytest_cache", ".mypy_cache", ".ruff_cache", "__pycache__",
-    "build", "dist", ".hypothesis", ".venv", "venv", ".eggs",
-    "htmlcov", "output", "outputs", "logs", ".tox", ".nox",
+    ".git",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "__pycache__",
+    "build",
+    "dist",
+    ".hypothesis",
+    ".venv",
+    "venv",
+    ".eggs",
+    "htmlcov",
+    "output",
+    "outputs",
+    "logs",
+    ".tox",
+    ".nox",
 }
 
 
@@ -127,8 +142,7 @@ def load_manifest(path: Path) -> ReleaseManifest:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
         entries = tuple(
-            ManifestEntry(str(item["path"]), str(item["sha256"]), int(item["size"]))
-            for item in payload["entries"]
+            ManifestEntry(str(item["path"]), str(item["sha256"]), int(item["size"])) for item in payload["entries"]
         )
         return ReleaseManifest(
             schema_version=int(payload["schema_version"]),
@@ -149,9 +163,7 @@ def verify_manifest(
     """Verify the requested artifact against its contract."""
     root = root.resolve()
     if manifest.schema_version != 1:
-        raise ReleaseIntegrityError(
-            f"Version de schéma de manifeste non supportée: {manifest.schema_version}"
-        )
+        raise ReleaseIntegrityError(f"Version de schéma de manifeste non supportée: {manifest.schema_version}")
     if expected_version is not None and manifest.product_version != expected_version:
         raise ReleaseIntegrityError(
             f"Version du manifeste {manifest.product_version} != version attendue {expected_version}"
@@ -160,10 +172,7 @@ def verify_manifest(
     if len(declared) != len(manifest.entries):
         raise ReleaseIntegrityError("Chemin dupliqué dans le manifeste")
     failures: list[str] = []
-    current = {
-        path.relative_to(root).as_posix()
-        for path in iter_release_files(root, root / "RELEASE_MANIFEST.json")
-    }
+    current = {path.relative_to(root).as_posix() for path in iter_release_files(root, root / "RELEASE_MANIFEST.json")}
     undeclared = sorted(current - set(declared))
     if undeclared:
         failures.append("artefacts non déclarés: " + ", ".join(undeclared[:20]))
@@ -201,9 +210,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if args.generate:
             if not args.version or not args.edition:
                 parser.error("--version et --edition sont requis avec --generate")
-            manifest = create_manifest(
-                root, version=args.version, edition=args.edition, manifest_path=manifest_path
-            )
+            manifest = create_manifest(root, version=args.version, edition=args.edition, manifest_path=manifest_path)
             write_manifest(manifest, manifest_path)
         manifest = load_manifest(manifest_path)
         verify_manifest(root, manifest, expected_version=args.version)

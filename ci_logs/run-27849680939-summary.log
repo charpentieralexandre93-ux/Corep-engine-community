@@ -1,0 +1,64 @@
+
+X release/v6.2.0 Community CI charpentieralexandre93-ux/Corep-engine-community#13 · 27849680939
+Triggered via push about 24 minutes ago
+
+JOBS
+✓ Budget de performance SA / SA-CCR in 21s (ID 82426163602)
+✓ Tests (py3.11) in 24s (ID 82426163619)
+X Docker Community one-shot et PostgreSQL in 22s (ID 82426163630)
+  ✓ Set up job
+  ✓ Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+  X Construire et contrôler l'image
+  - Smoke test sans base
+  - Bootstrap et readiness via Docker Compose
+  X Nettoyer Docker Compose
+  ✓ Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+  ✓ Complete job
+✓ package-reproducibility in 28s (ID 82426163631)
+✓ Supply-chain runtime in 34s (ID 82426163656)
+✓ Tests (py3.13) in 22s (ID 82426163671)
+✓ Qualité statique et intégrité in 26s (ID 82426163673)
+✓ Tests (py3.12) in 21s (ID 82426163700)
+X postgres-e2e in 32s (ID 82426163710)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+  ✓ Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+  ✓ Run python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
+  X E2E PostgreSQL détaillé
+  - Readiness PostgreSQL stricte
+  ✓ Générer la preuve de release
+  ✓ Publier la preuve PostgreSQL
+  X Appliquer le verdict PostgreSQL
+  - Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+  ✓ Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+  ✓ Stop containers
+  ✓ Complete job
+
+ANNOTATIONS
+X Process completed with exit code 1.
+Docker Community one-shot et PostgreSQL: .github#9
+
+X Process completed with exit code 1.
+Docker Community one-shot et PostgreSQL: .github#431
+
+X Process completed with exit code 1.
+Supply-chain runtime: .github#16
+
+X Process completed with exit code 1.
+postgres-e2e: .github#18
+
+X Process completed with exit code 1.
+postgres-e2e: .github#209
+
+
+ARTIFACTS
+community-supply-chain
+community-postgresql-evidence
+community-coverage-py3.11
+community-coverage-py3.13
+community-coverage-py3.12
+community-performance
+
+To see what failed, try: gh run view 27849680939 --log-failed
+View this run on GitHub: https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/runs/27849680939

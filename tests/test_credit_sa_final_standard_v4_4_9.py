@@ -50,6 +50,9 @@ def test_currency_mismatch_multiplier_applies_and_caps_at_150_percent():
 
 def test_infer_rw_bucket_equity_and_specialised_lending():
     assert infer_rw_bucket({"asset_class_id": "EQUITY", "exposure_subtype": "GENERIC"}, 2.5) == "EQUITY_GENERIC_250"
-    assert infer_rw_bucket({"asset_class_id": "EQUITY", "exposure_subtype": "SPECULATIVE_UNLISTED"}, 4.0) == "EQUITY_SPECULATIVE_UNLISTED_400"
+    assert (
+        infer_rw_bucket({"asset_class_id": "EQUITY", "exposure_subtype": "SPECULATIVE_UNLISTED"}, 4.0)
+        == "EQUITY_SPECULATIVE_UNLISTED_400"
+    )
     assert infer_rw_bucket({"exposure_subtype": "ADC"}, 1.5) == "ADC"
     assert infer_rw_bucket({"exposure_subtype": "PROJECT_FINANCE"}, 1.3) == "SPECIALISED_LENDING_PROJECT_FINANCE"

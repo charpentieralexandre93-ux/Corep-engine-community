@@ -1,4 +1,5 @@
 """Public runtime-readiness checks for the Community SA/SA-CCR edition."""
+
 from __future__ import annotations
 
 import argparse
@@ -132,7 +133,7 @@ def run_readiness_checks(
             "PYTHON_VERSION",
             sys.version_info >= (3, 9),
             "Version Python supportée",
-            "Python 3.9 ou supérieur est requis",
+            "Python 3.11 ou supérieur est requis",
             {"python": platform.python_version()},
         )
     )
@@ -214,7 +215,13 @@ def run_readiness_checks(
     probe = database_probe
     if probe is None and require_database:
         relations = tuple(required_db_relations)
-        probe = lambda: _default_database_probe(relations)
+
+        def default_probe() -> dict[str, object]:
+            """Run the default PostgreSQL readiness probe."""
+
+            return _default_database_probe(relations)
+
+        probe = default_probe
     if probe is not None:
         try:
             result = probe()
@@ -239,7 +246,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--min-free-mb", type=int, default=100)
     parser.add_argument("--require-env", action="append", default=[])
     parser.add_argument("--json-output", type=Path)
-    parser.add_argument("--skip-database", action="store_true", help="Désactive explicitement la sonde PostgreSQL (build uniquement)")
+    parser.add_argument(
+        "--skip-database",
+        action="store_true",
+        help="Désactive explicitement la sonde PostgreSQL (build uniquement)",
+    )
     args = parser.parse_args(argv)
     report = run_readiness_checks(
         output_dir=args.output_dir,

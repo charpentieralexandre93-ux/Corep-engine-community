@@ -16,8 +16,8 @@ import os
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence, Tuple
 
-from .db import Database, build_dsn_from_env
 from . import __version__
+from .db import Database, build_dsn_from_env
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +26,21 @@ _MANIFEST_NAME = "ACTIVE_SQL_MANIFEST.txt"
 _RESET_CONFIRMATION = "RESET"
 _ALLOWED_GROUPS = {"always", "run_sa", "run_saccr", "post_seed"}
 _FORBIDDEN_SQL_TOKENS = (
-    "irb", "sft", "cva", "liquidity", "irrbb", "market_risk",
-    "operational_risk", "own_funds", "securitisation",
-    "large_exposures", "crypto_assets", "frtb", "output_floor",
-    "dpm_xbrl", "finrep",
+    "irb",
+    "sft",
+    "cva",
+    "liquidity",
+    "irrbb",
+    "market_risk",
+    "operational_risk",
+    "own_funds",
+    "securitisation",
+    "large_exposures",
+    "crypto_assets",
+    "frtb",
+    "output_floor",
+    "dpm_xbrl",
+    "finrep",
 )
 
 
@@ -54,8 +65,7 @@ def resolve_sql_dir(explicit: Optional[Path] = None) -> Path:
             return candidate
     searched = ", ".join(str(path) for path in candidates)
     raise FileNotFoundError(
-        "Répertoire SQL Community introuvable ou contrat absent. "
-        f"Emplacements contrôlés : {searched}"
+        f"Répertoire SQL Community introuvable ou contrat absent. Emplacements contrôlés : {searched}"
     )
 
 
@@ -65,8 +75,7 @@ def load_sql_contract(sql_dir: Path) -> dict[str, Any]:
     raw = json.loads(contract_path.read_text(encoding="utf-8"))
     if raw.get("version") != __version__:
         raise ValueError(
-            f"Version du contrat SQL Community ({raw.get('version')!r}) "
-            f"!= version du package ({__version__!r})."
+            f"Version du contrat SQL Community ({raw.get('version')!r}) != version du package ({__version__!r})."
         )
     if raw.get("edition") != "Community":
         raise ValueError(f"Contrat SQL inattendu : edition={raw.get('edition')!r}")
@@ -91,15 +100,11 @@ def load_sql_contract(sql_dir: Path) -> dict[str, Any]:
             raise ValueError(f"Étape SQL dupliquée : {rel_path_value}")
         seen_paths.add(rel_path_value)
         if step["group"] not in _ALLOWED_GROUPS:
-            raise ValueError(
-                f"Étape SQL #{index} : groupe non autorisé {step['group']!r}."
-            )
+            raise ValueError(f"Étape SQL #{index} : groupe non autorisé {step['group']!r}.")
         normalized = rel_path_value.lower()
         leaked = sorted(token for token in _FORBIDDEN_SQL_TOKENS if token in normalized)
         if leaked:
-            raise ValueError(
-                f"Étape SQL #{index} hors périmètre Community : {', '.join(leaked)}."
-            )
+            raise ValueError(f"Étape SQL #{index} hors périmètre Community : {', '.join(leaked)}.")
     return raw
 
 
@@ -122,9 +127,7 @@ def render_sql_manifest(sql_dir: Optional[Path] = None) -> str:
         "# Ordre SQL effectif",
     ]
     for index, step in enumerate(contract["steps"], start=1):
-        lines.append(
-            f"{index:02d} | {step['group']:<10s} | {step['path']} | {step['description']}"
-        )
+        lines.append(f"{index:02d} | {step['group']:<10s} | {step['path']} | {step['description']}")
     return "\n".join(lines) + "\n"
 
 
@@ -146,10 +149,7 @@ def _resolved_scripts(sql_dir: Path, steps: Sequence[dict[str, str]]) -> list[tu
             sql_text = candidate.read_text(encoding="utf-8").lower()
             leaked = sorted(token for token in _FORBIDDEN_SQL_TOKENS if token in sql_text)
             if leaked:
-                raise ValueError(
-                    f"Contenu SQL hors périmètre Community dans {step['path']} : "
-                    + ", ".join(leaked)
-                )
+                raise ValueError(f"Contenu SQL hors périmètre Community dans {step['path']} : " + ", ".join(leaked))
             resolved.append((candidate, step))
         else:
             missing.append(step["path"])

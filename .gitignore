@@ -19,3 +19,21 @@ dist/
 *.zip
 *.tar
 *.tar.gz
+
+# Local CI/debug artifacts
+ci_logs/
+
+# Python build metadata
+*.egg-info/
+src/*.egg-info/
+
+# Local Python artifacts
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+coverage.json
+*.pyc

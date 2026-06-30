@@ -15,20 +15,14 @@ def _runtime_payload() -> dict[str, object]:
 def test_runtime_licenses_are_deterministic_across_installed_metadata(monkeypatch):
     monkeypatch.setattr(
         "tools.enrich_sbom_licenses._metadata_license",
-        lambda name: "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0"
-        if name == "numpy"
-        else None,
+        lambda name: "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0" if name == "numpy" else None,
     )
     payload = _runtime_payload()
     enriched, unresolved = enrich(payload, {"numpy", "psycopg2-binary"})
     assert enriched == 2
     assert unresolved == []
-    assert payload["components"][0]["licenses"] == [
-        {"license": {"id": "BSD-3-Clause"}}
-    ]
-    assert payload["components"][1]["licenses"] == [
-        {"license": {"id": "LGPL-3.0-or-later"}}
-    ]
+    assert payload["components"][0]["licenses"] == [{"license": {"id": "BSD-3-Clause"}}]
+    assert payload["components"][1]["licenses"] == [{"license": {"id": "LGPL-3.0-or-later"}}]
 
 
 def test_distribution_names_are_pep503_normalized():

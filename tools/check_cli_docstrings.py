@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Enforce a minimum function-docstring ratio on user-facing entry points."""
+
 from __future__ import annotations
 
 import argparse

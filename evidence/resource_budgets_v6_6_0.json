@@ -1,0 +1,79 @@
+{
+  "budgets": [
+    {
+      "max_rows": 100000,
+      "max_rss_mb": 512.0,
+      "max_seconds": 30.0,
+      "min_rows_per_second": 100.0,
+      "name": "standard_engine_volume",
+      "percentile": "single_run",
+      "scope": "benchmark"
+    },
+    {
+      "max_rows": 100000,
+      "max_rss_mb": 512.0,
+      "max_seconds": 10.0,
+      "min_rows_per_second": 1000.0,
+      "name": "saccr_multiplier_volume",
+      "percentile": "single_run",
+      "scope": "benchmark"
+    },
+    {
+      "max_rows": 100000,
+      "max_rss_mb": 512.0,
+      "max_seconds": 30.0,
+      "min_rows_per_second": 100000.0,
+      "name": "standard_engine_volume_100k",
+      "percentile": "single_run",
+      "scope": "benchmark"
+    },
+    {
+      "max_rows": 100000,
+      "max_rss_mb": 512.0,
+      "max_seconds": 10.0,
+      "min_rows_per_second": 500000.0,
+      "name": "saccr_multiplier_volume_100k",
+      "percentile": "single_run",
+      "scope": "benchmark"
+    },
+    {
+      "max_rows": 10000,
+      "max_rss_mb": 512.0,
+      "max_seconds": 15.0,
+      "min_rows_per_second": 1000.0,
+      "name": "mixed_portfolio_volume_10k",
+      "percentile": "single_run",
+      "scope": "benchmark"
+    },
+    {
+      "max_rows": 0,
+      "max_rss_mb": 1024.0,
+      "max_seconds": 180.0,
+      "min_rows_per_second": 0.0,
+      "name": "postgres_bootstrap_smoke",
+      "percentile": "single_run",
+      "scope": "e2e"
+    },
+    {
+      "max_rows": 100000,
+      "max_rss_mb": 1024.0,
+      "max_seconds": 5.0,
+      "min_rows_per_second": 0.0,
+      "name": "postgres_query_budget_smoke",
+      "percentile": "single_run",
+      "scope": "postgres"
+    },
+    {
+      "max_rows": 50000,
+      "max_rss_mb": 1024.0,
+      "max_seconds": 120.0,
+      "min_rows_per_second": 0.0,
+      "name": "excel_export_smoke",
+      "percentile": "single_run",
+      "scope": "e2e"
+    }
+  ],
+  "edition": "COMMUNITY",
+  "product_version": "6.6.0",
+  "schema_version": 2
+}

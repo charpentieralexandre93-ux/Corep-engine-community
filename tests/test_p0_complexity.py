@@ -5,19 +5,32 @@ from pathlib import Path
 
 MODULE = Path(__file__).parents[1] / "src" / "corep_crr3" / "standard_engine.py"
 TARGETS = {
-    "run_standard_engine", "_filter_standard_rows", "_sme_totals_by_obligor",
-    "_load_standard_runtime", "_resolve_ccf", "_resolve_base_risk_weight",
-    "_partition_protections", "_apply_funded_protections",
-    "_apply_unfunded_protections", "_process_standard_exposure",
-    "_persist_standard_batches", "_report_standard_anomalies",
+    "run_standard_engine",
+    "_filter_standard_rows",
+    "_sme_totals_by_obligor",
+    "_load_standard_runtime",
+    "_resolve_ccf",
+    "_resolve_base_risk_weight",
+    "_partition_protections",
+    "_apply_funded_protections",
+    "_apply_unfunded_protections",
+    "_process_standard_exposure",
+    "_persist_standard_batches",
+    "_report_standard_anomalies",
 }
 
 
 def complexity(node: ast.AST) -> int:
     score = 1
     branches = (
-        ast.If, ast.For, ast.AsyncFor, ast.While, ast.IfExp,
-        ast.ExceptHandler, ast.comprehension, ast.match_case,
+        ast.If,
+        ast.For,
+        ast.AsyncFor,
+        ast.While,
+        ast.IfExp,
+        ast.ExceptHandler,
+        ast.comprehension,
+        ast.match_case,
     )
     for child in ast.walk(node):
         if isinstance(child, branches):

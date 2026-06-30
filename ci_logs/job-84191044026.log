@@ -1,0 +1,334 @@
+static-and-tests (3.13)	Set up job	﻿2026-06-30T01:11:10.7715426Z Current runner version: '2.335.1'
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7752322Z ##[group]Runner Image Provisioner
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7753638Z Hosted Compute Agent
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7754698Z Version: 20260611.554
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7755834Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7757074Z Build Date: 2026-06-11T21:40:46Z
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7758207Z Worker ID: {d3f2f3cb-d7db-4184-be99-3c16d1973731}
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7759310Z Azure Region: centralus
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7760339Z ##[endgroup]
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7762552Z ##[group]Operating System
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7763650Z Ubuntu
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7764441Z 24.04.4
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7765213Z LTS
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7766076Z ##[endgroup]
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7766920Z ##[group]Runner Image
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7767876Z Image: ubuntu-24.04
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7768852Z Version: 20260622.220.1
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7770562Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7773710Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7775519Z ##[endgroup]
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7777280Z ##[group]GITHUB_TOKEN Permissions
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7780360Z Contents: read
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7781327Z Metadata: read
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7782446Z ##[endgroup]
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7785357Z Secret source: Actions
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.7786802Z Prepare workflow directory
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.8158571Z Prepare all required actions
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:10.8197196Z Getting action download info
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:11.0661123Z Download action repository 'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:11.1406114Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:11.2579558Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+static-and-tests (3.13)	Set up job	2026-06-30T01:11:11.5371919Z Complete job name: static-and-tests (3.13)
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	﻿2026-06-30T01:11:11.6218386Z ##[group]Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6219567Z with:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6220169Z   repository: charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6225498Z   token: ***
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6225964Z   ssh-strict: true
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6226417Z   ssh-user: git
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6226927Z   persist-credentials: true
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6227427Z   clean: true
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6227889Z   sparse-checkout-cone-mode: true
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6228429Z   fetch-depth: 1
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6228885Z   fetch-tags: false
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6229357Z   show-progress: true
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6229810Z   lfs: false
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6230220Z   submodules: false
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6230665Z   set-safe-directory: true
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6231413Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7316136Z Syncing repository: charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7318560Z ##[group]Getting Git version info
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7319466Z Working directory is '/home/runner/work/Corep-engine-community/Corep-engine-community'
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7320743Z [command]/usr/bin/git version
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8424656Z git version 2.54.0
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8448373Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8467050Z Temporarily overriding HOME='/home/runner/work/_temp/62895891-1a73-44f8-a8eb-828765093929' before making global git config changes
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8469321Z Adding repository directory to the temporary git global config as a safe directory
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8474260Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8525145Z Deleting the contents of '/home/runner/work/Corep-engine-community/Corep-engine-community'
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8529208Z ##[group]Determining repository object format
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8531969Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8532735Z ##[group]Initializing the repository
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8536824Z [command]/usr/bin/git init /home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8618864Z hint: Using 'master' as the name for the initial branch. This default branch name
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8620060Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8621939Z hint: to use in all of your new repositories, which will suppress this warning,
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8623134Z hint: call:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8623763Z hint:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8624584Z hint: 	git config --global init.defaultBranch <name>
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8625458Z hint:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8626397Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8627450Z hint: 'development'. The just-created branch can be renamed via this command:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8628200Z hint:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8628621Z hint: 	git branch -m <name>
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8629334Z hint:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8630241Z hint: Disable this message with "git config set advice.defaultBranchName false"
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8631670Z Initialized empty Git repository in /home/runner/work/Corep-engine-community/Corep-engine-community/.git/
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8634762Z [command]/usr/bin/git remote add origin https://github.com/charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8676014Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8676813Z ##[group]Disabling automatic garbage collection
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8679665Z [command]/usr/bin/git config --local gc.auto 0
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8710634Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8711721Z ##[group]Setting up auth
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8712505Z Removing SSH command configuration
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8717585Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8752432Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9073608Z Removing HTTP extra header
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9079593Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9113609Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9346168Z Removing includeIf entries pointing to credentials config files
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9352620Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9385648Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9637527Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9678100Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9709012Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9741741Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9772224Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9800611Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9801393Z ##[group]Fetching the repository
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9808918Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +fc76f59b569bd2d113feb6df10d62fcd590e110b:refs/remotes/pull/25/merge
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3688332Z From https://github.com/charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3690480Z  * [new ref]         fc76f59b569bd2d113feb6df10d62fcd590e110b -> pull/25/merge
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3728151Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3729444Z ##[group]Determining the checkout info
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3730792Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3734900Z [command]/usr/bin/git sparse-checkout disable
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3784062Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3872341Z ##[group]Checking out the ref
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3873665Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/25/merge
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3961919Z Note: switching to 'refs/remotes/pull/25/merge'.
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3962875Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3963507Z You are in 'detached HEAD' state. You can look around, make experimental
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3964494Z changes and commit them, and you can discard any commits you make in this
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3965633Z state without impacting any branches by switching back to a branch.
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3966384Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3966935Z If you want to create a new branch to retain commits you create, you may
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3968229Z do so (now or later) by using -c with the switch command. Example:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3968903Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3969138Z   git switch -c <new-branch-name>
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3969575Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3969805Z Or undo this operation with:
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3970203Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3970406Z   git switch -
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3970718Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3971283Z Turn off this advice by setting config variable advice.detachedHead to false
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3972428Z 
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3973334Z HEAD is now at fc76f59 Merge 97b4ea15138b9f5d6483b7b9cf51bf9cc099792b into bd79badc68cc8dce7c5b243d7b30440624b33180
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.3975776Z ##[endgroup]
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4010931Z [command]/usr/bin/git log -1 --format=%H
+static-and-tests (3.13)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4036144Z fc76f59b569bd2d113feb6df10d62fcd590e110b
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	﻿2026-06-30T01:11:12.4358397Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4359379Z with:
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4359813Z   python-version: 3.13
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4360309Z   cache: pip
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4360759Z   check-latest: false
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4367319Z   token: ***
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4367783Z   update-environment: true
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4368376Z   allow-prereleases: false
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4368918Z   freethreaded: false
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4369405Z ##[endgroup]
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.5697547Z ##[group]Installed versions
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.5792873Z Successfully set up CPython (3.13.14)
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.5794531Z ##[endgroup]
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.6477904Z [command]/opt/hostedtoolcache/Python/3.13.14/x64/bin/pip cache dir
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:14.2027156Z /home/runner/.cache/pip
+static-and-tests (3.13)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:14.3548392Z pip cache is not found
+static-and-tests (3.13)	Installer le projet et les outils	﻿2026-06-30T01:11:14.3727065Z ##[group]Run if [ "3.13" = "3.11" ]; then
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3727581Z ^[[36;1mif [ "3.13" = "3.11" ]; then^[[0m
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3728170Z ^[[36;1m  python -m pip install --require-hashes -r requirements-dev-py311-linux.lock^[[0m
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3728801Z ^[[36;1m  python -m pip install --no-deps -e ".[dev,postgres]"^[[0m
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3729210Z ^[[36;1melse^[[0m
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3729563Z ^[[36;1m  python -m pip install -e ".[dev]" ruff bandit build^[[0m
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3729949Z ^[[36;1mfi^[[0m
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3873199Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3873652Z env:
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3874004Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3874512Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib/pkgconfig
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3875263Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3875712Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3876211Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3876688Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:14.3877071Z ##[endgroup]
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:15.8639456Z Obtaining file:///home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:15.8659520Z   Installing build dependencies: started
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:17.3652592Z   Installing build dependencies: finished with status 'done'
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:17.3658657Z   Checking if build backend supports build_editable: started
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:17.7613031Z   Checking if build backend supports build_editable: finished with status 'done'
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:17.7620666Z   Getting requirements to build editable: started
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.1206737Z   Getting requirements to build editable: finished with status 'done'
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.1216225Z   Preparing editable metadata (pyproject.toml): started
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.3253357Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.7957832Z Collecting ruff
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.8656025Z   Downloading ruff-0.15.20-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (26 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.9085827Z Collecting bandit
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.9197075Z   Downloading bandit-1.9.4-py3-none-any.whl.metadata (7.1 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.9525342Z Collecting build
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:18.9632089Z   Downloading build-1.5.0-py3-none-any.whl.metadata (5.7 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.0049313Z Collecting pytest>=7.0 (from corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.0159051Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.0454570Z Collecting pytest-cov>=4.0 (from corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.0561262Z   Downloading pytest_cov-7.1.0-py3-none-any.whl.metadata (32 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.1839462Z Collecting mypy<2.0 (from corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.1952989Z   Downloading mypy-1.20.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.2421106Z Collecting PyYAML>=6.0 (from corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.2528746Z   Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.2829453Z Collecting types-PyYAML>=6.0 (from corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.3098589Z   Downloading types_pyyaml-6.0.12.20260518-py3-none-any.whl.metadata (1.7 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.3414630Z Collecting types-psycopg2>=2.9 (from corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.3523502Z   Downloading types_psycopg2-2.9.21.20260518-py3-none-any.whl.metadata (1.7 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.3790561Z Collecting typing_extensions>=4.6.0 (from mypy<2.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.3896197Z   Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.4125531Z Collecting mypy_extensions>=1.0.0 (from mypy<2.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.4233542Z   Downloading mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.4470938Z Collecting pathspec>=1.0.0 (from mypy<2.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.4575987Z   Downloading pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.5813545Z Collecting librt>=0.8.0 (from mypy<2.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.5924453Z   Downloading librt-0.11.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.3 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.6248093Z Collecting stevedore>=1.20.0 (from bandit)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.6356761Z   Downloading stevedore-5.8.0-py3-none-any.whl.metadata (2.3 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.6826501Z Collecting rich (from bandit)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.6936360Z   Downloading rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.7202472Z Collecting packaging>=24.0 (from build)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.7215471Z   Using cached packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.7413585Z Collecting pyproject_hooks (from build)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.7528056Z   Downloading pyproject_hooks-1.2.0-py3-none-any.whl.metadata (1.3 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.7765665Z Collecting iniconfig>=1.0.1 (from pytest>=7.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.7872027Z   Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.8112314Z Collecting pluggy<2,>=1.5 (from pytest>=7.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.8223222Z   Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.8515016Z Collecting pygments>=2.7.2 (from pytest>=7.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:19.8621966Z   Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.2505577Z Collecting coverage>=7.10.6 (from coverage[toml]>=7.10.6->pytest-cov>=4.0->corep-crr3-community==6.6.0)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.2618578Z   Downloading coverage-7.14.3-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.6 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.2912928Z Collecting markdown-it-py>=2.2.0 (from rich->bandit)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.3018834Z   Downloading markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.3283469Z Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich->bandit)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.3393135Z   Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.3546385Z Downloading mypy-1.20.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (14.7 MB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.4881809Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.7/14.7 MB 129.4 MB/s  0:00:00
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.4991326Z Downloading ruff-0.15.20-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.5 MB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.5363311Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.5/11.5 MB 325.8 MB/s  0:00:00
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.5473142Z Downloading bandit-1.9.4-py3-none-any.whl (134 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.5599885Z Downloading build-1.5.0-py3-none-any.whl (26 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.5730319Z Downloading librt-0.11.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (513 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.5871840Z Downloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.5902222Z Using cached packaging-26.2-py3-none-any.whl (100 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6010446Z Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6145033Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6281943Z Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6407692Z Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6537670Z Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6612950Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 229.2 MB/s  0:00:00
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6721348Z Downloading pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6851881Z Downloading coverage-7.14.3-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (254 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.6992763Z Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7050602Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 168.9 MB/s  0:00:00
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7159502Z Downloading stevedore-5.8.0-py3-none-any.whl (54 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7287781Z Downloading types_psycopg2-2.9.21.20260518-py3-none-any.whl (24 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7420014Z Downloading types_pyyaml-6.0.12.20260518-py3-none-any.whl (20 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7547378Z Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7675086Z Downloading pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7803342Z Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.7948992Z Downloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.8079585Z Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.8607583Z Building wheels for collected packages: corep-crr3-community
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:20.8615867Z   Building editable for corep-crr3-community (pyproject.toml): started
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:21.0992526Z   Building editable for corep-crr3-community (pyproject.toml): finished with status 'done'
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:21.0998608Z   Created wheel for corep-crr3-community: filename=corep_crr3_community-6.6.0-0.editable-py3-none-any.whl size=8596 sha256=d0c174f71b61f2e472f78600bbb30d57d880c98fac8e4d6e28e5a25f07f42587
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:21.1001087Z   Stored in directory: /tmp/pip-ephem-wheel-cache-alh7obmw/wheels/55/a1/47/d50567bff8b331fc3ab8ebeb1c650f615ba97d05d50f115d82
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:21.1021068Z Successfully built corep-crr3-community
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:21.1443757Z Installing collected packages: typing_extensions, types-PyYAML, types-psycopg2, stevedore, ruff, PyYAML, pyproject_hooks, pygments, pluggy, pathspec, packaging, mypy_extensions, mdurl, librt, iniconfig, coverage, corep-crr3-community, pytest, mypy, markdown-it-py, build, rich, pytest-cov, bandit
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:24.6794638Z 
+static-and-tests (3.13)	Installer le projet et les outils	2026-06-30T01:11:24.6825804Z Successfully installed PyYAML-6.0.3 bandit-1.9.4 build-1.5.0 corep-crr3-community-6.6.0 coverage-7.14.3 iniconfig-2.3.0 librt-0.11.0 markdown-it-py-4.2.0 mdurl-0.1.2 mypy-1.20.2 mypy_extensions-1.1.0 packaging-26.2 pathspec-1.1.1 pluggy-1.6.0 pygments-2.20.0 pyproject_hooks-1.2.0 pytest-9.1.1 pytest-cov-7.1.0 rich-15.0.0 ruff-0.15.20 stevedore-5.8.0 types-PyYAML-6.0.12.20260518 types-psycopg2-2.9.21.20260518 typing_extensions-4.15.0
+static-and-tests (3.13)	Contrat public et manifeste de release	﻿2026-06-30T01:11:24.8129911Z ##[group]Run python tools/check_release_contract.py
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8130338Z ^[[36;1mpython tools/check_release_contract.py^[[0m
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8130686Z ^[[36;1mpython -m corep_crr3.release_integrity \^[[0m
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8131079Z ^[[36;1m  --root . --manifest RELEASE_MANIFEST.json --version 6.0.4^[[0m
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8168068Z shell: /usr/bin/bash -e {0}
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8168334Z env:
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8168612Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8169071Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib/pkgconfig
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8169501Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8169889Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8170287Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8170683Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8171014Z ##[endgroup]
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8494711Z ERROR: Dérive de version : {'pyproject': '6.6.0', 'package': '6.0.4', 'README': '6.0.4', 'SQL contract': '6.0.4'}
+static-and-tests (3.13)	Contrat public et manifeste de release	2026-06-30T01:11:24.8545815Z ##[error]Process completed with exit code 1.
+static-and-tests (3.13)	Publier la couverture	﻿2026-06-30T01:11:24.8655397Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8655820Z with:
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8656073Z   name: community-coverage-py3.13
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8656456Z   path: coverage.xml
+static-and-tests (3.13)	Publier la couverture	coverage.json
+static-and-tests (3.13)	Publier la couverture	evidence/branch_coverage_v6_0_4.json
+static-and-tests (3.13)	Publier la couverture	
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8656855Z   if-no-files-found: warn
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8657107Z   compression-level: 6
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8657337Z   overwrite: false
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8657570Z   include-hidden-files: false
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8657820Z   archive: true
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8658029Z env:
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8658310Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8658779Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib/pkgconfig
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8659213Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8659618Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8660010Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8660427Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:24.8660955Z ##[endgroup]
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.0128384Z Multiple search paths detected. Calculating the least common ancestor of all paths
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.0130505Z The least common ancestor is /home/runner/work/Corep-engine-community/Corep-engine-community. This will be the root directory of the artifact
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.0131743Z With the provided path, there will be 1 file uploaded
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.0136319Z Artifact name is valid!
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.0137069Z Root directory input is valid!
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.2169214Z Uploading artifact: community-coverage-py3.13.zip
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.2207167Z Beginning upload of artifact content to blob storage
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.4087060Z Uploaded bytes 472
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.4513508Z Finished uploading artifact content to blob storage!
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.4514456Z SHA256 digest of uploaded artifact is fae952738a0f211b66a18ad4d6fd247a8234b3f9908b2aa248d187533db4c30a
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.4515340Z Finalizing artifact upload
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.6817089Z Artifact community-coverage-py3.13 successfully finalized. Artifact ID 7968502880
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.6818333Z Artifact community-coverage-py3.13 has been successfully uploaded! Final size is 472 bytes. Artifact ID is 7968502880
+static-and-tests (3.13)	Publier la couverture	2026-06-30T01:11:25.6821920Z Artifact download URL: https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/runs/28413396407/artifacts/7968502880
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	﻿2026-06-30T01:11:25.7014779Z Post job cleanup.
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.7851727Z [command]/usr/bin/git version
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.7921881Z git version 2.54.0
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.7960866Z Temporarily overriding HOME='/home/runner/work/_temp/369f0225-12b9-4206-a7a9-f41c0cf85abb' before making global git config changes
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.7962337Z Adding repository directory to the temporary git global config as a safe directory
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.7966397Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8002755Z Removing SSH command configuration
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8009361Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8046068Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8293587Z Removing HTTP extra header
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8299227Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8335021Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8573266Z Removing includeIf entries pointing to credentials config files
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8580124Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8610164Z includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8611431Z includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8612563Z includeif.gitdir:/github/workspace/.git.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8613151Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8619764Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8644776Z /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8656046Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8692229Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8715303Z /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8726192Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8759325Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8781858Z /github/runner_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8789865Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8822749Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8844905Z /github/runner_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8854155Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.8888233Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+static-and-tests (3.13)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:25.9131005Z Removing credentials config '/home/runner/work/_temp/git-credentials-ffb19d10-4910-4b6b-94e3-b1ec2b5a1b08.config'
+static-and-tests (3.13)	Complete job	﻿2026-06-30T01:11:25.9298699Z Cleaning up orphan processes

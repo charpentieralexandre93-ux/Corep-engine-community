@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : supporting_factors.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.6.0
 ================================================================================
 
 DESCRIPTION
@@ -85,6 +85,7 @@ SORTIE
 """
 
 from __future__ import annotations
+
 from .db import Database
 from .utils import to_float as _f
 
@@ -134,7 +135,7 @@ def sme_blended_factor(
     if e <= 0:
         # Pas d'information de montant → on retombe sur la tranche basse seule.
         return low_tier_factor
-    low_part  = low_tier_factor * min(e, threshold)
+    low_part = low_tier_factor * min(e, threshold)
     high_part = high_tier_factor * max(0.0, e - threshold)
     return (low_part + high_part) / e
 
@@ -262,10 +263,10 @@ def apply_supporting_factors(
     else:
         rules = preloaded_rules  # ← 0 requête SQL supplémentaire
 
-    rwa_running      = _f(rwa_pre_supporting)  # RWA courant (modifié par chaque facteur)
-    multiplier_final = 1.0                      # Produit cumulé des multiplicateurs
-    applied_codes:   list[str]   = []           # Codes des facteurs effectivement appliqués
-    trace_batch:     list[tuple] = []           # Lignes de traçabilité
+    rwa_running = _f(rwa_pre_supporting)  # RWA courant (modifié par chaque facteur)
+    multiplier_final = 1.0  # Produit cumulé des multiplicateurs
+    applied_codes: list[str] = []  # Codes des facteurs effectivement appliqués
+    trace_batch: list[tuple] = []  # Lignes de traçabilité
     exposure_id = exposure_row["exposure_id"]
 
     for rule in rules:
@@ -289,8 +290,8 @@ def apply_supporting_factors(
         else:
             factor_multiplier = rule_multiplier
 
-        rwa_before   = rwa_running
-        rwa_running  = rwa_running * factor_multiplier
+        rwa_before = rwa_running
+        rwa_running = rwa_running * factor_multiplier
         multiplier_final *= factor_multiplier
         applied_codes.append(rule["factor_code"])
 
@@ -299,15 +300,17 @@ def apply_supporting_factors(
         # base (BIGSERIAL PK de ref_supporting_factor_rules) mais cette protection
         # évite un KeyError si un appelant injecte une règle pré-construite sans
         # cette clé (cas typique en test unitaire).
-        trace_batch.append((
-            batch_id,
-            exposure_id,
-            rule.get("factor_rule_id"),
-            factor_multiplier,
-            rule.get("applies_to_metric", "RWA"),
-            rwa_before,
-            rwa_running,
-        ))
+        trace_batch.append(
+            (
+                batch_id,
+                exposure_id,
+                rule.get("factor_rule_id"),
+                factor_multiplier,
+                rule.get("applies_to_metric", "RWA"),
+                rwa_before,
+                rwa_running,
+            )
+        )
 
     # Flush des traces :
     # - v2.8 moteur batch : append dans un buffer global, puis 1 INSERT final.
@@ -328,6 +331,6 @@ def apply_supporting_factors(
 
     return {
         "multiplier_final": multiplier_final,
-        "rwa_final":        rwa_running,
-        "factor_codes":     "|".join(applied_codes),
+        "rwa_final": rwa_running,
+        "factor_codes": "|".join(applied_codes),
     }

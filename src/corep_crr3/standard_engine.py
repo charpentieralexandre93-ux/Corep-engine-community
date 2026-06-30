@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : standard_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.6.0
 ================================================================================
 
 DESCRIPTION
@@ -105,11 +105,13 @@ SORTIE
 """
 
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
+
 from .db import Database
-from .decision_engine import evaluate_rule_set, flush_trace_buffer, clear_rules_cache
+from .decision_engine import clear_rules_cache, evaluate_rule_set, flush_trace_buffer
 from .protection_strategy import load_all_ranked_protections
 from .supporting_factors import apply_supporting_factors
 from .utils import to_float as _f
@@ -135,7 +137,7 @@ _CCF_BY_ANNEX_I_BUCKET = {
 }
 
 
-def _norm_code(value) -> str:
+def _norm_code(value: Any) -> str:
     return str(value or "").strip().upper()
 
 
@@ -169,7 +171,15 @@ def infer_ccf_bucket(row: dict) -> str | None:
         return "NOT_ACCEPTED_ZERO_CCF"
 
     product = _norm_code(row.get("product_type_id") or row.get("product_type"))
-    if product in {"TERM_LOAN", "BOND", "MORTGAGE", "GUARANTEE", "STANDBY_LC", "ACCEPTANCE", "FORWARD_ASSET"}:
+    if product in {
+        "TERM_LOAN",
+        "BOND",
+        "MORTGAGE",
+        "GUARANTEE",
+        "STANDBY_LC",
+        "ACCEPTANCE",
+        "FORWARD_ASSET",
+    }:
         return "BUCKET_1"
     if product in {"PERFORMANCE_BOND", "NIF", "RUF"}:
         return "BUCKET_2"
@@ -207,7 +217,7 @@ def apply_currency_mismatch_multiplier(base_rw: float, mismatch: bool) -> float:
     return min(1.50, rw * 1.50)
 
 
-def ltv_bucket(ltv_ratio) -> str | None:
+def ltv_bucket(ltv_ratio: Any) -> str | None:
     """Bucket LTV lisible pour la trace C07/C09."""
     if ltv_ratio in (None, ""):
         return None
@@ -250,6 +260,7 @@ def infer_rw_bucket(row: dict, applied_rw: float) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 # HELPER — SUBSTITUTION UFCP PARTIELLE (Art.235 CRR3)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def apply_ufcp_partial_substitution(
     ead_at_obligor_rw: float,
@@ -324,8 +335,8 @@ def apply_ufcp_partial_substitution(
     # Coercitions défensives (psycopg2 renvoie des Decimal pour les NUMERIC ;
     # Decimal × float lèverait TypeError plus bas). _f est idempotent sur float.
     rw_provider_f = _f(rw_provider)
-    base_rw_f     = _f(base_rw)
-    ead_rest      = _f(ead_at_obligor_rw)
+    base_rw_f = _f(base_rw)
+    ead_rest = _f(ead_at_obligor_rw)
 
     if rw_provider_f >= base_rw_f:
         return (0.0, 0.0, ead_rest)
@@ -337,12 +348,12 @@ def apply_ufcp_partial_substitution(
         return (0.0, 0.0, ead_rest)
 
     guarantee_amount = min(ead_rest, max(0.0, _f(protection_value)))
-    rwa_increment    = guarantee_amount * rw_provider_f
-    new_ead          = ead_rest - guarantee_amount
+    rwa_increment = guarantee_amount * rw_provider_f
+    new_ead = ead_rest - guarantee_amount
     return (guarantee_amount, rwa_increment, new_ead)
 
 
-def _to_flag(value) -> str:
+def _to_flag(value: Any) -> str:
     """Normalise les booléens du staging pour les règles BCNF (= TRUE/FALSE)."""
     if isinstance(value, bool):
         return "TRUE" if value else "FALSE"
@@ -350,7 +361,7 @@ def _to_flag(value) -> str:
     return "TRUE" if text in {"1", "TRUE", "T", "Y", "YES", "O", "OUI"} else "FALSE"
 
 
-def _maturity_bucket(months) -> Optional[str]:
+def _maturity_bucket(months: Any) -> Optional[str]:
     """Convertit une maturité en mois en bucket de haircut superviseur."""
     try:
         m = float(months)
@@ -530,14 +541,45 @@ def compute_recognized_ufcp_value(
     return max(0.0, adjusted * mm)
 
 
-def preload_fcp_haircut_rules(db: Database, regulatory_version_id: str) -> list[dict]:
-    """Charge en une seule requête les règles de haircuts FCP actives.
+@dataclass(frozen=True)
+class FcpHaircutRuleBook:
+    """Index normalisé des haircuts FCP, construit une fois par batch.
 
-    Correctif performance v2.8 — suppression du N+1 haircut.
-    Les haircuts sont un référentiel stable et faible volume : ils doivent être
-    lus une seule fois par batch, pas à chaque protection FCP.
+    Le dictionnaire réduit chaque recherche au seul type de collatéral concerné
+    et évite les normalisations de chaînes répétées dans la boucle exposition ×
+    protection. Les tuples conservent l'ordre SQL afin de préserver strictement
+    la priorité historique en cas de règles de même rang.
     """
-    return db.query(
+
+    by_collateral_type: dict[
+        str,
+        tuple[tuple[Optional[str], Optional[str], float], ...],
+    ]
+
+
+def compile_fcp_haircut_rules(haircut_rules: list[dict[str, Any]]) -> FcpHaircutRuleBook:
+    """Compile les règles brutes en index immuable et normalisé."""
+    grouped: dict[str, list[tuple[Optional[str], Optional[str], float]]] = {}
+    for rule in haircut_rules or []:
+        collateral_type = str(rule.get("collateral_type") or "").strip().upper()
+        if not collateral_type:
+            continue
+        grade_raw = rule.get("collateral_grade")
+        grade = str(grade_raw).strip().upper() if grade_raw not in (None, "") else None
+        maturity_raw = rule.get("residual_maturity")
+        maturity = str(maturity_raw).strip() if maturity_raw not in (None, "") else None
+        grouped.setdefault(collateral_type, []).append((grade, maturity, _f(rule.get("haircut_rate"))))
+    return FcpHaircutRuleBook({collateral_type: tuple(rules) for collateral_type, rules in grouped.items()})
+
+
+def preload_fcp_haircut_rules(db: Database, regulatory_version_id: str) -> FcpHaircutRuleBook:
+    """Charge et compile en une seule requête les règles de haircuts FCP actives.
+
+    Correctif performance v6.3.1 : le référentiel est normalisé et indexé une
+    seule fois par batch. Le chemin chaud ne rescane plus les autres types de
+    collatéral et ne renormalise plus chaque ligne à chaque protection.
+    """
+    rows = db.query(
         """
         SELECT *
         FROM ref.ref_collateral_haircuts
@@ -551,16 +593,20 @@ def preload_fcp_haircut_rules(db: Database, regulatory_version_id: str) -> list[
         """,
         (regulatory_version_id,),
     )
+    return compile_fcp_haircut_rules(rows)
 
 
-def lookup_fcp_haircut_rate_from_rules(haircut_rules: list[dict], protection: dict) -> float:
-    """Recherche le haircut FCP dans des règles préchargées.
+def lookup_fcp_haircut_rate_from_rules(
+    haircut_rules: list[dict[str, Any]] | FcpHaircutRuleBook,
+    protection: dict,
+) -> float:
+    """Recherche le haircut FCP dans des règles préchargées ou compilées.
 
-    La logique de priorité reproduit l'ancien SELECT :
-    correspondance exacte type + grade + maturité, puis lignes génériques NULL.
-    En absence de type de collatéral, fallback 0 % pour compatibilité historique.
+    La logique de priorité reproduit l'ancien SELECT : correspondance exacte
+    type + grade + maturité, puis lignes génériques NULL. Une liste brute reste
+    acceptée pour rétrocompatibilité ; le moteur utilise le RuleBook précompilé.
     """
-    collateral_type = (protection.get("collateral_type") or protection.get("protection_subtype") or "")
+    collateral_type = protection.get("collateral_type") or protection.get("protection_subtype") or ""
     collateral_type = str(collateral_type).strip().upper()
     if not collateral_type:
         return 0.0
@@ -569,28 +615,23 @@ def lookup_fcp_haircut_rate_from_rules(haircut_rules: list[dict], protection: di
     grade = str(grade).strip().upper() if grade not in (None, "") else None
     residual_maturity = _maturity_bucket(protection.get("maturity_months"))
 
-    best: tuple[int, int, dict] | None = None
-    for rule in haircut_rules or []:
-        if str(rule.get("collateral_type") or "").strip().upper() != collateral_type:
-            continue
-
-        rule_grade_raw = rule.get("collateral_grade")
-        rule_grade = str(rule_grade_raw).strip().upper() if rule_grade_raw not in (None, "") else None
+    rule_book = (
+        haircut_rules if isinstance(haircut_rules, FcpHaircutRuleBook) else compile_fcp_haircut_rules(haircut_rules)
+    )
+    best: tuple[int, int, float] | None = None
+    for rule_grade, rule_maturity, haircut_rate in rule_book.by_collateral_type.get(collateral_type, ()):
         if not (rule_grade == grade or rule_grade is None or grade is None):
             continue
-
-        rule_maturity_raw = rule.get("residual_maturity")
-        rule_maturity = str(rule_maturity_raw).strip() if rule_maturity_raw not in (None, "") else None
         if not (rule_maturity == residual_maturity or rule_maturity is None or residual_maturity is None):
             continue
 
         grade_rank = 0 if rule_grade == grade else 1 if rule_grade is None else 2
         maturity_rank = 0 if rule_maturity == residual_maturity else 1 if rule_maturity is None else 2
-        candidate = (grade_rank, maturity_rank, rule)
+        candidate = (grade_rank, maturity_rank, haircut_rate)
         if best is None or candidate[:2] < best[:2]:
             best = candidate
 
-    return _f(best[2].get("haircut_rate")) if best else 0.0
+    return best[2] if best else 0.0
 
 
 def lookup_fcp_haircut_rate(db: Database, regulatory_version_id: str, protection: dict) -> float:
@@ -652,7 +693,7 @@ class _StandardFallbackStats:
 class _StandardRuntime:
     supporting_factor_rules: list[dict[str, Any]]
     protections_by_exposure: dict[str, list[dict[str, Any]]]
-    haircut_rules: list[dict[str, Any]]
+    haircut_rules: FcpHaircutRuleBook
     crm_fx_haircut: float
 
 
@@ -661,11 +702,7 @@ _MAX_LOGGED_FALLBACKS = 50
 
 def _filter_standard_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Conserve les expositions SA et exclut les approches IRB."""
-    return [
-        row
-        for row in rows
-        if str(row.get("calculation_approach") or "SA").upper() not in {"IRB-F", "IRB-A"}
-    ]
+    return [row for row in rows if str(row.get("calculation_approach") or "SA").upper() not in {"IRB-F", "IRB-A"}]
 
 
 def _truthy_flag(value: Any) -> bool:
@@ -865,9 +902,7 @@ def _apply_funded_protections(
     for protection in protections:
         haircut_rate = lookup_fcp_haircut_rate_from_rules(runtime.haircut_rules, protection)
         mismatch = _currency_mismatch(row, protection)
-        maturity_factor = maturity_mismatch_factor(
-            row.get("maturity_months"), protection.get("maturity_months")
-        )
+        maturity_factor = maturity_mismatch_factor(row.get("maturity_months"), protection.get("maturity_months"))
         recognized_value = compute_recognized_fcp_value(
             _f(protection.get("protection_value")),
             haircut_rate,
@@ -879,14 +914,16 @@ def _apply_funded_protections(
         cover = min(ead_after_fcp, recognized_value)
         ead_after_fcp -= cover
         total_fcp += cover
-        allocations.append((
-            batch_id,
-            exposure_id,
-            protection.get("protection_id"),
-            protection.get("bucket") or "DEFAULT",
-            cover,
-            _crm_effect("EAD_REDUCTION_HAIRCUT", fx_mismatch=mismatch, maturity_factor=maturity_factor),
-        ))
+        allocations.append(
+            (
+                batch_id,
+                exposure_id,
+                protection.get("protection_id"),
+                protection.get("bucket") or "DEFAULT",
+                cover,
+                _crm_effect("EAD_REDUCTION_HAIRCUT", fx_mismatch=mismatch, maturity_factor=maturity_factor),
+            )
+        )
     return ead_after_fcp, total_fcp
 
 
@@ -906,9 +943,7 @@ def _apply_unfunded_protections(
     substituted_rwa = 0.0
     for protection in protections:
         mismatch = _currency_mismatch(row, protection)
-        maturity_factor = maturity_mismatch_factor(
-            row.get("maturity_months"), protection.get("maturity_months")
-        )
+        maturity_factor = maturity_mismatch_factor(row.get("maturity_months"), protection.get("maturity_months"))
         recognized_value = compute_recognized_ufcp_value(
             _f(protection.get("protection_value")),
             fx_mismatch=mismatch,
@@ -937,14 +972,16 @@ def _apply_unfunded_protections(
             protection_value=recognized_value,
         )
         substituted_rwa += rwa_increment
-        buffers.allocations.append((
-            batch_id,
-            exposure_id,
-            protection.get("protection_id"),
-            protection.get("bucket") or "DEFAULT",
-            guarantee,
-            _crm_effect("RW_SUBSTITUTION", fx_mismatch=mismatch, maturity_factor=maturity_factor),
-        ))
+        buffers.allocations.append(
+            (
+                batch_id,
+                exposure_id,
+                protection.get("protection_id"),
+                protection.get("bucket") or "DEFAULT",
+                guarantee,
+                _crm_effect("RW_SUBSTITUTION", fx_mismatch=mismatch, maturity_factor=maturity_factor),
+            )
+        )
     return residual_ead, substituted_rwa
 
 
@@ -1012,9 +1049,7 @@ def _process_standard_exposure(
     gross = _f(row["exposure_amount"])
     provision = _f(row["provision_amount"])
     net = max(gross - provision, 0.0)
-    ccf, ccf_bucket = _resolve_ccf(
-        db, batch_id, regulatory_version_id, row, buffers.decision_traces, stats
-    )
+    ccf, ccf_bucket = _resolve_ccf(db, batch_id, regulatory_version_id, row, buffers.decision_traces, stats)
     base_rw, rw_bucket, mismatch_multiplier = _resolve_base_risk_weight(
         db,
         batch_id,
@@ -1080,10 +1115,12 @@ def _process_standard_exposure(
 def _standard_control_metrics(batch_id: str, stats: _StandardFallbackStats) -> list[tuple]:
     metrics: list[tuple] = []
     if stats.ccf_count > 0 or stats.rw_count > 0:
-        metrics.extend([
-            (batch_id, "SA_CCF_FALLBACK_HITS", stats.ccf_count),
-            (batch_id, "SA_RW_FALLBACK_HITS", stats.rw_count),
-        ])
+        metrics.extend(
+            [
+                (batch_id, "SA_CCF_FALLBACK_HITS", stats.ccf_count),
+                (batch_id, "SA_RW_FALLBACK_HITS", stats.rw_count),
+            ]
+        )
     if stats.ignored_protection_count > 0:
         metrics.append((batch_id, "SA_CRM_IGNORED_PROTECTIONS", stats.ignored_protection_count))
     return metrics
@@ -1189,9 +1226,7 @@ def run_standard_engine(
     db.execute("DELETE FROM core.core_standard_results WHERE batch_id = %s", (batch_id,))
     db.execute("DELETE FROM core.core_protection_allocation WHERE batch_id = %s", (batch_id,))
     db.execute("DELETE FROM rpt.rpt_supporting_factor_trace WHERE batch_id = %s", (batch_id,))
-    rows = _filter_standard_rows(
-        db.query("SELECT * FROM stg.stg_exposures WHERE batch_id = %s", (batch_id,))
-    )
+    rows = _filter_standard_rows(db.query("SELECT * FROM stg.stg_exposures WHERE batch_id = %s", (batch_id,)))
     buffers = _StandardBuffers()
     stats = _StandardFallbackStats()
     runtime = _load_standard_runtime(db, batch_id, regulatory_version_id, buffers)
@@ -1212,4 +1247,3 @@ def run_standard_engine(
     _persist_standard_batches(db, batch_id, buffers, stats)
     _report_standard_anomalies(stats, len(buffers.results), strict_fallback_mode)
     return len(buffers.results)
-

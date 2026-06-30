@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : saccr_engine.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.6.0
 ================================================================================
 
 CORRECTIONS RÉGLEMENTAIRES v3.4.0 (audit points ② et ③)
@@ -130,55 +130,59 @@ import logging
 import math
 from collections import defaultdict
 from statistics import NormalDist
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from .db import Database
-from .runtime_rules import get_parameter
 from .decision_engine import evaluate_rule_set, flush_trace_buffer
+from .runtime_rules import get_parameter
+from .types import SaccrAddOnBreakdown, SaccrAdjNotional, SaccrTradeRow
 from .utils import to_float as _f
-from .types import SaccrTradeRow, SaccrAdjNotional, SaccrAddOnBreakdown
 
 logger = logging.getLogger(__name__)
 _NORMAL_DIST = NormalDist()
 
 # ─── Constantes réglementaires ───────────────────────────────────────────────
-_ALPHA     = 1.40    # Art.274(5)
-_MF_FLOOR  = 0.05    # floor du multiplier Art.278(1)
+_ALPHA = 1.40  # Art.274(5)
+_MF_FLOOR = 0.05  # floor du multiplier Art.278(1)
 
 # Supervisory factors Art.280a-280e
 _SF: Dict[str, float] = {
-    "IRD":        0.005,
-    "FX":         0.040,
-    "CREDIT_IG":  0.005,
-    "CREDIT_HY":  0.010,
+    "IRD": 0.005,
+    "FX": 0.040,
+    "CREDIT_IG": 0.005,
+    "CREDIT_HY": 0.010,
     "EQUITY_SINGLE": 0.320,
-    "EQUITY_INDEX":  0.200,
+    "EQUITY_INDEX": 0.200,
     "COMMODITY_ENERGY": 0.180,
-    "COMMODITY_METAL":  0.180,
-    "COMMODITY_AGRI":   0.180,
-    "COMMODITY_OTHER":  0.180,
+    "COMMODITY_METAL": 0.180,
+    "COMMODITY_AGRI": 0.180,
+    "COMMODITY_OTHER": 0.180,
 }
 
 # Corrélations inter-entités Art.280b-280e
 _RHO: Dict[str, float] = {
-    "CREDIT":         0.50,
-    "EQUITY_SINGLE":  0.50,
-    "EQUITY_INDEX":   0.80,
-    "COMMODITY":      0.40,
+    "CREDIT": 0.50,
+    "EQUITY_SINGLE": 0.50,
+    "EQUITY_INDEX": 0.80,
+    "COMMODITY": 0.40,
 }
 
 # Facteurs de corrélation inter-buckets IRD Art.280a(1)(b) Table 1
 # ε[i][j] pour buckets maturité 1=[0,1y], 2=[1y,5y], 3=[>5y]
-_IRD_EPSILON: Dict[Tuple[int,int], float] = {
-    (1,2): 1.4, (2,1): 1.4,
-    (1,3): 0.6, (3,1): 0.6,
-    (2,3): 1.4, (3,2): 1.4,
+_IRD_EPSILON: Dict[Tuple[int, int], float] = {
+    (1, 2): 1.4,
+    (2, 1): 1.4,
+    (1, 3): 0.6,
+    (3, 1): 0.6,
+    (2, 3): 1.4,
+    (3, 2): 1.4,
 }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HELPER — DELTA SUPERVISORY (Art.279b)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _compute_delta(
     option_type: str,
@@ -214,8 +218,9 @@ def _compute_delta(
         return sign
 
     try:
-        d1 = (math.log(underlying_price / strike) + 0.5 * implied_vol**2 * maturity) \
-             / (implied_vol * math.sqrt(maturity))
+        d1 = (math.log(underlying_price / strike) + 0.5 * implied_vol**2 * maturity) / (
+            implied_vol * math.sqrt(maturity)
+        )
     except (ValueError, ZeroDivisionError):
         return sign
 
@@ -230,6 +235,7 @@ def _compute_delta(
 # ─────────────────────────────────────────────────────────────────────────────
 # HELPER — SUPERVISORY DURATION (Art.279c pour IRD)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _supervisory_duration(start_years: float, end_years: float) -> float:
     """Durée supervisory SA-CCR Art.279c(1)(b) pour les dérivés de taux.
@@ -300,6 +306,7 @@ def _maturity_factor(maturity_years: float, margined: bool, mpor_days: float = 1
 # HELPER — NOTIONNEL AJUSTÉ PAR TRADE (Art.279)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def _adjusted_notional(
     trade: SaccrTradeRow,
     margined: bool = False,
@@ -323,32 +330,31 @@ def _adjusted_notional(
     mpor_days : float  MPOR en jours ouvrés (margé).
     """
     asset_class = (trade.get("asset_class") or "").upper()
-    notional    = _f(trade.get("notional", 0.0))
-    maturity    = max(_f(trade.get("maturity_years", 1.0)), 0.0)
-    bought      = _f(trade.get("delta", 1.0)) >= 0  # ±1 linéaire par défaut
+    notional = _f(trade.get("notional", 0.0))
+    maturity = max(_f(trade.get("maturity_years", 1.0)), 0.0)
+    bought = _f(trade.get("delta", 1.0)) >= 0  # ±1 linéaire par défaut
 
     # Facteur de maturité MF (Art.279c) — commun à toutes les classes.
     mf = _maturity_factor(maturity, margined, mpor_days)
 
     # Delta supervisory
-    option_type     = str(trade.get("option_type") or "")
+    option_type = str(trade.get("option_type") or "")
     underlying_price = _f(trade.get("underlying_price", 0.0))
-    strike          = _f(trade.get("strike", 0.0))
-    implied_vol     = _f(trade.get("implied_vol", 0.0))
+    strike = _f(trade.get("strike", 0.0))
+    implied_vol = _f(trade.get("implied_vol", 0.0))
 
     # Si delta explicitement fourni (pré-calculé), l'utiliser directement
-    delta_override  = trade.get("delta")
+    delta_override = trade.get("delta")
     if delta_override is not None and option_type.upper() not in ("CALL", "PUT"):
         delta = _f(delta_override)
     else:
-        delta = _compute_delta(option_type, underlying_price, strike,
-                               implied_vol, maturity, bought)
+        delta = _compute_delta(option_type, underlying_price, strike, implied_vol, maturity, bought)
 
     # Notionnel ajusté
     if asset_class == "IRD":
         s_years = _f(trade.get("start_date_years", 0.0))
         e_years = _f(trade.get("end_date_years", maturity))
-        sd      = _supervisory_duration(s_years, e_years)
+        sd = _supervisory_duration(s_years, e_years)
         # v3.4.0 — D_i = notional × SD × MF (Art.279b + Art.279c)
         adj_notional = notional * sd * mf
         # PATCH v2.7 — Bucket IRD = devise de paiement (Art.280a CRR3)
@@ -370,9 +376,7 @@ def _adjusted_notional(
         #   2. currency           (champ générique parfois rempli côté client)
         #   3. ird_currency       (autre alias possible)
         #   4. "DEFAULT"          (ancien comportement — log un warning)
-        ccy = (trade.get("payment_currency") or
-               trade.get("currency") or
-               trade.get("ird_currency"))
+        ccy = trade.get("payment_currency") or trade.get("currency") or trade.get("ird_currency")
         if not ccy:
             logger.warning(
                 "SA-CCR IRD trade %s sans payment_currency — bucket = 'DEFAULT' "
@@ -381,7 +385,7 @@ def _adjusted_notional(
                 trade.get("trade_id", "?"),
             )
             ccy = "DEFAULT"
-        bucket  = str(ccy).upper().strip()
+        bucket = str(ccy).upper().strip()
         sub_type = ""
     elif asset_class == "FX":
         # v4.4.5 — D_i = notional × MF, bucket FX = paire de devises explicite.
@@ -400,39 +404,40 @@ def _adjusted_notional(
         # → SD ≈ 3,6 → add-on sous-estimé d'un facteur ~3,6).
         s_years = _f(trade.get("start_date_years", 0.0))
         e_years = _f(trade.get("end_date_years", maturity))
-        sd_cr   = _supervisory_duration(s_years, e_years)
+        sd_cr = _supervisory_duration(s_years, e_years)
         adj_notional = notional * sd_cr * mf
-        bucket   = str(trade.get("reference_entity_id") or "UNKNOWN")
+        bucket = str(trade.get("reference_entity_id") or "UNKNOWN")
         sub_type = (str(trade.get("credit_quality") or "IG")).upper()
     elif asset_class == "EQUITY":
         # v3.4.0 — D_i = notional × MF
         adj_notional = notional * mf
-        bucket   = str(trade.get("equity_id") or "UNKNOWN")
+        bucket = str(trade.get("equity_id") or "UNKNOWN")
         sub_type = (str(trade.get("equity_type") or "SINGLE")).upper()
     elif asset_class == "COMMODITY":
         # v3.4.0 — D_i = notional × MF
         adj_notional = notional * mf
-        bucket   = str(trade.get("commodity_type") or "ENERGY").upper()
+        bucket = str(trade.get("commodity_type") or "ENERGY").upper()
         sub_type = bucket
     else:
         adj_notional = notional * mf
-        bucket   = "DEFAULT"
+        bucket = "DEFAULT"
         sub_type = ""
 
     return SaccrAdjNotional(
-        trade_id     = str(trade.get("trade_id", "")),
-        asset_class  = asset_class,
-        delta        = delta,
-        adj_notional = adj_notional,
-        maturity     = maturity,
-        bucket       = bucket,
-        sub_type     = sub_type,
+        trade_id=str(trade.get("trade_id", "")),
+        asset_class=asset_class,
+        delta=delta,
+        adj_notional=adj_notional,
+        maturity=maturity,
+        bucket=bucket,
+        sub_type=sub_type,
     )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ADD-ON IRD (Art.280a)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _addon_ird(trades: List[SaccrAdjNotional]) -> float:
     """Add-on IRD : agrégation par devise puis inter-bucket maturité Art.280a."""
@@ -442,7 +447,7 @@ def _addon_ird(trades: List[SaccrAdjNotional]) -> float:
     sf = _SF["IRD"]
 
     # Group by currency (bucket field = currency de paiement)
-    by_currency: Dict[str, Dict[int, float]] = defaultdict(lambda: {1:0.0, 2:0.0, 3:0.0})
+    by_currency: Dict[str, Dict[int, float]] = defaultdict(lambda: {1: 0.0, 2: 0.0, 3: 0.0})
     for t in trades:
         b = _ird_bucket(t["maturity"])
         by_currency[t["bucket"]][b] += t["delta"] * t["adj_notional"]
@@ -452,10 +457,12 @@ def _addon_ird(trades: List[SaccrAdjNotional]) -> float:
         d1, d2, d3 = buckets[1], buckets[2], buckets[3]
         # Formule Art.280a(1)(b) avec facteurs ε
         variance = (
-            d1**2 + d2**2 + d3**2
-            + 2 * _IRD_EPSILON[(1,2)] * d1 * d2
-            + 2 * _IRD_EPSILON[(2,3)] * d2 * d3
-            + 2 * _IRD_EPSILON[(1,3)] * d1 * d3
+            d1**2
+            + d2**2
+            + d3**2
+            + 2 * _IRD_EPSILON[(1, 2)] * d1 * d2
+            + 2 * _IRD_EPSILON[(2, 3)] * d2 * d3
+            + 2 * _IRD_EPSILON[(1, 3)] * d1 * d3
         )
         addon_ccy = sf * math.sqrt(max(0.0, variance))
         addon_total += addon_ccy
@@ -467,6 +474,7 @@ def _addon_ird(trades: List[SaccrAdjNotional]) -> float:
 # ─────────────────────────────────────────────────────────────────────────────
 # ADD-ON FX (Art.280c)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _addon_fx(trades: List[SaccrAdjNotional]) -> float:
     """Add-on FX : agrégation par currency pair Art.280c."""
@@ -486,6 +494,7 @@ def _addon_fx(trades: List[SaccrAdjNotional]) -> float:
 # ADD-ON CREDIT (Art.280b) — formule corrélation Art.280b(1)(b)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def _addon_credit(trades: List[SaccrAdjNotional]) -> float:
     """Add-on Credit Art.280b — agrégation par entité de référence avec corrélation ρ."""
     if not trades:
@@ -497,8 +506,8 @@ def _addon_credit(trades: List[SaccrAdjNotional]) -> float:
     by_entity: Dict[str, Tuple[float, float]] = {}  # entity → (EffNot, SF)
     for t in trades:
         sf_key = "CREDIT_IG" if t["sub_type"] != "HY" else "CREDIT_HY"
-        sf     = _SF[sf_key]
-        d      = t["delta"] * t["adj_notional"]
+        sf = _SF[sf_key]
+        d = t["delta"] * t["adj_notional"]
         if t["bucket"] not in by_entity:
             by_entity[t["bucket"]] = (0.0, sf)
         prev_d, prev_sf = by_entity[t["bucket"]]
@@ -508,15 +517,16 @@ def _addon_credit(trades: List[SaccrAdjNotional]) -> float:
     if not eff_nots:
         return 0.0
 
-    sum_en    = sum(eff_nots)
+    sum_en = sum(eff_nots)
     sum_en_sq = sum(v * v for v in eff_nots)
-    variance  = rho**2 * sum_en**2 + (1 - rho**2) * sum_en_sq
+    variance = rho**2 * sum_en**2 + (1 - rho**2) * sum_en_sq
     return math.sqrt(max(0.0, variance))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ADD-ON EQUITY (Art.280d)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _aggregate_addon_with_correlation(
     weighted_eff_notionals: List[float],
@@ -530,9 +540,9 @@ def _aggregate_addon_with_correlation(
     """
     if not weighted_eff_notionals:
         return 0.0
-    sum_en    = sum(weighted_eff_notionals)
+    sum_en = sum(weighted_eff_notionals)
     sum_en_sq = sum(v * v for v in weighted_eff_notionals)
-    variance  = rho ** 2 * sum_en ** 2 + (1.0 - rho ** 2) * sum_en_sq
+    variance = rho**2 * sum_en**2 + (1.0 - rho**2) * sum_en_sq
     return math.sqrt(max(0.0, variance))
 
 
@@ -577,11 +587,10 @@ def _addon_equity(trades: List[SaccrAdjNotional]) -> float:
             by_type["SINGLE"].append(t)
 
     # ── 2. Add-on intra-type — agrégation par bucket (ticker ou code index) ──
-    def _addon_for_subset(subset: List[SaccrAdjNotional],
-                          sf_key: str, rho_key: str) -> float:
+    def _addon_for_subset(subset: List[SaccrAdjNotional], sf_key: str, rho_key: str) -> float:
         if not subset:
             return 0.0
-        sf  = _SF[sf_key]
+        sf = _SF[sf_key]
         rho = _RHO[rho_key]
         # Agrégation par bucket (entity / index code) : Σ δ × D pour chaque entité
         by_entity: Dict[str, float] = defaultdict(float)
@@ -595,17 +604,18 @@ def _addon_equity(trades: List[SaccrAdjNotional]) -> float:
         eff_nots = [sf * d for d in by_entity.values()]
         return _aggregate_addon_with_correlation(eff_nots, rho)
 
-    addon_single = _addon_for_subset(by_type["SINGLE"],
-                                     "EQUITY_SINGLE", "EQUITY_SINGLE")
-    addon_index  = _addon_for_subset(by_type["INDEX"],
-                                     "EQUITY_INDEX",  "EQUITY_INDEX")
+    addon_single = _addon_for_subset(by_type["SINGLE"], "EQUITY_SINGLE", "EQUITY_SINGLE")
+    addon_index = _addon_for_subset(by_type["INDEX"], "EQUITY_INDEX", "EQUITY_INDEX")
 
     # ── 3. Sommation linéaire — pas de corrélation inter-type Art.280d ───────
     addon_total = addon_single + addon_index
     logger.debug(
         "SA-CCR EQUITY add-on : SINGLE=%.2f  INDEX=%.2f  TOTAL=%.2f  (n_single=%d, n_index=%d)",
-        addon_single, addon_index, addon_total,
-        len(by_type["SINGLE"]), len(by_type["INDEX"]),
+        addon_single,
+        addon_index,
+        addon_total,
+        len(by_type["SINGLE"]),
+        len(by_type["INDEX"]),
     )
     return addon_total
 
@@ -613,6 +623,7 @@ def _addon_equity(trades: List[SaccrAdjNotional]) -> float:
 # ─────────────────────────────────────────────────────────────────────────────
 # ADD-ON COMMODITY (Art.280e)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _addon_commodity(trades: List[SaccrAdjNotional]) -> float:
     """Add-on Commodity Art.280e — agrégation par commodity type avec ρ=0.40."""
@@ -625,19 +636,20 @@ def _addon_commodity(trades: List[SaccrAdjNotional]) -> float:
     for t in trades:
         ctype = t["sub_type"].upper() if t["sub_type"] else "ENERGY"
         sf_key = f"COMMODITY_{ctype}" if f"COMMODITY_{ctype}" in _SF else "COMMODITY_OTHER"
-        sf     = _SF[sf_key]
+        sf = _SF[sf_key]
         by_type[ctype] += sf * t["delta"] * t["adj_notional"]
 
-    eff_nots  = list(by_type.values())
-    sum_en    = sum(eff_nots)
+    eff_nots = list(by_type.values())
+    sum_en = sum(eff_nots)
     sum_en_sq = sum(v * v for v in eff_nots)
-    variance  = rho**2 * sum_en**2 + (1 - rho**2) * sum_en_sq
+    variance = rho**2 * sum_en**2 + (1 - rho**2) * sum_en_sq
     return math.sqrt(max(0.0, variance))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CALCUL PFE COMPLET PAR NETTING SET (Art.278)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _compute_pfe_full(
     trades: List[SaccrTradeRow],
@@ -657,19 +669,20 @@ def _compute_pfe_full(
     mpor_days : float  Marge Period Of Risk en jours ouvrés (margé).
     """
     # Vérifier si les trades ont des données natives SA-CCR (v7)
-    has_native = any(
-        t.get("asset_class") and t.get("notional") is not None
-        for t in trades
-    )
+    has_native = any(t.get("asset_class") and t.get("notional") is not None for t in trades)
 
     if not has_native:
         # Fallback v5 : utiliser les add-ons pré-calculés
         pfe_full = sum(_f(t.get("addon", 0.0)) for t in trades)
         multiplier = _calc_multiplier(mtm_net - collateral_for_multiplier, pfe_full)
         return SaccrAddOnBreakdown(
-            addon_ird=0.0, addon_fx=0.0, addon_credit=0.0,
-            addon_equity=0.0, addon_commodity=0.0,
-            pfe_full=pfe_full, multiplier=multiplier,
+            addon_ird=0.0,
+            addon_fx=0.0,
+            addon_credit=0.0,
+            addon_equity=0.0,
+            addon_commodity=0.0,
+            pfe_full=pfe_full,
+            multiplier=multiplier,
             pfe_final=pfe_full * multiplier,
         )
 
@@ -683,20 +696,25 @@ def _compute_pfe_full(
     for an in adj_notionals:
         by_class[an["asset_class"]].append(an)
 
-    addon_ird       = _addon_ird(by_class.get("IRD", []))
-    addon_fx        = _addon_fx(by_class.get("FX", []))
-    addon_credit    = _addon_credit(by_class.get("CREDIT", []))
-    addon_equity    = _addon_equity(by_class.get("EQUITY", []))
+    addon_ird = _addon_ird(by_class.get("IRD", []))
+    addon_fx = _addon_fx(by_class.get("FX", []))
+    addon_credit = _addon_credit(by_class.get("CREDIT", []))
+    addon_equity = _addon_equity(by_class.get("EQUITY", []))
     addon_commodity = _addon_commodity(by_class.get("COMMODITY", []))
 
-    pfe_full   = addon_ird + addon_fx + addon_credit + addon_equity + addon_commodity
+    pfe_full = addon_ird + addon_fx + addon_credit + addon_equity + addon_commodity
     multiplier = _calc_multiplier(mtm_net - collateral_for_multiplier, pfe_full)
-    pfe_final  = pfe_full * multiplier
+    pfe_final = pfe_full * multiplier
 
     return SaccrAddOnBreakdown(
-        addon_ird=addon_ird, addon_fx=addon_fx, addon_credit=addon_credit,
-        addon_equity=addon_equity, addon_commodity=addon_commodity,
-        pfe_full=pfe_full, multiplier=multiplier, pfe_final=pfe_final,
+        addon_ird=addon_ird,
+        addon_fx=addon_fx,
+        addon_credit=addon_credit,
+        addon_equity=addon_equity,
+        addon_commodity=addon_commodity,
+        pfe_full=pfe_full,
+        multiplier=multiplier,
+        pfe_final=pfe_final,
     )
 
 
@@ -720,7 +738,8 @@ def _calc_multiplier(v: float, pfe_full: float) -> float:
 # P0 v3.2.0 — MARGE / COLLATERAL SA-CCR AVANCÉ
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _truthy(value, default: bool = False) -> bool:
+
+def _truthy(value: Any, default: bool = False) -> bool:
     """Normalise les indicateurs booléens CSV/SQL sans dépendre de l'ingestion."""
     if value is None or value == "":
         return default
@@ -795,7 +814,7 @@ def _compute_margin_state(
     mpor_days = max((int(_f(t.get("mpor_days", 10.0)) or 10) for t in trades), default=10)
     mpor_days = max(_MPOR_FLOOR_DAYS, mpor_days)
 
-    def _is_set(v) -> bool:
+    def _is_set(v: Any) -> bool:
         return v not in (None, "")
 
     detected_csa = any(
@@ -980,6 +999,114 @@ def _load_supervisory_parameters(db: Database, regulatory_version_id: str) -> fl
 # POINT D'ENTRÉE PRINCIPAL
 # ─────────────────────────────────────────────────────────────────────────────
 
+
+def _calculate_saccr_netting_set(
+    db: Database,
+    batch_id: str,
+    regulatory_version_id: str,
+    ns_id: str,
+    ns_trades: List[SaccrTradeRow],
+    ctype: str,
+    cpid: str,
+    alpha: float,
+    trace_buffer: List[tuple],
+) -> tuple:
+    """Calculate one netting set and return its persistence tuple."""
+    # ── RC/PFE/EAD + cap Art.274(3) ─────────────────────────────────────
+    exposure_state = _apply_margin_cap(ns_trades, alpha=alpha)
+    final_state = exposure_state["final"]
+    margin_state = final_state["margin_state"]
+    pfe_breakdown = final_state["pfe_breakdown"]
+    mtm_sum = margin_state["mtm_net"]
+    rc = final_state["rc"]
+    pfe = final_state["pfe"]
+    ead = final_state["ead"]
+    margined_state = exposure_state.get("margined")
+    unmargined_state = exposure_state.get("unmargined")
+    ead_margined = margined_state["ead"] if margined_state else None
+    ead_unmargined = unmargined_state["ead"] if unmargined_state else ead
+    rc_margined = margined_state["rc"] if margined_state else None
+    rc_unmargined = unmargined_state["rc"] if unmargined_state else rc
+    pfe_margined = margined_state["pfe"] if margined_state else None
+    pfe_unmargined = unmargined_state["pfe"] if unmargined_state else pfe
+
+    logger.debug(
+        "SA-CCR NS=%s  method=%s cap=%s RC=%.2f PFE_full=%.2f mult=%.4f PFE=%.2f "
+        "EAD=%.2f EAD_margined=%s EAD_unmargined=%.2f "
+        "(IRD=%.2f FX=%.2f CR=%.2f EQ=%.2f CO=%.2f)",
+        ns_id,
+        exposure_state["final_method"],
+        exposure_state["cap_applied"],
+        rc,
+        pfe_breakdown["pfe_full"],
+        pfe_breakdown["multiplier"],
+        pfe,
+        ead,
+        f"{ead_margined:.2f}" if ead_margined is not None else "n/a",
+        ead_unmargined,
+        pfe_breakdown["addon_ird"],
+        pfe_breakdown["addon_fx"],
+        pfe_breakdown["addon_credit"],
+        pfe_breakdown["addon_equity"],
+        pfe_breakdown["addon_commodity"],
+    )
+
+    # ── Risk Weight via moteur de décision ───────────────────────────────
+    rw_decision = evaluate_rule_set(
+        db,
+        batch_id,
+        regulatory_version_id,
+        "SACCR_RISK_WEIGHT",
+        {"_context_key": ns_id, "counterparty_type": ctype},
+        trace_buffer=trace_buffer,
+    )
+    rw = _f(rw_decision["result_value"]) if rw_decision else 1.0
+    rwa = ead * rw
+
+    collateral_state = {
+        "final": margin_state,
+        "margined": margined_state["margin_state"] if margined_state else None,
+        "unmargined": unmargined_state["margin_state"] if unmargined_state else None,
+        "cap_applied": exposure_state["cap_applied"],
+        "final_method": exposure_state["final_method"],
+    }
+    return (
+        batch_id,
+        ns_id,
+        cpid,
+        ctype,
+        rc,
+        pfe,
+        ead,
+        rw,
+        rwa,
+        mtm_sum,
+        margin_state["net_variation_margin"],
+        margin_state["nica"],
+        margin_state["threshold_amount"],
+        margin_state["mta"],
+        margin_state["mpor_days"],
+        pfe_breakdown["multiplier"],
+        pfe_breakdown["pfe_full"],
+        pfe_breakdown["addon_ird"],
+        pfe_breakdown["addon_fx"],
+        pfe_breakdown["addon_credit"],
+        pfe_breakdown["addon_equity"],
+        pfe_breakdown["addon_commodity"],
+        margin_state["eligible_collateral_value"],
+        margin_state["ineligible_collateral_value"],
+        ead_margined,
+        ead_unmargined,
+        rc_margined,
+        rc_unmargined,
+        pfe_margined,
+        pfe_unmargined,
+        exposure_state["cap_applied"],
+        exposure_state["final_method"],
+        json.dumps(collateral_state, default=str),
+    )
+
+
 def run_saccr_engine(
     db: Database,
     batch_id: str,
@@ -1078,90 +1205,28 @@ def run_saccr_engine(
         if ns_id not in ns_meta:
             ns_meta[ns_id] = {
                 "counterparty_type": str(t.get("counterparty_type", "CORPORATE")),
-                "counterparty_id":   str(t.get("counterparty_id", "")),
+                "counterparty_id": str(t.get("counterparty_id", "")),
             }
 
-    alpha          = _load_supervisory_parameters(db, regulatory_version_id)
-    trace_buffer:  List[tuple] = []
+    alpha = _load_supervisory_parameters(db, regulatory_version_id)
+    trace_buffer: List[tuple] = []
     results_batch: List[tuple] = []
 
     for ns_id, ns_trades in by_ns.items():
-        ctype = ns_meta[ns_id]["counterparty_type"]
-        cpid  = ns_meta[ns_id]["counterparty_id"]
-
-        # ── RC/PFE/EAD + cap Art.274(3) ─────────────────────────────────────
-        exposure_state = _apply_margin_cap(ns_trades, alpha=alpha)
-        final_state = exposure_state["final"]
-        margin_state = final_state["margin_state"]
-        pfe_breakdown = final_state["pfe_breakdown"]
-        mtm_sum = margin_state["mtm_net"]
-        rc = final_state["rc"]
-        pfe = final_state["pfe"]
-        ead = final_state["ead"]
-        margined_state = exposure_state.get("margined")
-        unmargined_state = exposure_state.get("unmargined")
-        ead_margined = margined_state["ead"] if margined_state else None
-        ead_unmargined = unmargined_state["ead"] if unmargined_state else ead
-        rc_margined = margined_state["rc"] if margined_state else None
-        rc_unmargined = unmargined_state["rc"] if unmargined_state else rc
-        pfe_margined = margined_state["pfe"] if margined_state else None
-        pfe_unmargined = unmargined_state["pfe"] if unmargined_state else pfe
-
-        logger.debug(
-            "SA-CCR NS=%s  method=%s cap=%s RC=%.2f PFE_full=%.2f mult=%.4f PFE=%.2f "
-            "EAD=%.2f EAD_margined=%s EAD_unmargined=%.2f "
-            "(IRD=%.2f FX=%.2f CR=%.2f EQ=%.2f CO=%.2f)",
-            ns_id, exposure_state["final_method"], exposure_state["cap_applied"], rc,
-            pfe_breakdown["pfe_full"], pfe_breakdown["multiplier"], pfe, ead,
-            f"{ead_margined:.2f}" if ead_margined is not None else "n/a", ead_unmargined,
-            pfe_breakdown["addon_ird"], pfe_breakdown["addon_fx"],
-            pfe_breakdown["addon_credit"], pfe_breakdown["addon_equity"],
-            pfe_breakdown["addon_commodity"],
+        meta = ns_meta[ns_id]
+        results_batch.append(
+            _calculate_saccr_netting_set(
+                db,
+                batch_id,
+                regulatory_version_id,
+                ns_id,
+                ns_trades,
+                meta["counterparty_type"],
+                meta["counterparty_id"],
+                alpha,
+                trace_buffer,
+            )
         )
-
-        # ── Risk Weight via moteur de décision ───────────────────────────────
-        rw_decision = evaluate_rule_set(
-            db, batch_id, regulatory_version_id, "SACCR_RISK_WEIGHT",
-            {"_context_key": ns_id, "counterparty_type": ctype},
-            trace_buffer=trace_buffer,
-        )
-        rw  = _f(rw_decision["result_value"]) if rw_decision else 1.0
-        rwa = ead * rw
-
-        collateral_state = {
-            "final": margin_state,
-            "margined": margined_state["margin_state"] if margined_state else None,
-            "unmargined": unmargined_state["margin_state"] if unmargined_state else None,
-            "cap_applied": exposure_state["cap_applied"],
-            "final_method": exposure_state["final_method"],
-        }
-        results_batch.append((
-            batch_id, ns_id, cpid, ctype, rc, pfe, ead, rw, rwa,
-            mtm_sum,
-            margin_state["net_variation_margin"],
-            margin_state["nica"],
-            margin_state["threshold_amount"],
-            margin_state["mta"],
-            margin_state["mpor_days"],
-            pfe_breakdown["multiplier"],
-            pfe_breakdown["pfe_full"],
-            pfe_breakdown["addon_ird"],
-            pfe_breakdown["addon_fx"],
-            pfe_breakdown["addon_credit"],
-            pfe_breakdown["addon_equity"],
-            pfe_breakdown["addon_commodity"],
-            margin_state["eligible_collateral_value"],
-            margin_state["ineligible_collateral_value"],
-            ead_margined,
-            ead_unmargined,
-            rc_margined,
-            rc_unmargined,
-            pfe_margined,
-            pfe_unmargined,
-            exposure_state["cap_applied"],
-            exposure_state["final_method"],
-            json.dumps(collateral_state, default=str),
-        ))
 
     # ── Persistance ─────────────────────────────────────────────────────────
     with db.transaction():
@@ -1189,7 +1254,8 @@ def run_saccr_engine(
 
     logger.info(
         "SA-CCR : %d netting sets traités  (α=%.2f, PFE natif=%s)",
-        len(results_batch), alpha,
+        len(results_batch),
+        alpha,
         "OUI" if any(t.get("asset_class") for t in all_trades) else "NON (fallback v5)",
     )
     return len(results_batch)

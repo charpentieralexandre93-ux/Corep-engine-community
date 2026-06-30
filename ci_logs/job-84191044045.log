@@ -1,0 +1,412 @@
+static-and-tests (3.11)	Set up job	﻿2026-06-30T01:11:10.7512055Z Current runner version: '2.335.1'
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7549246Z ##[group]Runner Image Provisioner
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7550742Z Hosted Compute Agent
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7551794Z Version: 20260611.554
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7553049Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7554422Z Build Date: 2026-06-11T21:40:46Z
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7555816Z Worker ID: {919fa69a-5942-47f9-92bf-6eb801c20195}
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7557194Z Azure Region: centralus
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7558128Z ##[endgroup]
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7560348Z ##[group]Operating System
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7561382Z Ubuntu
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7562188Z 24.04.4
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7563093Z LTS
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7563914Z ##[endgroup]
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7564870Z ##[group]Runner Image
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7566155Z Image: ubuntu-24.04
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7567100Z Version: 20260622.220.1
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7568984Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7571970Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7573860Z ##[endgroup]
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7576026Z ##[group]GITHUB_TOKEN Permissions
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7579943Z Contents: read
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7580894Z Metadata: read
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7581924Z ##[endgroup]
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7585318Z Secret source: Actions
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7587290Z Prepare workflow directory
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7942271Z Prepare all required actions
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:10.7980185Z Getting action download info
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:11.0656675Z Download action repository 'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:11.1634315Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:11.2343163Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+static-and-tests (3.11)	Set up job	2026-06-30T01:11:11.4458865Z Complete job name: static-and-tests (3.11)
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	﻿2026-06-30T01:11:11.5302831Z ##[group]Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5304043Z with:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5304683Z   repository: charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5309314Z   token: ***
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5309813Z   ssh-strict: true
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5310351Z   ssh-user: git
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5310856Z   persist-credentials: true
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5311405Z   clean: true
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5311861Z   sparse-checkout-cone-mode: true
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5312482Z   fetch-depth: 1
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5312927Z   fetch-tags: false
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5313378Z   show-progress: true
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5313833Z   lfs: false
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5314254Z   submodules: false
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5314714Z   set-safe-directory: true
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.5315479Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6309066Z Syncing repository: charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6311378Z ##[group]Getting Git version info
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6312304Z Working directory is '/home/runner/work/Corep-engine-community/Corep-engine-community'
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6313566Z [command]/usr/bin/git version
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6698543Z git version 2.54.0
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6754762Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6771971Z Temporarily overriding HOME='/home/runner/work/_temp/d866f583-349a-4955-9ace-3b087f51d720' before making global git config changes
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6774761Z Adding repository directory to the temporary git global config as a safe directory
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.6780031Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7090886Z Deleting the contents of '/home/runner/work/Corep-engine-community/Corep-engine-community'
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7094645Z ##[group]Determining repository object format
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7097067Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7098052Z ##[group]Initializing the repository
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7103351Z [command]/usr/bin/git init /home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7643987Z hint: Using 'master' as the name for the initial branch. This default branch name
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7671636Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7673340Z hint: to use in all of your new repositories, which will suppress this warning,
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7674726Z hint: call:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7675470Z hint:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7676697Z hint: 	git config --global init.defaultBranch <name>
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7677820Z hint:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7678448Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7679725Z hint: 'development'. The just-created branch can be renamed via this command:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7680759Z hint:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7681220Z hint: 	git branch -m <name>
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7681749Z hint:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7682397Z hint: Disable this message with "git config set advice.defaultBranchName false"
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7683697Z Initialized empty Git repository in /home/runner/work/Corep-engine-community/Corep-engine-community/.git/
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.7689501Z [command]/usr/bin/git remote add origin https://github.com/charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8053639Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8054853Z ##[group]Disabling automatic garbage collection
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8059408Z [command]/usr/bin/git config --local gc.auto 0
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8116694Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8121645Z ##[group]Setting up auth
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8122903Z Removing SSH command configuration
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8129328Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.8170090Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9746452Z Removing HTTP extra header
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9752972Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:11.9786662Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0000411Z Removing includeIf entries pointing to credentials config files
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0006500Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0037553Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0259804Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0297575Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0325835Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0357795Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0389542Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0415439Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0417063Z ##[group]Fetching the repository
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.0426106Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +fc76f59b569bd2d113feb6df10d62fcd590e110b:refs/remotes/pull/25/merge
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4209605Z From https://github.com/charpentieralexandre93-ux/Corep-engine-community
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4212331Z  * [new ref]         fc76f59b569bd2d113feb6df10d62fcd590e110b -> pull/25/merge
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4249828Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4251629Z ##[group]Determining the checkout info
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4253779Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4257441Z [command]/usr/bin/git sparse-checkout disable
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4368255Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4371030Z ##[group]Checking out the ref
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4372320Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/25/merge
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4476257Z Note: switching to 'refs/remotes/pull/25/merge'.
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4477620Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4478362Z You are in 'detached HEAD' state. You can look around, make experimental
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4480137Z changes and commit them, and you can discard any commits you make in this
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4482056Z state without impacting any branches by switching back to a branch.
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4483440Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4484150Z If you want to create a new branch to retain commits you create, you may
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4485977Z do so (now or later) by using -c with the switch command. Example:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4486903Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4487283Z   git switch -c <new-branch-name>
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4487900Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4488520Z Or undo this operation with:
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4489237Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4489660Z   git switch -
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4490194Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4491115Z Turn off this advice by setting config variable advice.detachedHead to false
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4492392Z 
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4493827Z HEAD is now at fc76f59 Merge 97b4ea15138b9f5d6483b7b9cf51bf9cc099792b into bd79badc68cc8dce7c5b243d7b30440624b33180
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4498562Z ##[endgroup]
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4539111Z [command]/usr/bin/git log -1 --format=%H
+static-and-tests (3.11)	Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:12.4562700Z fc76f59b569bd2d113feb6df10d62fcd590e110b
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	﻿2026-06-30T01:11:12.4938063Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4939735Z with:
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4940534Z   python-version: 3.11
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4941434Z   cache: pip
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4942239Z   check-latest: false
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4953639Z   token: ***
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4954532Z   update-environment: true
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4955732Z   allow-prereleases: false
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4956733Z   freethreaded: false
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.4957610Z ##[endgroup]
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.6255462Z ##[group]Installed versions
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.6366707Z Successfully set up CPython (3.11.15)
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.6369990Z ##[endgroup]
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:12.7197588Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:13.4309407Z /home/runner/.cache/pip
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:13.5865312Z Cache hit for restore-key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-8465f91af38e1dc7cc3b689dd3103ece0082692ca9222117eb9f8cbd462c130e
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:14.7656984Z Received 67108864 of 109397917 (61.3%), 63.9 MBs/sec
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:15.0176139Z Received 109397917 of 109397917 (100.0%), 83.1 MBs/sec
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:15.0177965Z Cache Size: ~104 MB (109397917 B)
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:15.0258396Z [command]/usr/bin/tar -xf /home/runner/work/_temp/1dabec30-23d1-470a-8a0a-1e11130b043f/cache.tzst -P -C /home/runner/work/Corep-engine-community/Corep-engine-community --use-compress-program unzstd
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:15.2252927Z Cache restored successfully
+static-and-tests (3.11)	Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405	2026-06-30T01:11:15.2306221Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-8465f91af38e1dc7cc3b689dd3103ece0082692ca9222117eb9f8cbd462c130e
+static-and-tests (3.11)	Installer le projet et les outils	﻿2026-06-30T01:11:15.2494007Z ##[group]Run if [ "3.11" = "3.11" ]; then
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2494669Z ^[[36;1mif [ "3.11" = "3.11" ]; then^[[0m
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2495162Z ^[[36;1m  python -m pip install --require-hashes -r requirements-dev-py311-linux.lock^[[0m
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2496072Z ^[[36;1m  python -m pip install --no-deps -e ".[dev,postgres]"^[[0m
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2496435Z ^[[36;1melse^[[0m
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2496730Z ^[[36;1m  python -m pip install -e ".[dev]" ruff bandit build^[[0m
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2497073Z ^[[36;1mfi^[[0m
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2679516Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2679953Z env:
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2680268Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2680793Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2681300Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2681789Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2682289Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2682833Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:15.2683243Z ##[endgroup]
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.7891255Z Collecting arrow==1.4.0 (from -r requirements-dev-py311-linux.lock (line 6))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.7906116Z   Using cached arrow-1.4.0-py3-none-any.whl (68 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.8195103Z Collecting attrs==26.1.0 (from -r requirements-dev-py311-linux.lock (line 10))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.8209361Z   Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.8566413Z Collecting bandit==1.9.4 (from -r requirements-dev-py311-linux.lock (line 16))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.8580155Z   Using cached bandit-1.9.4-py3-none-any.whl (134 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.8828420Z Collecting boolean-py==5.0 (from -r requirements-dev-py311-linux.lock (line 22))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.8841749Z   Using cached boolean_py-5.0-py3-none-any.whl (26 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.9091396Z Collecting build==1.5.0 (from -r requirements-dev-py311-linux.lock (line 26))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.9105171Z   Using cached build-1.5.0-py3-none-any.whl (26 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.9359504Z Collecting cachecontrol==0.14.4 (from -r requirements-dev-py311-linux.lock (line 32))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.9372425Z   Using cached cachecontrol-0.14.4-py3-none-any.whl (22 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.9654471Z Collecting certifi==2026.5.20 (from -r requirements-dev-py311-linux.lock (line 36))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:16.9668465Z   Using cached certifi-2026.5.20-py3-none-any.whl (134 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.0156763Z Collecting chardet==5.2.0 (from -r requirements-dev-py311-linux.lock (line 40))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.0172540Z   Using cached chardet-5.2.0-py3-none-any.whl (199 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.1323396Z Collecting charset-normalizer==3.4.7 (from -r requirements-dev-py311-linux.lock (line 44))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.1339632Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.5100606Z Collecting coverage==7.14.1 (from -r requirements-dev-py311-linux.lock (line 175))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.5116265Z   Using cached coverage-7.14.1-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (252 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.5429834Z Collecting cyclonedx-bom==7.3.0 (from -r requirements-dev-py311-linux.lock (line 283))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.5442782Z   Using cached cyclonedx_bom-7.3.0-py3-none-any.whl (60 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.5763241Z Collecting cyclonedx-python-lib==11.10.0 (from -r requirements-dev-py311-linux.lock (line 289))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.5776003Z   Using cached cyclonedx_python_lib-11.10.0-py3-none-any.whl (527 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6060133Z Collecting defusedxml==0.7.1 (from -r requirements-dev-py311-linux.lock (line 295))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6073842Z   Using cached defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6376930Z Collecting filelock==3.29.4 (from -r requirements-dev-py311-linux.lock (line 301))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6389998Z   Using cached filelock-3.29.4-py3-none-any.whl (42 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6649440Z Collecting fqdn==1.5.1 (from -r requirements-dev-py311-linux.lock (line 305))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6662468Z   Using cached fqdn-1.5.1-py3-none-any.whl (9.1 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6889679Z Collecting idna==3.18 (from -r requirements-dev-py311-linux.lock (line 309))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.6902765Z   Using cached idna-3.18-py3-none-any.whl (65 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7117211Z Collecting iniconfig==2.3.0 (from -r requirements-dev-py311-linux.lock (line 315))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7130289Z   Using cached iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7332710Z Collecting isoduration==20.11.0 (from -r requirements-dev-py311-linux.lock (line 319))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7345700Z   Using cached isoduration-20.11.0-py3-none-any.whl (11 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7566320Z Collecting jsonpointer==3.1.1 (from -r requirements-dev-py311-linux.lock (line 323))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7579648Z   Using cached jsonpointer-3.1.1-py3-none-any.whl (7.7 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7858636Z Collecting jsonschema==4.26.0 (from -r requirements-dev-py311-linux.lock (line 327))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.7871689Z   Using cached jsonschema-4.26.0-py3-none-any.whl (90 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.8106243Z Collecting jsonschema-specifications==2025.9.1 (from -r requirements-dev-py311-linux.lock (line 331))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.8119228Z   Using cached jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.8332196Z Collecting lark==1.3.1 (from -r requirements-dev-py311-linux.lock (line 335))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.8345340Z   Using cached lark-1.3.1-py3-none-any.whl (113 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.9387800Z Collecting librt==0.11.0 (from -r requirements-dev-py311-linux.lock (line 339))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.9403274Z   Using cached librt-0.11.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (497 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.9650831Z Collecting license-expression==30.4.4 (from -r requirements-dev-py311-linux.lock (line 431))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:17.9663924Z   Using cached license_expression-30.4.4-py3-none-any.whl (120 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.1846916Z Collecting lxml==6.1.1 (from -r requirements-dev-py311-linux.lock (line 435))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.1861536Z   Using cached lxml-6.1.1-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.2182082Z Collecting markdown-it-py==4.2.0 (from -r requirements-dev-py311-linux.lock (line 571))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.2195905Z   Using cached markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.2424450Z Collecting mdurl==0.1.2 (from -r requirements-dev-py311-linux.lock (line 575))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.2437499Z   Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.3143372Z Collecting msgpack==1.2.0 (from -r requirements-dev-py311-linux.lock (line 579))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.3158191Z   Using cached msgpack-1.2.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (423 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.4113219Z Collecting mypy==1.20.2 (from -r requirements-dev-py311-linux.lock (line 647))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.4128271Z   Using cached mypy-1.20.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (14.6 MB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.4575045Z Collecting mypy-extensions==1.1.0 (from -r requirements-dev-py311-linux.lock (line 696))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.4588582Z   Using cached mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.4839262Z Collecting packageurl-python==0.17.6 (from -r requirements-dev-py311-linux.lock (line 700))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.4852031Z   Using cached packageurl_python-0.17.6-py3-none-any.whl (36 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5103545Z Collecting packaging==26.2 (from -r requirements-dev-py311-linux.lock (line 706))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5146804Z   Using cached packaging-26.2-py3-none-any.whl (100 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5339609Z Collecting pathspec==1.1.1 (from -r requirements-dev-py311-linux.lock (line 716))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5352958Z   Using cached pathspec-1.1.1-py3-none-any.whl (57 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5381783Z Requirement already satisfied: pip==26.1.2 in /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages (from -r requirements-dev-py311-linux.lock (line 720)) (26.1.2)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5590495Z Collecting pip-api==0.0.34 (from -r requirements-dev-py311-linux.lock (line 724))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5604160Z   Using cached pip_api-0.0.34-py3-none-any.whl (120 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5850859Z Collecting pip-audit==2.10.1 (from -r requirements-dev-py311-linux.lock (line 728))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.5864321Z   Using cached pip_audit-2.10.1-py3-none-any.whl (62 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.6085127Z Collecting pip-requirements-parser==32.0.1 (from -r requirements-dev-py311-linux.lock (line 734))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.6098898Z   Using cached pip_requirements_parser-32.0.1-py3-none-any.whl (35 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.6350978Z Collecting platformdirs==4.10.0 (from -r requirements-dev-py311-linux.lock (line 740))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.6364442Z   Using cached platformdirs-4.10.0-py3-none-any.whl (22 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.6593227Z Collecting pluggy==1.6.0 (from -r requirements-dev-py311-linux.lock (line 744))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.6606935Z   Using cached pluggy-1.6.0-py3-none-any.whl (20 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.7263475Z Collecting psycopg2-binary==2.9.11 (from -r requirements-dev-py311-linux.lock (line 750))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.7279113Z   Using cached psycopg2_binary-2.9.11-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.7607279Z Collecting py-serializable==2.1.0 (from -r requirements-dev-py311-linux.lock (line 821))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.7621785Z   Using cached py_serializable-2.1.0-py3-none-any.whl (23 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.7895240Z Collecting pygments==2.20.0 (from -r requirements-dev-py311-linux.lock (line 825))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.7908662Z   Using cached pygments-2.20.0-py3-none-any.whl (1.2 MB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.8242047Z Collecting pyparsing==3.3.2 (from -r requirements-dev-py311-linux.lock (line 831))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.8255228Z   Using cached pyparsing-3.3.2-py3-none-any.whl (122 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.8467749Z Collecting pyproject-hooks==1.2.0 (from -r requirements-dev-py311-linux.lock (line 835))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.8480816Z   Using cached pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.8823715Z Collecting pytest==9.0.2 (from -r requirements-dev-py311-linux.lock (line 839))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.8844130Z   Using cached pytest-9.0.2-py3-none-any.whl (374 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.9106855Z Collecting pytest-cov==7.0.0 (from -r requirements-dev-py311-linux.lock (line 846))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.9120569Z   Using cached pytest_cov-7.0.0-py3-none-any.whl (22 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.9356602Z Collecting python-dateutil==2.9.0.post0 (from -r requirements-dev-py311-linux.lock (line 852))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.9370027Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.9807422Z Collecting pyyaml==6.0.3 (from -r requirements-dev-py311-linux.lock (line 856))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:18.9821918Z   Using cached pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (806 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0128021Z Collecting referencing==0.37.0 (from -r requirements-dev-py311-linux.lock (line 933))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0143116Z   Using cached referencing-0.37.0-py3-none-any.whl (26 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0439620Z Collecting requests==2.34.2 (from -r requirements-dev-py311-linux.lock (line 940))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0453096Z   Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0685424Z Collecting rfc3339-validator==0.1.4 (from -r requirements-dev-py311-linux.lock (line 946))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0698819Z   Using cached rfc3339_validator-0.1.4-py2.py3-none-any.whl (3.5 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0896916Z Collecting rfc3986-validator==0.1.1 (from -r requirements-dev-py311-linux.lock (line 950))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.0909947Z   Using cached rfc3986_validator-0.1.1-py2.py3-none-any.whl (4.2 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.1129533Z Collecting rfc3987-syntax==1.1.0 (from -r requirements-dev-py311-linux.lock (line 954))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.1143233Z   Using cached rfc3987_syntax-1.1.0-py3-none-any.whl (8.0 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.1498168Z Collecting rich==15.0.0 (from -r requirements-dev-py311-linux.lock (line 958))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.1511766Z   Using cached rich-15.0.0-py3-none-any.whl (310 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.4060448Z Collecting rpds-py==2026.5.1 (from -r requirements-dev-py311-linux.lock (line 964))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.4075693Z   Using cached rpds_py-2026.5.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (378 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.7256805Z Collecting ruff==0.15.17 (from -r requirements-dev-py311-linux.lock (line 1098))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.7272172Z   Using cached ruff-0.15.17-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.6 MB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8146635Z Collecting setuptools==82.0.1 (from -r requirements-dev-py311-linux.lock (line 1120))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8161697Z   Using cached setuptools-82.0.1-py3-none-any.whl (1.0 MB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8465217Z Collecting six==1.17.0 (from -r requirements-dev-py311-linux.lock (line 1126))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8479064Z   Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8703759Z Collecting sortedcontainers==2.4.0 (from -r requirements-dev-py311-linux.lock (line 1132))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8717367Z   Using cached sortedcontainers-2.4.0-py2.py3-none-any.whl (29 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8982651Z Collecting stevedore==5.8.0 (from -r requirements-dev-py311-linux.lock (line 1136))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.8997218Z   Using cached stevedore-5.8.0-py3-none-any.whl (54 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.9321167Z Collecting tomli==2.4.1 (from -r requirements-dev-py311-linux.lock (line 1140))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.9334990Z   Using cached tomli-2.4.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (243 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.9543999Z Collecting tomli-w==1.2.0 (from -r requirements-dev-py311-linux.lock (line 1191))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.9557897Z   Using cached tomli_w-1.2.0-py3-none-any.whl (6.7 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.9878187Z Collecting types-psycopg2==2.9.21.20260518 (from -r requirements-dev-py311-linux.lock (line 1195))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:19.9892822Z   Using cached types_psycopg2-2.9.21.20260518-py3-none-any.whl (24 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.0158856Z Collecting types-pyyaml==6.0.12.20260518 (from -r requirements-dev-py311-linux.lock (line 1202))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.0173005Z   Using cached types_pyyaml-6.0.12.20260518-py3-none-any.whl (20 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.0472577Z Collecting typing-extensions==4.15.0 (from -r requirements-dev-py311-linux.lock (line 1208))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.0486893Z   Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.0770258Z Collecting tzdata==2026.2 (from -r requirements-dev-py311-linux.lock (line 1216))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.0784091Z   Using cached tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1043869Z Collecting uri-template==1.3.0 (from -r requirements-dev-py311-linux.lock (line 1220))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1057385Z   Using cached uri_template-1.3.0-py3-none-any.whl (11 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1350831Z Collecting urllib3==2.7.0 (from -r requirements-dev-py311-linux.lock (line 1224))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1364408Z   Using cached urllib3-2.7.0-py3-none-any.whl (131 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1609665Z Collecting webcolors==25.10.0 (from -r requirements-dev-py311-linux.lock (line 1228))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1623156Z   Using cached webcolors-25.10.0-py3-none-any.whl (14 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1897971Z Collecting wheel==0.46.3 (from -r requirements-dev-py311-linux.lock (line 1232))
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.1911721Z   Using cached wheel-0.46.3-py3-none-any.whl (30 kB)
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.3952546Z Installing collected packages: sortedcontainers, boolean-py, webcolors, urllib3, uri-template, tzdata, typing-extensions, types-pyyaml, types-psycopg2, tomli-w, tomli, stevedore, six, setuptools, ruff, rpds-py, rfc3986-validator, pyyaml, pyproject-hooks, pyparsing, pygments, psycopg2-binary, pluggy, platformdirs, pip-api, pathspec, packaging, packageurl-python, mypy-extensions, msgpack, mdurl, lxml, license-expression, librt, lark, jsonpointer, iniconfig, idna, fqdn, filelock, defusedxml, coverage, charset-normalizer, chardet, certifi, attrs, wheel, rfc3987-syntax, rfc3339-validator, requests, referencing, python-dateutil, pytest, py-serializable, pip-requirements-parser, mypy, markdown-it-py, build, rich, pytest-cov, jsonschema-specifications, cyclonedx-python-lib, cachecontrol, arrow, jsonschema, isoduration, bandit, pip-audit, cyclonedx-bom
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.6993653Z   Attempting uninstall: setuptools
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.7011929Z     Found existing installation: setuptools 79.0.1
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.8459418Z     Uninstalling setuptools-79.0.1:
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:20.8880895Z       Successfully uninstalled setuptools-79.0.1
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:25.6707731Z 
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:25.6742812Z Successfully installed arrow-1.4.0 attrs-26.1.0 bandit-1.9.4 boolean-py-5.0 build-1.5.0 cachecontrol-0.14.4 certifi-2026.5.20 chardet-5.2.0 charset-normalizer-3.4.7 coverage-7.14.1 cyclonedx-bom-7.3.0 cyclonedx-python-lib-11.10.0 defusedxml-0.7.1 filelock-3.29.4 fqdn-1.5.1 idna-3.18 iniconfig-2.3.0 isoduration-20.11.0 jsonpointer-3.1.1 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 lark-1.3.1 librt-0.11.0 license-expression-30.4.4 lxml-6.1.1 markdown-it-py-4.2.0 mdurl-0.1.2 msgpack-1.2.0 mypy-1.20.2 mypy-extensions-1.1.0 packageurl-python-0.17.6 packaging-26.2 pathspec-1.1.1 pip-api-0.0.34 pip-audit-2.10.1 pip-requirements-parser-32.0.1 platformdirs-4.10.0 pluggy-1.6.0 psycopg2-binary-2.9.11 py-serializable-2.1.0 pygments-2.20.0 pyparsing-3.3.2 pyproject-hooks-1.2.0 pytest-9.0.2 pytest-cov-7.0.0 python-dateutil-2.9.0.post0 pyyaml-6.0.3 referencing-0.37.0 requests-2.34.2 rfc3339-validator-0.1.4 rfc3986-validator-0.1.1 rfc3987-syntax-1.1.0 rich-15.0.0 rpds-py-2026.5.1 ruff-0.15.17 setuptools-82.0.1 six-1.17.0 sortedcontainers-2.4.0 stevedore-5.8.0 tomli-2.4.1 tomli-w-1.2.0 types-psycopg2-2.9.21.20260518 types-pyyaml-6.0.12.20260518 typing-extensions-4.15.0 tzdata-2026.2 uri-template-1.3.0 urllib3-2.7.0 webcolors-25.10.0 wheel-0.46.3
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:26.6814586Z Obtaining file:///home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:26.6833830Z   Installing build dependencies: started
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:27.6983219Z   Installing build dependencies: finished with status 'done'
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:27.6989564Z   Checking if build backend supports build_editable: started
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.0079075Z   Checking if build backend supports build_editable: finished with status 'done'
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.0086226Z   Getting requirements to build editable: started
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.2971925Z   Getting requirements to build editable: finished with status 'done'
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.2981895Z   Preparing editable metadata (pyproject.toml): started
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.4944907Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.4991433Z Building wheels for collected packages: corep-crr3-community
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.4999365Z   Building editable for corep-crr3-community (pyproject.toml): started
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.7008707Z   Building editable for corep-crr3-community (pyproject.toml): finished with status 'done'
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.7016266Z   Created wheel for corep-crr3-community: filename=corep_crr3_community-6.6.0-0.editable-py3-none-any.whl size=8596 sha256=aa3e4f4e9a7c2a48ac7e2d7fcf9e5b8e6c1cbb422cea6ba40b2516ba6d2dd4d7
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.7019090Z   Stored in directory: /tmp/pip-ephem-wheel-cache-6w70v9gs/wheels/a6/8a/e3/502720a903eefbfebdb2c44230dd41c25442ad3895404cd8d4
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.7042857Z Successfully built corep-crr3-community
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.7064577Z Installing collected packages: corep-crr3-community
+static-and-tests (3.11)	Installer le projet et les outils	2026-06-30T01:11:28.7183390Z Successfully installed corep-crr3-community-6.6.0
+static-and-tests (3.11)	Contrat public et manifeste de release	﻿2026-06-30T01:11:28.7788899Z ##[group]Run python tools/check_release_contract.py
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7789335Z ^[[36;1mpython tools/check_release_contract.py^[[0m
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7789683Z ^[[36;1mpython -m corep_crr3.release_integrity \^[[0m
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7790075Z ^[[36;1m  --root . --manifest RELEASE_MANIFEST.json --version 6.0.4^[[0m
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7823230Z shell: /usr/bin/bash -e {0}
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7823494Z env:
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7823759Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7824216Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7824661Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7825046Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7825434Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7826123Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.7826455Z ##[endgroup]
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.8098755Z ERROR: Dérive de version : {'pyproject': '6.6.0', 'package': '6.0.4', 'README': '6.0.4', 'SQL contract': '6.0.4'}
+static-and-tests (3.11)	Contrat public et manifeste de release	2026-06-30T01:11:28.8144537Z ##[error]Process completed with exit code 1.
+static-and-tests (3.11)	Publier la couverture	﻿2026-06-30T01:11:28.8276024Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8276507Z with:
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8276730Z   name: community-coverage-py3.11
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8277113Z   path: coverage.xml
+static-and-tests (3.11)	Publier la couverture	coverage.json
+static-and-tests (3.11)	Publier la couverture	evidence/branch_coverage_v6_0_4.json
+static-and-tests (3.11)	Publier la couverture	
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8277505Z   if-no-files-found: warn
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8277745Z   compression-level: 6
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8277973Z   overwrite: false
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8278196Z   include-hidden-files: false
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8278445Z   archive: true
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8278640Z env:
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8278916Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8279357Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8279793Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8280191Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8280581Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8281006Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.8281346Z ##[endgroup]
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.9670075Z Multiple search paths detected. Calculating the least common ancestor of all paths
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.9673091Z The least common ancestor is /home/runner/work/Corep-engine-community/Corep-engine-community. This will be the root directory of the artifact
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.9673843Z With the provided path, there will be 1 file uploaded
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.9677999Z Artifact name is valid!
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:28.9678570Z Root directory input is valid!
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.1772419Z Uploading artifact: community-coverage-py3.11.zip
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.1814229Z Beginning upload of artifact content to blob storage
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.3569168Z Uploaded bytes 472
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.3978726Z Finished uploading artifact content to blob storage!
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.3980005Z SHA256 digest of uploaded artifact is fae952738a0f211b66a18ad4d6fd247a8234b3f9908b2aa248d187533db4c30a
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.3981244Z Finalizing artifact upload
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.6217569Z Artifact community-coverage-py3.11 successfully finalized. Artifact ID 7968503733
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.6218978Z Artifact community-coverage-py3.11 has been successfully uploaded! Final size is 472 bytes. Artifact ID is 7968503733
+static-and-tests (3.11)	Publier la couverture	2026-06-30T01:11:29.6221808Z Artifact download URL: https://github.com/charpentieralexandre93-ux/Corep-engine-community/actions/runs/28413396407/artifacts/7968503733
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	﻿2026-06-30T01:11:29.6426641Z Post job cleanup.
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7239798Z [command]/usr/bin/git version
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7275964Z git version 2.54.0
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7315939Z Temporarily overriding HOME='/home/runner/work/_temp/aabcda57-36a3-4fa4-b607-fb603c13b600' before making global git config changes
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7317634Z Adding repository directory to the temporary git global config as a safe directory
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7322945Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Corep-engine-community/Corep-engine-community
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7352897Z Removing SSH command configuration
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7359240Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7393907Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7648695Z Removing HTTP extra header
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7655160Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7688383Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7904390Z Removing includeIf entries pointing to credentials config files
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7911212Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7939142Z includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7940636Z includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7941673Z includeif.gitdir:/github/workspace/.git.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7942448Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7947750Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7968500Z /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.7979453Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git.path /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8013112Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8034333Z /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8043788Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/Corep-engine-community/Corep-engine-community/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8074964Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8095958Z /github/runner_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8103934Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8134178Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8153976Z /github/runner_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8163221Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8193334Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+static-and-tests (3.11)	Post Run actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10	2026-06-30T01:11:29.8414149Z Removing credentials config '/home/runner/work/_temp/git-credentials-42785870-2332-4b15-8817-1b9b748311a3.config'
+static-and-tests (3.11)	Complete job	﻿2026-06-30T01:11:29.8567507Z Cleaning up orphan processes

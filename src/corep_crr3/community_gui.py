@@ -18,8 +18,8 @@ import subprocess
 import sys
 import threading
 from dataclasses import dataclass
-from functools import partial
 from datetime import datetime
+from functools import partial
 from typing import Any, Iterable
 
 try:
@@ -110,7 +110,9 @@ def backup_file(path: pathlib.Path, backup_dir: pathlib.Path) -> pathlib.Path | 
     return target
 
 
-def write_env_file(path: pathlib.Path, values: dict[str, str], backup_dir: pathlib.Path | None = None) -> pathlib.Path | None:
+def write_env_file(
+    path: pathlib.Path, values: dict[str, str], backup_dir: pathlib.Path | None = None
+) -> pathlib.Path | None:
     """Write the requested release or configuration resource."""
     backup = backup_file(path, backup_dir) if backup_dir else None
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -225,19 +227,48 @@ class CommunityGuiApp:
         style.configure("TLabel", background=self.BG, foreground=self.NAVY, font=("Segoe UI", 10))
         style.configure("Surface.TLabel", background=self.SURFACE, foreground=self.NAVY, font=("Segoe UI", 10))
         style.configure("Muted.TLabel", background=self.SURFACE, foreground=self.MUTED, font=("Segoe UI", 9))
-        style.configure("Title.TLabel", background=self.SURFACE, foreground=self.NAVY, font=("Segoe UI Semibold", 15))
-        style.configure("Metric.TLabel", background=self.SURFACE, foreground=self.BLUE, font=("Segoe UI Semibold", 22))
+        style.configure(
+            "Title.TLabel",
+            background=self.SURFACE,
+            foreground=self.NAVY,
+            font=("Segoe UI Semibold", 15),
+        )
+        style.configure(
+            "Metric.TLabel",
+            background=self.SURFACE,
+            foreground=self.BLUE,
+            font=("Segoe UI Semibold", 22),
+        )
         style.configure("Section.TLabelframe", background=self.SURFACE)
-        style.configure("Section.TLabelframe.Label", background=self.SURFACE, foreground=self.NAVY,
-                        font=("Segoe UI Semibold", 10))
+        style.configure(
+            "Section.TLabelframe.Label",
+            background=self.SURFACE,
+            foreground=self.NAVY,
+            font=("Segoe UI Semibold", 10),
+        )
         style.configure("TCheckbutton", background=self.SURFACE, foreground=self.NAVY)
-        style.configure("Primary.TButton", font=("Segoe UI Semibold", 10), padding=(12, 8),
-                        background=self.BLUE, foreground="white")
+        style.configure(
+            "Primary.TButton",
+            font=("Segoe UI Semibold", 10),
+            padding=(12, 8),
+            background=self.BLUE,
+            foreground="white",
+        )
         style.map("Primary.TButton", background=[("active", self.BLUE_DARK), ("disabled", "#9fb3c8")])
-        style.configure("Secondary.TButton", font=("Segoe UI", 9), padding=(10, 7),
-                        background="#e8f1f8", foreground=self.NAVY)
-        style.configure("Danger.TButton", font=("Segoe UI Semibold", 9), padding=(10, 7),
-                        background="#fde8e7", foreground=self.RED)
+        style.configure(
+            "Secondary.TButton",
+            font=("Segoe UI", 9),
+            padding=(10, 7),
+            background="#e8f1f8",
+            foreground=self.NAVY,
+        )
+        style.configure(
+            "Danger.TButton",
+            font=("Segoe UI Semibold", 9),
+            padding=(10, 7),
+            background="#fde8e7",
+            foreground=self.RED,
+        )
         style.configure("TNotebook.Tab", font=("Segoe UI Semibold", 10), padding=(16, 9))
         style.configure("Horizontal.TProgressbar", background=self.BLUE, troughcolor="#e8edf2")
 
@@ -270,12 +301,19 @@ class CommunityGuiApp:
         header.pack_propagate(False)
         left = tk.Frame(header, bg=self.NAVY)
         left.pack(side="left", fill="y", padx=22, pady=13)
-        tk.Label(left, text="COREP Engine", bg=self.NAVY, fg="white",
-                 font=("Segoe UI Semibold", 20)).pack(anchor="w")
-        tk.Label(left, text="Community Control Center", bg=self.NAVY, fg="#bcccdc",
-                 font=("Segoe UI", 10)).pack(anchor="w")
-        tk.Label(header, text=f"COMMUNITY  •  v{VERSION}", bg=self.BLUE, fg="white",
-                 font=("Segoe UI Semibold", 9), padx=12, pady=6).pack(side="right", padx=22)
+        tk.Label(left, text="COREP Engine", bg=self.NAVY, fg="white", font=("Segoe UI Semibold", 20)).pack(anchor="w")
+        tk.Label(left, text="Community Control Center", bg=self.NAVY, fg="#bcccdc", font=("Segoe UI", 10)).pack(
+            anchor="w"
+        )
+        tk.Label(
+            header,
+            text=f"COMMUNITY  •  v{VERSION}",
+            bg=self.BLUE,
+            fg="white",
+            font=("Segoe UI Semibold", 9),
+            padx=12,
+            pady=6,
+        ).pack(side="right", padx=22)
 
     def _build_home(self) -> None:
         """Build the requested CLI or GUI structure."""
@@ -307,26 +345,43 @@ class CommunityGuiApp:
             card.grid(row=0, column=idx, sticky="nsew", padx=10, pady=12)
             engine_box.columnconfigure(idx, weight=1)
             ttk.Label(card, text=code.replace("_", "-"), style="Title.TLabel").pack(anchor="w")
-            ttk.Label(card, text=descriptions.get(code, "Moteur public"), style="Muted.TLabel").pack(anchor="w", pady=(3, 0))
+            ttk.Label(card, text=descriptions.get(code, "Moteur public"), style="Muted.TLabel").pack(
+                anchor="w", pady=(3, 0)
+            )
 
         boundary = ttk.LabelFrame(outer, text="Frontière produit", style="Section.TLabelframe")
         boundary.pack(fill="x", pady=8)
         ttk.Label(
             boundary,
-            text="IRB, Market Risk, CVA, SFT, liquidité, titrisation et autres moteurs Enterprise ne sont ni importés ni accessibles depuis cette édition.",
-            style="Surface.TLabel", wraplength=850, justify="left",
+            text=(
+                "IRB, Market Risk, CVA, SFT, liquidité, titrisation et autres moteurs Enterprise "
+                "ne sont ni importés ni accessibles depuis cette édition."
+            ),
+            style="Surface.TLabel",
+            wraplength=850,
+            justify="left",
         ).pack(anchor="w", padx=14, pady=12)
 
         quick = ttk.Frame(outer, style="Surface.TFrame")
         quick.pack(fill="x", pady=8)
-        ttk.Button(quick, text="Lister le plan SQL", command=lambda: self.run_command(
-            [sys.executable, "-m", "corep_crr3.community_bootstrap", "--list"]
-        ), style="Secondary.TButton").pack(side="left")
-        ttk.Button(quick, text="Tester PostgreSQL", command=self.test_postgresql_connection,
-                   style="Secondary.TButton").pack(side="left", padx=8)
-        ttk.Button(quick, text="Lancer le bootstrap", command=lambda: self.run_command(
-            [sys.executable, "-m", "corep_crr3.community_bootstrap"]
-        ), style="Primary.TButton").pack(side="left")
+        ttk.Button(
+            quick,
+            text="Lister le plan SQL",
+            command=lambda: self.run_command([sys.executable, "-m", "corep_crr3.community_bootstrap", "--list"]),
+            style="Secondary.TButton",
+        ).pack(side="left")
+        ttk.Button(
+            quick,
+            text="Tester PostgreSQL",
+            command=self.test_postgresql_connection,
+            style="Secondary.TButton",
+        ).pack(side="left", padx=8)
+        ttk.Button(
+            quick,
+            text="Lancer le bootstrap",
+            command=lambda: self.run_command([sys.executable, "-m", "corep_crr3.community_bootstrap"]),
+            style="Primary.TButton",
+        ).pack(side="left")
 
     def _metric(self, parent: Any, column: int, value: str, label: str) -> None:
         """Execute the metric helper used by the command workflow."""
@@ -340,47 +395,83 @@ class CommunityGuiApp:
         outer = ttk.Frame(self.tab_env, style="Surface.TFrame")
         outer.pack(fill="both", expand=True, padx=18, pady=18)
         ttk.Label(outer, text="Connexion PostgreSQL", style="Title.TLabel").pack(anchor="w")
-        ttk.Label(outer, text="Les paramètres sont stockés dans .env et sauvegardés avant chaque écriture.",
-                  style="Muted.TLabel").pack(anchor="w", pady=(2, 14))
+        ttk.Label(
+            outer,
+            text="Les paramètres sont stockés dans .env et sauvegardés avant chaque écriture.",
+            style="Muted.TLabel",
+        ).pack(anchor="w", pady=(2, 14))
 
         form = ttk.LabelFrame(outer, text="Paramètres", style="Section.TLabelframe")
         form.pack(fill="x")
-        labels = {"PGHOST": "Hôte", "PGPORT": "Port", "PGDATABASE": "Base",
-                  "PGUSER": "Utilisateur", "PGPASSWORD": "Mot de passe"}
+        labels = {
+            "PGHOST": "Hôte",
+            "PGPORT": "Port",
+            "PGDATABASE": "Base",
+            "PGUSER": "Utilisateur",
+            "PGPASSWORD": "Mot de passe",
+        }
         self.env_entries: dict[str, Any] = {}
         for row, key in enumerate(ENV_KEYS):
-            ttk.Label(form, text=labels[key], style="Surface.TLabel").grid(row=row, column=0, sticky="w", padx=14, pady=9)
-            entry = ttk.Entry(form, textvariable=self.env_vars[key], show="•" if key == "PGPASSWORD" else "", width=68)
+            ttk.Label(form, text=labels[key], style="Surface.TLabel").grid(
+                row=row, column=0, sticky="w", padx=14, pady=9
+            )
+            entry = ttk.Entry(
+                form,
+                textvariable=self.env_vars[key],
+                show="•" if key == "PGPASSWORD" else "",
+                width=68,
+            )
             entry.grid(row=row, column=1, sticky="ew", padx=10, pady=9)
             self.env_entries[key] = entry
             if key == "PGPASSWORD":
-                ttk.Checkbutton(form, text="Afficher", variable=self.password_visible_var,
-                                command=self._toggle_password).grid(row=row, column=2, padx=(0, 14))
+                ttk.Checkbutton(
+                    form,
+                    text="Afficher",
+                    variable=self.password_visible_var,
+                    command=self._toggle_password,
+                ).grid(row=row, column=2, padx=(0, 14))
         form.columnconfigure(1, weight=1)
 
         controls = ttk.Frame(outer, style="Surface.TFrame")
         controls.pack(fill="x", pady=14)
-        ttk.Button(controls, text="Tester la connexion", command=self.test_postgresql_connection,
-                   style="Primary.TButton").pack(side="left")
-        ttk.Button(controls, text="Sauvegarder .env", command=self.save_env,
-                   style="Secondary.TButton").pack(side="left", padx=8)
+        ttk.Button(
+            controls,
+            text="Tester la connexion",
+            command=self.test_postgresql_connection,
+            style="Primary.TButton",
+        ).pack(side="left")
+        ttk.Button(controls, text="Sauvegarder .env", command=self.save_env, style="Secondary.TButton").pack(
+            side="left", padx=8
+        )
 
     def _build_operations(self) -> None:
         """Build the requested CLI or GUI structure."""
         outer = ttk.Frame(self.tab_ops, style="Surface.TFrame")
         outer.pack(fill="both", expand=True, padx=18, pady=18)
         ttk.Label(outer, text="Bootstrap & tests", style="Title.TLabel").pack(anchor="w")
-        ttk.Label(outer, text="Une seule commande peut être active ; le bouton Arrêter termine le processus courant.",
-                  style="Muted.TLabel").pack(anchor="w", pady=(2, 12))
+        ttk.Label(
+            outer,
+            text="Une seule commande peut être active ; le bouton Arrêter termine le processus courant.",
+            style="Muted.TLabel",
+        ).pack(anchor="w", pady=(2, 12))
 
         commands = ttk.LabelFrame(outer, text="Commandes Community", style="Section.TLabelframe")
         commands.pack(fill="x")
         actions = [
             ("Lister moteurs publics", [sys.executable, "-m", "corep_crr3.public_registry"]),
-            ("Lister le plan SQL", [sys.executable, "-m", "corep_crr3.community_bootstrap", "--list"]),
-            ("Régénérer le manifeste", [sys.executable, "-m", "corep_crr3.community_bootstrap", "--write-manifest"]),
+            (
+                "Lister le plan SQL",
+                [sys.executable, "-m", "corep_crr3.community_bootstrap", "--list"],
+            ),
+            (
+                "Régénérer le manifeste",
+                [sys.executable, "-m", "corep_crr3.community_bootstrap", "--write-manifest"],
+            ),
             ("Lancer le bootstrap", [sys.executable, "-m", "corep_crr3.community_bootstrap"]),
-            ("Smoke tests", [sys.executable, "-m", "pytest", "-q", "tests/test_community_smoke.py"]),
+            (
+                "Smoke tests",
+                [sys.executable, "-m", "pytest", "-q", "tests/test_community_smoke.py"],
+            ),
         ]
         for idx, (label, command) in enumerate(actions):
             button = ttk.Button(
@@ -398,8 +489,13 @@ class CommunityGuiApp:
         activity.pack(fill="x", pady=(10, 6))
         self.progress = ttk.Progressbar(activity, mode="indeterminate")
         self.progress.pack(side="left", fill="x", expand=True)
-        self.stop_button = ttk.Button(activity, text="Arrêter", command=self.stop_current_process,
-                                      style="Danger.TButton", state="disabled")
+        self.stop_button = ttk.Button(
+            activity,
+            text="Arrêter",
+            command=self.stop_current_process,
+            style="Danger.TButton",
+            state="disabled",
+        )
         self.stop_button.pack(side="right", padx=(10, 0))
 
         logs = ttk.LabelFrame(outer, text="Console", style="Section.TLabelframe")
@@ -407,11 +503,21 @@ class CommunityGuiApp:
         tools = ttk.Frame(logs, style="Surface.TFrame")
         tools.pack(fill="x", padx=8, pady=(6, 0))
         ttk.Button(tools, text="Effacer", command=self._clear_log, style="Secondary.TButton").pack(side="right")
-        ttk.Button(tools, text="Exporter", command=self._export_log, style="Secondary.TButton").pack(side="right", padx=6)
+        ttk.Button(tools, text="Exporter", command=self._export_log, style="Secondary.TButton").pack(
+            side="right", padx=6
+        )
         self.log_widget = scrolledtext.ScrolledText(
-            logs, state="disabled", wrap="word", height=20, relief="flat",
-            font=("Cascadia Mono", 9), background="#0b1f33", foreground="#d9e2ec",
-            insertbackground="white", padx=10, pady=8,
+            logs,
+            state="disabled",
+            wrap="word",
+            height=20,
+            relief="flat",
+            font=("Cascadia Mono", 9),
+            background="#0b1f33",
+            foreground="#d9e2ec",
+            insertbackground="white",
+            padx=10,
+            pady=8,
         )
         self.log_widget.pack(fill="both", expand=True, padx=8, pady=8)
         self.log_widget.tag_configure("success", foreground="#8bd49c")
@@ -478,8 +584,12 @@ class CommunityGuiApp:
             """Execute the worker helper used by the command workflow."""
             try:
                 conn = psycopg2.connect(
-                    host=values["PGHOST"], port=values["PGPORT"], dbname=values["PGDATABASE"],
-                    user=values["PGUSER"], password=values["PGPASSWORD"], connect_timeout=5,
+                    host=values["PGHOST"],
+                    port=values["PGPORT"],
+                    dbname=values["PGDATABASE"],
+                    user=values["PGUSER"],
+                    password=values["PGPASSWORD"],
+                    connect_timeout=5,
                 )
                 conn.close()
                 self.process_queue.put(("db_result", True, "Connexion PostgreSQL OK."))
@@ -506,9 +616,14 @@ class CommunityGuiApp:
             code = -1
             try:
                 process = subprocess.Popen(
-                    command, cwd=str(self.paths.project_root), env=env,
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                    text=True, encoding="utf-8", errors="replace",
+                    command,
+                    cwd=str(self.paths.project_root),
+                    env=env,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
                 )
                 with self._process_lock:
                     self.current_process = process
@@ -585,7 +700,12 @@ class CommunityGuiApp:
     def _set_status(self, text: str, level: str) -> None:
         """Execute the set status helper used by the command workflow."""
         self.status_var.set(text)
-        colors = {"success": self.GREEN, "warning": self.AMBER, "error": self.RED, "busy": self.BLUE}
+        colors = {
+            "success": self.GREEN,
+            "warning": self.AMBER,
+            "error": self.RED,
+            "busy": self.BLUE,
+        }
         if hasattr(self, "status_dot"):
             self.status_dot.configure(fg=colors.get(level, self.MUTED))
 

@@ -1013,8 +1013,8 @@
     },
     {
       "path": "src/corep_crr3/regulatory_dossier.py",
-      "sha256": "80e33e5044b063844107ee4b904fae25d96b319de4d414ae771f3fde339f10b3",
-      "size": 29337
+      "sha256": "c6aed60e7b37df8df9a6d996c3fb446a3436eeacf117126546534fa41b908e60",
+      "size": 29472
     },
     {
       "path": "src/corep_crr3/release_integrity.py",
@@ -1138,8 +1138,8 @@
     },
     {
       "path": "src/corep_crr3/sql_migrations.py",
-      "sha256": "c6f3e7c45f70b0b781236c0f5e2e036749f9b4776f5d2b874ca730a8e68cf42d",
-      "size": 10696
+      "sha256": "94013423f179f896c1dd40a762590a42b8bc65ae2dceddbda7acbfbcbe48ebdb",
+      "size": 10715
     },
     {
       "path": "src/corep_crr3/standard_engine.py",
@@ -1318,8 +1318,8 @@
     },
     {
       "path": "tests/test_v6_4_1_p1_completion.py",
-      "sha256": "eec816dddbdaf6548ffa9a35c9f099acc98a61be5afe87e961f2ebd611db3bc6",
-      "size": 1397
+      "sha256": "af1764888bd9eaf3b04c724bf34fe692c9c966504c4d7c9423b438b6703ab93c",
+      "size": 1373
     },
     {
       "path": "tests/test_v6_4_1_user_install_scripts.py",

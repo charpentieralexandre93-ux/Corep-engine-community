@@ -111,7 +111,10 @@ def activation_status_for_module(module: str, quality_status: str) -> str:
     """Classify an engine in the v6.6.0 phased Enterprise activation roadmap."""
     normalized_module = module.strip()
     normalized_quality = quality_status.strip().upper()
-    if normalized_module in PHASE_1_ACTIVE_MODULES and normalized_quality in OFFICIAL_SUBMISSION_ALLOWED_QUALITY_STATUSES:
+    if (
+        normalized_module in PHASE_1_ACTIVE_MODULES
+        and normalized_quality in OFFICIAL_SUBMISSION_ALLOWED_QUALITY_STATUSES
+    ):
         return "PHASE_1_ACTIVE"
     if normalized_quality in PRODUCTION_BLOCKING_QUALITY_STATUSES:
         return "NOT_ELIGIBLE"
@@ -214,7 +217,8 @@ def _traceability_rows_for_edition(edition: str) -> tuple[tuple[str, str, str, s
                     "sft_engine",
                     "SFT EAD / collateral volatility adjustments",
                     "sql/03_mapping/06_mapping_regulatory_bcnf_v5_0_6.sql",
-                    "SFT exposure after collateral, haircuts, netting and maturity adjustment; official submission requires external reference case",
+                    "SFT exposure after collateral, haircuts, netting and maturity adjustment; "
+                    "official submission requires external reference case",
                     "tests/test_v5_0_6_regulatory_completion.py",
                     "ESTIMATED",
                 ),
@@ -407,7 +411,10 @@ def official_submission_scope_from_matrix(matrix: Sequence[Mapping[str, object]]
         if quality in OFFICIAL_SUBMISSION_ALLOWED_QUALITY_STATUSES and activation == "PHASE_1_ACTIVE":
             included.append(module)
         else:
-            reason = "Excluded from Phase 1 official scope until the activation stage is promoted and externally signed off."
+            reason = (
+                "Excluded from Phase 1 official scope until the activation stage is promoted "
+                "and externally signed off."
+            )
             if quality in PRODUCTION_BLOCKING_QUALITY_STATUSES:
                 reason = "Excluded from official submission until external reference evidence is signed off."
             excluded.append(
@@ -439,7 +446,10 @@ def validate_official_submission_scope(payload: Mapping[str, object]) -> tuple[s
     included = sorted(str(item) for item in scope.get("included_engine_modules", []))
     expected_included = sorted(str(item) for item in expected["included_engine_modules"])
     if included != expected_included:
-        errors.append("official_submission_scope included_engine_modules is not aligned with PHASE_1_ACTIVE OFFICIAL rows")
+        errors.append(
+            "official_submission_scope included_engine_modules is not aligned "
+            "with PHASE_1_ACTIVE OFFICIAL rows"
+        )
     raw_excluded = scope.get("excluded_engine_modules", [])
     if not isinstance(raw_excluded, list):
         errors.append("official_submission_scope excluded_engine_modules must be a list")

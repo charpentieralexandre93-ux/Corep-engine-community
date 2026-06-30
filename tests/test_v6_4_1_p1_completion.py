@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-import ast
 import json
 from pathlib import Path
-
-import yaml
 
 from corep_crr3 import regulatory_dossier
 

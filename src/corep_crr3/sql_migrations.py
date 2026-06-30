@@ -139,7 +139,12 @@ def state_table_ddl(*, schema: str = MIGRATION_STATE_SCHEMA, table: str = MIGRAT
     )
 
 
-def record_step_sql(step: MigrationStep, *, schema: str = MIGRATION_STATE_SCHEMA, table: str = MIGRATION_STATE_TABLE) -> str:
+def record_step_sql(
+    step: MigrationStep,
+    *,
+    schema: str = MIGRATION_STATE_SCHEMA,
+    table: str = MIGRATION_STATE_TABLE,
+) -> str:
     """Return the SQL statement recording one applied migration checksum."""
     qualified = f"{schema}.{table}"
     path = step.path.replace("'", "''")

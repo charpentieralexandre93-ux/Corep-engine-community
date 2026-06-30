@@ -48,8 +48,8 @@
     },
     {
       "path": ".gitignore",
-      "sha256": "374876c0db4c8735644dda51a050784ba3719724e6f2376cae9fd2ec195f959f",
-      "size": 208
+      "sha256": "b7f899d71fac5f7381f185397ec321bdbfeaa9798810c31a26207cdaff10d1c1",
+      "size": 428
     },
     {
       "path": "BOOTSTRAP_SQL_WINDOWS.bat",
@@ -808,8 +808,8 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "cd1f7ae80f86067edfd4fad159597344d247070b3c3b7bf0479f6946348eff45",
-      "size": 2822
+      "sha256": "04b9f5ee8ff7b1d160e3cd8999512e498cebec47f8acc95481d2d129f495e4e1",
+      "size": 2862
     },
     {
       "path": "requirements-dev-py311-linux.lock",

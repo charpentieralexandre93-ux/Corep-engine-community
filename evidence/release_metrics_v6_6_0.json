@@ -1,7 +1,7 @@
 {
   "cli_docstrings_documented": 110,
   "cli_docstrings_total": 110,
-  "coverage_branches": 72.51,
+  "coverage_branches": 72.02,
   "coverage_combined": 79.1,
   "coverage_version_recorded": "7.13.3",
   "edition": "COMMUNITY",
@@ -19,7 +19,7 @@
   ],
   "tests_collected": 217,
   "tests_execution_contract": "CI locked Community suite; local audit reproduced 216 passed / 1 skipped after final P1 completion",
-  "tests_passed": 216,
+  "tests_passed": 229,
   "tests_skipped": 1,
   "toolchain": {
     "coverage": "7.13.3",

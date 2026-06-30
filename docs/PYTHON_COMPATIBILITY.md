@@ -1,17 +1,12 @@
-# Politique de compatibilité Python — v6.0.4
+# Politique de compatibilité Python — v6.6.0
 
-## Contrat d'installation
+Le package déclare `requires-python = ">=3.11,<3.14"`.
 
-Le package déclare `requires-python = ">=3.9,<3.14"`.
-
-| Version | Statut | Résolution des dépendances |
+| Version | Niveau de support | Qualification |
 |---|---|---|
-| Python 3.11 | **Baseline de production reproductible** | lockfiles Linux hashés `requirements-*-py311-linux.lock` |
-| Python 3.9 | Compatibilité CI **best-effort** | résolution depuis `pyproject.toml`, sans promesse byte-reproductible |
-| Python 3.12 | Compatibilité CI **best-effort** | résolution depuis `pyproject.toml`, sans promesse byte-reproductible |
-| Python 3.13 | Compatibilité CI **best-effort** | résolution depuis `pyproject.toml`, sans promesse byte-reproductible |
-| Python 3.14+ | Non supporté par cette release | installation bloquée par le metadata package |
+| Python 3.11 | Baseline de production reproductible | lockfiles hashés, qualité statique, supply-chain, packaging et PostgreSQL E2E |
+| Python 3.12 | Support CI best-effort | tests fonctionnels et couverture |
+| Python 3.13 | Support CI best-effort | tests fonctionnels et couverture |
+| Python 3.10 et antérieures | Non supporté | hors contrat v6.6.0 |
 
-La matrice CI exécute les tests fonctionnels sur 3.9, 3.11, 3.12 et 3.13. Les contrôles supply-chain reproductibles (`pip-audit`, SBOM, wheel smoke) utilisent Python 3.11 et les lockfiles hashés.
-
-Cette distinction évite de présenter un environnement non verrouillé comme reproductible. Elle ne change pas les formules réglementaires ni les résultats des moteurs.
+Les contrôles Ruff, Mypy et Bandit sont exécutés une seule fois sous Python 3.11 avec les dépendances verrouillées. La matrice runtime reste limitée aux tests sous Python 3.11, 3.12 et 3.13, ce qui évite les divergences de versions d'outils entre interpréteurs.

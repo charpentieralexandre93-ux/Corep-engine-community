@@ -16,8 +16,8 @@ import os
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence, Tuple
 
-from .db import Database, build_dsn_from_env
 from . import __version__
+from .db import Database, build_dsn_from_env
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +25,23 @@ _CONTRACT_NAME = "COMMUNITY_SQL_CONTRACT.json"
 _MANIFEST_NAME = "ACTIVE_SQL_MANIFEST.txt"
 _RESET_CONFIRMATION = "RESET"
 _ALLOWED_GROUPS = {"always", "run_sa", "run_saccr", "post_seed"}
+_ENGINE_GROUPS = ("run_sa", "run_saccr")
 _FORBIDDEN_SQL_TOKENS = (
-    "irb", "sft", "cva", "liquidity", "irrbb", "market_risk",
-    "operational_risk", "own_funds", "securitisation",
-    "large_exposures", "crypto_assets", "frtb", "output_floor",
-    "dpm_xbrl", "finrep",
+    "irb",
+    "sft",
+    "cva",
+    "liquidity",
+    "irrbb",
+    "market_risk",
+    "operational_risk",
+    "own_funds",
+    "securitisation",
+    "large_exposures",
+    "crypto_assets",
+    "frtb",
+    "output_floor",
+    "dpm_xbrl",
+    "finrep",
 )
 
 
@@ -54,8 +66,7 @@ def resolve_sql_dir(explicit: Optional[Path] = None) -> Path:
             return candidate
     searched = ", ".join(str(path) for path in candidates)
     raise FileNotFoundError(
-        "Répertoire SQL Community introuvable ou contrat absent. "
-        f"Emplacements contrôlés : {searched}"
+        f"Répertoire SQL Community introuvable ou contrat absent. Emplacements contrôlés : {searched}"
     )
 
 
@@ -65,8 +76,7 @@ def load_sql_contract(sql_dir: Path) -> dict[str, Any]:
     raw = json.loads(contract_path.read_text(encoding="utf-8"))
     if raw.get("version") != __version__:
         raise ValueError(
-            f"Version du contrat SQL Community ({raw.get('version')!r}) "
-            f"!= version du package ({__version__!r})."
+            f"Version du contrat SQL Community ({raw.get('version')!r}) != version du package ({__version__!r})."
         )
     if raw.get("edition") != "Community":
         raise ValueError(f"Contrat SQL inattendu : edition={raw.get('edition')!r}")
@@ -91,48 +101,75 @@ def load_sql_contract(sql_dir: Path) -> dict[str, Any]:
             raise ValueError(f"Étape SQL dupliquée : {rel_path_value}")
         seen_paths.add(rel_path_value)
         if step["group"] not in _ALLOWED_GROUPS:
-            raise ValueError(
-                f"Étape SQL #{index} : groupe non autorisé {step['group']!r}."
-            )
+            raise ValueError(f"Étape SQL #{index} : groupe non autorisé {step['group']!r}.")
         normalized = rel_path_value.lower()
         leaked = sorted(token for token in _FORBIDDEN_SQL_TOKENS if token in normalized)
         if leaked:
-            raise ValueError(
-                f"Étape SQL #{index} hors périmètre Community : {', '.join(leaked)}."
-            )
+            raise ValueError(f"Étape SQL #{index} hors périmètre Community : {', '.join(leaked)}.")
     return raw
 
 
-def sql_steps(sql_dir: Optional[Path] = None) -> Tuple[dict[str, str], ...]:
-    """Retourne la séquence SQL immuable du contrat Community."""
+def _normalize_engine_filter(engines: Optional[Sequence[str]]) -> tuple[str, ...]:
+    """Validate optional Community engine filter."""
+    if not engines:
+        return ()
+    selected = tuple(dict.fromkeys(str(engine) for engine in engines))
+    unknown = sorted(set(selected) - set(_ENGINE_GROUPS))
+    if unknown:
+        raise ValueError("Moteur Community inconnu : " + ", ".join(unknown))
+    return selected
+
+
+def sql_steps(sql_dir: Optional[Path] = None, engines: Optional[Sequence[str]] = None) -> Tuple[dict[str, str], ...]:
+    """Retourne la séquence SQL du contrat Community, optionnellement filtrée."""
     resolved = resolve_sql_dir(sql_dir)
     contract = load_sql_contract(resolved)
-    return tuple(contract["steps"])
+    selected = set(_normalize_engine_filter(engines))
+    if not selected:
+        return tuple(contract["steps"])
+    return tuple(
+        step
+        for step in contract["steps"]
+        if step["group"] in {"always", "post_seed"} or step["group"] in selected
+    )
 
 
-def render_sql_manifest(sql_dir: Optional[Path] = None) -> str:
+def _profile_manifest_name(engines: Optional[Sequence[str]]) -> str:
+    """Return default or engine-specific manifest file name."""
+    selected = _normalize_engine_filter(engines)
+    if not selected:
+        return _MANIFEST_NAME
+    return "ACTIVE_SQL_MANIFEST_engine_" + "_".join(selected) + ".txt"
+
+
+def render_sql_manifest(sql_dir: Optional[Path] = None, engines: Optional[Sequence[str]] = None) -> str:
     """Génère le manifeste lisible à partir du contrat distribué."""
     resolved = resolve_sql_dir(sql_dir)
     contract = load_sql_contract(resolved)
+    selected = _normalize_engine_filter(engines)
+    scope = " + ".join(selected) if selected else "SA + SA-CCR"
     lines = [
         f"# ACTIVE_SQL_MANIFEST — Corep Engine Community v{contract['version']}",
-        "# Périmètre public strict : SA + SA-CCR.",
+        f"# Périmètre public strict : {scope}.",
         "# Source d'exécution : COMMUNITY_SQL_CONTRACT.json.",
         "",
         "# Ordre SQL effectif",
     ]
-    for index, step in enumerate(contract["steps"], start=1):
-        lines.append(
-            f"{index:02d} | {step['group']:<10s} | {step['path']} | {step['description']}"
-        )
+    for index, step in enumerate(sql_steps(resolved, engines=selected), start=1):
+        lines.append(f"{index:02d} | {step['group']:<10s} | {step['path']} | {step['description']}")
     return "\n".join(lines) + "\n"
 
 
-def write_sql_manifest(sql_dir: Optional[Path] = None) -> Path:
-    """Réécrit le manifeste dans le répertoire SQL résolu."""
+def write_sql_manifest(
+    sql_dir: Optional[Path] = None,
+    engines: Optional[Sequence[str]] = None,
+    output_path: Optional[Path] = None,
+) -> Path:
+    """Réécrit le manifeste par défaut ou un manifeste moteur dans le répertoire SQL résolu."""
     resolved = resolve_sql_dir(sql_dir)
-    path = resolved / _MANIFEST_NAME
-    path.write_text(render_sql_manifest(resolved), encoding="utf-8")
+    path = output_path or resolved / _profile_manifest_name(engines)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(render_sql_manifest(resolved, engines=engines), encoding="utf-8")
     return path
 
 
@@ -146,10 +183,7 @@ def _resolved_scripts(sql_dir: Path, steps: Sequence[dict[str, str]]) -> list[tu
             sql_text = candidate.read_text(encoding="utf-8").lower()
             leaked = sorted(token for token in _FORBIDDEN_SQL_TOKENS if token in sql_text)
             if leaked:
-                raise ValueError(
-                    f"Contenu SQL hors périmètre Community dans {step['path']} : "
-                    + ", ".join(leaked)
-                )
+                raise ValueError(f"Contenu SQL hors périmètre Community dans {step['path']} : " + ", ".join(leaked))
             resolved.append((candidate, step))
         else:
             missing.append(step["path"])
@@ -204,10 +238,10 @@ def _record_applied(db: Database, script_name: str, checksum: str) -> None:
     db.commit()
 
 
-def bootstrap_postgresql(db: Database, sql_dir: Optional[Path] = None) -> int:
+def bootstrap_postgresql(db: Database, sql_dir: Optional[Path] = None, engines: Optional[Sequence[str]] = None) -> int:
     """Applique le bootstrap SA / SA-CCR et renvoie le nombre de scripts joués."""
     resolved_dir = resolve_sql_dir(sql_dir)
-    steps = sql_steps(resolved_dir)
+    steps = sql_steps(resolved_dir, engines=engines)
     scripts = _resolved_scripts(resolved_dir, steps)
     _ensure_migration_table(db)
 
@@ -261,12 +295,19 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--dsn", help="DSN PostgreSQL. Défaut : DATABASE_URL / variables PG*.")
     parser.add_argument("--sql-dir", type=Path, help="Répertoire SQL alternatif.")
+    parser.add_argument(
+        "--engine",
+        action="append",
+        choices=_ENGINE_GROUPS,
+        help="Limite le bootstrap Community à un moteur public. Option répétable.",
+    )
     parser.add_argument("--list", action="store_true", help="Liste les scripts sans connexion.")
     parser.add_argument(
         "--write-manifest",
         action="store_true",
-        help="Régénère ACTIVE_SQL_MANIFEST.txt depuis le contrat.",
+        help="Régénère ACTIVE_SQL_MANIFEST.txt ou un manifeste moteur depuis le contrat.",
     )
+    parser.add_argument("--manifest-output", type=Path, help="Chemin de sortie explicite du manifeste SQL généré.")
     parser.add_argument(
         "--reset",
         action="store_true",
@@ -285,12 +326,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
         resolved_dir = resolve_sql_dir(args.sql_dir)
+        engine_filter = tuple(args.engine or ()) or None
         if args.list:
-            for step in sql_steps(resolved_dir):
+            for step in sql_steps(resolved_dir, engines=engine_filter):
                 print(f"{step['group']:10s} {step['path']}")
             return 0
         if args.write_manifest:
-            path = write_sql_manifest(resolved_dir)
+            path = write_sql_manifest(resolved_dir, engines=engine_filter, output_path=args.manifest_output)
             print(f"✓ Manifeste SQL Community généré : {path}")
             return 0
 
@@ -300,7 +342,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             if args.reset:
                 _reset_database(db, resolved_dir, args.confirm_reset)
                 print("✓ Reset Community exécuté.")
-            count = bootstrap_postgresql(db, resolved_dir)
+            count = bootstrap_postgresql(db, resolved_dir, engines=engine_filter)
         finally:
             db.close()
         print(f"✓ Bootstrap Community terminé : {count} script(s) appliqué(s).")

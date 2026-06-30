@@ -8,7 +8,8 @@ import pytest
 
 from corep_crr3 import db as db_module
 from corep_crr3 import protection_strategy
-from corep_crr3.public_registry import get_engine, main as registry_main
+from corep_crr3.public_registry import get_engine
+from corep_crr3.public_registry import main as registry_main
 from corep_crr3.saccr_engine import run_saccr_engine
 from corep_crr3.standard_engine import run_standard_engine
 from corep_crr3.utils import to_float
@@ -58,9 +59,7 @@ def test_protections_are_enriched_grouped_and_ranked(monkeypatch):
 
     monkeypatch.setattr(protection_strategy, "evaluate_rule_set", _decision)
     trace_buffer: list = []
-    grouped = protection_strategy.load_all_ranked_protections(
-        db, "B1", "CRR3_V9", trace_buffer=trace_buffer
-    )
+    grouped = protection_strategy.load_all_ranked_protections(db, "B1", "CRR3_V9", trace_buffer=trace_buffer)
 
     assert len(db.queries) == 1
     assert [p["protection_id"] for p in grouped["EXP1"]] == ["P1", "P2", "P3"]
@@ -70,14 +69,16 @@ def test_protections_are_enriched_grouped_and_ranked(monkeypatch):
 
 
 def test_unit_protection_loader_and_rank_fallbacks(monkeypatch):
-    db = _ProtectionDb([
-        {
-            "exposure_id": "EXP2",
-            "protection_id": "P9",
-            "protection_type": "FCP",
-            "allocation_rank": "not-an-int",
-        }
-    ])
+    db = _ProtectionDb(
+        [
+            {
+                "exposure_id": "EXP2",
+                "protection_id": "P9",
+                "protection_type": "FCP",
+                "allocation_rank": "not-an-int",
+            }
+        ]
+    )
     monkeypatch.setattr(protection_strategy, "evaluate_rule_set", lambda *a, **k: None)
 
     loaded = protection_strategy.load_ranked_protections(db, "B1", "CRR3_V9", "EXP2")
@@ -91,8 +92,14 @@ def test_unit_protection_loader_and_rank_fallbacks(monkeypatch):
 
 def test_database_environment_helpers_cover_all_resolution_modes(monkeypatch, tmp_path):
     for name in (
-        "DATABASE_URL", "PGHOST", "PGPORT", "PGDATABASE", "PGUSER",
-        "PGPASSWORD", "PGPASSWORD_FILE", "PGPASSWORD_CMD",
+        "DATABASE_URL",
+        "PGHOST",
+        "PGPORT",
+        "PGDATABASE",
+        "PGUSER",
+        "PGPASSWORD",
+        "PGPASSWORD_FILE",
+        "PGPASSWORD_CMD",
         "COREP_EXECUTE_VALUES_PAGE_SIZE",
     ):
         monkeypatch.delenv(name, raising=False)
@@ -128,6 +135,7 @@ def test_database_environment_helpers_cover_all_resolution_modes(monkeypatch, tm
     monkeypatch.delenv("PGPASSWORD_FILE")
     monkeypatch.setenv("PGPASSWORD_CMD", "secret-command --safe")
     import subprocess
+
     monkeypatch.setattr(
         subprocess,
         "run",

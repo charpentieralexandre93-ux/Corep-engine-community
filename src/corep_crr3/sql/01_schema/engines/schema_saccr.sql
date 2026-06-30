@@ -1,7 +1,7 @@
 -- =============================================================================
 -- schema_saccr.sql
 -- Moteur SA-CCR — schéma BCNF dédié.
--- VERSION : 6.0.4
+-- VERSION : 6.6.0
 -- =============================================================================
 -- P2 v2.8 : les tables SA-CCR ne sont plus créées dans le schéma commun.
 -- Ce fichier porte désormais la totalité du schéma moteur SA-CCR :

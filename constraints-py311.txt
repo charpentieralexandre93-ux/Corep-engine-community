@@ -1,4 +1,4 @@
-# Canonical production/toolchain constraints for Python 3.11 — Corep Engine v6.0.4
+# Canonical production/toolchain constraints for Python 3.11 — Corep Engine v6.6.0
 # Regenerate deliberately after dependency audit; CI and Docker consume this file.
 psycopg2-binary==2.9.11
 PyYAML==6.0.3

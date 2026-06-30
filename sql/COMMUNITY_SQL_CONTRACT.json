@@ -1,5 +1,5 @@
 {
-  "version": "6.0.4",
+  "version": "6.6.0",
   "edition": "Community",
   "engines": [
     "SA",
@@ -61,6 +61,16 @@
       "path": "03_mapping/99_mapping_conditions_bcnf.sql",
       "group": "post_seed",
       "description": "normalisation BCNF des conditions de mapping"
+    },
+    {
+      "path": "04_post_seed/99_bcnf_hardening_v6_6_0.sql",
+      "group": "post_seed",
+      "description": "Data Model BCNF Hardening v6.6.0"
+    },
+    {
+      "path": "04_post_seed/99_regulatory_reference_model_hardening_v6_6_0.sql",
+      "group": "post_seed",
+      "description": "Regulatory Reference Model Hardening v6.6.0"
     },
     {
       "path": "04_post_seed/99_post_seed_constraints_community.sql",

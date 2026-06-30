@@ -1,4 +1,5 @@
 """Community non-regression tests for the P2 polish release."""
+
 from __future__ import annotations
 
 import json
@@ -14,7 +15,7 @@ def test_python_support_policy_matches_public_packaging() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     policy = (ROOT / "docs/PYTHON_COMPATIBILITY.md").read_text(encoding="utf-8")
     runtime_lock = (ROOT / "requirements-runtime-py311-linux.lock").read_text(encoding="utf-8")
-    assert 'requires-python = ">=3.9,<3.14"' in pyproject
+    assert 'requires-python = ">=3.11,<3.14"' in pyproject
     assert "Python 3.11" in policy and "best-effort" in policy
     assert "reproducible Python 3.11 Linux baseline" in runtime_lock
 

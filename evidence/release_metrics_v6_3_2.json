@@ -1,0 +1,11 @@
+{
+  "cli_docstrings_documented": 72,
+  "cli_docstrings_total": 72,
+  "coverage_branches": 78.52,
+  "coverage_combined": 81.95,
+  "edition": "COMMUNITY",
+  "mypy_modules": 16,
+  "product_version": "6.4.1",
+  "tests_passed": 196,
+  "tests_skipped": 1
+}

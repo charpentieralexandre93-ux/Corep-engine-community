@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Reject undocumented ``except Exception`` handlers in production sources."""
+
 from __future__ import annotations
 
 import argparse

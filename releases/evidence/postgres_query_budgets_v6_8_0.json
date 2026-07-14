@@ -1,0 +1,26 @@
+{
+  "edition": "COMMUNITY",
+  "product_version": "6.8.0",
+  "query_budgets": [
+    {
+      "max_execution_ms": 250.0,
+      "max_plan_rows": 100000,
+      "max_seq_scan_rows": 100000,
+      "max_total_cost": 50000.0,
+      "name": "core_results_lookup"
+    },
+    {
+      "max_execution_ms": 500.0,
+      "max_plan_rows": 100000,
+      "max_seq_scan_rows": 100000,
+      "max_total_cost": 75000.0,
+      "name": "mapping_join_lookup"
+    }
+  ],
+  "required_ci_evidence": [
+    "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) for representative result lookup",
+    "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) for DPM/mapping join",
+    "pg_stat_statements top 20 query report after E2E batch"
+  ],
+  "schema_version": 1
+}

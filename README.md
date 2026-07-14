@@ -1,4 +1,15 @@
-# COREP CRR3 Engine Community — v6.0.4
+# COREP CRR3 Engine Community — v6.10.0
+
+
+## Installation utilisateur rapide
+
+Sous Windows, le parcours utilisateur final est volontairement réduit à des doubles-clics :
+
+1. `INSTALL_WINDOWS.bat` — crée `.venv` et installe COREP Engine Community v6.10.0.
+2. `RUN_GUI_WINDOWS.bat` — lance le GUI.
+3. `BOOTSTRAP_SQL_WINDOWS.bat` — vérifie le plan SQL et régénère le manifeste SQL.
+
+Documentation complète : `docs/INSTALLATION_UTILISATEUR.md`.
 
 Édition publique open-core limitée à **SA crédit + SA-CCR**. Elle contient les fonctions de calcul, le bootstrap PostgreSQL public, les schémas SQL autorisés, une interface graphique de diagnostic et les garde-fous de frontière Community/Enterprise.
 
@@ -12,7 +23,7 @@
 | Interface graphique Community | `corep-community-gui` ou `python -m corep_crr3.community_gui` |
 | Bootstrap PostgreSQL | `corep-community-bootstrap` |
 | Diagnostic PostgreSQL | `corep-community-health` |
-| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.0.4` |
+| Vérification release | `corep-community-release-verify --root . --manifest RELEASE_MANIFEST.json --version 6.10.0` |
 
 L'édition Community n'embarque pas l'orchestrateur Enterprise `batch/run_batch.py`. Elle sert de moteur public SA/SA-CCR et de socle d'intégration.
 
@@ -44,9 +55,10 @@ Sous Windows : `launch_community_gui.bat`.
 
 ```python
 from corep_crr3.standard_engine import ccf_from_annex_i_bucket
-from corep_crr3.saccr_engine import _calc_multiplier
+from corep_crr3.supporting_factors import sme_blended_factor
 
 assert ccf_from_annex_i_bucket("BUCKET_5") == 0.10
+assert round(sme_blended_factor(0.7619, 3_000_000), 6) == 0.776583
 ```
 
 Pour une exécution base de données, importer `run_standard_engine` ou `run_saccr_engine` dans votre propre orchestrateur et fournir une instance `Database` ainsi qu'un `batch_id`.
@@ -60,24 +72,22 @@ Pour une exécution base de données, importer `run_standard_engine` ou `run_sac
 
 Notes méthodologiques : [`docs/REGULATORY_METHODOLOGY_INDEX.md`](docs/REGULATORY_METHODOLOGY_INDEX.md). Politique Python : [`docs/PYTHON_COMPATIBILITY.md`](docs/PYTHON_COMPATIBILITY.md).
 
-## Preuves qualité v6.0.4
+<!-- RELEASE_METRICS_START -->
+## Preuves qualité v6.10.0
 
-- `standard_engine.py` byte-identique à l'Enterprise ;
-- refactoring P0 avec unités sous CC 20 ;
-- tests de non-régression SA ;
-- garde AST empêchant l'import de moteurs privés ;
-- politique documentée des exceptions larges ;
-- SBOM CycloneDX avec licence SPDX du runtime PostgreSQL ;
-- CI, manifest SHA-256 et wheel public contrôlé.
+- **247 tests réussis, 1 ignoré** ;
+- couverture lignes/branches combinée : **78.85 %**, dont **71.93 %** de branches ;
+- Mypy valide les **16 modules** du périmètre ;
+- **110/110 fonctions CLI/GUI documentées** ;
+- Ruff, formatage, Bandit, seuils par composant, manifeste et reproductibilité sont bloquants en CI.
+<!-- RELEASE_METRICS_END -->
 
-- Python 3.11 est la baseline reproductible ; 3.9/3.12/3.13 sont des compatibilités best-effort testées en CI ;
-- 100 % des 71 fonctions des modules exposés par les CLI/GUI disposent d’une docstring, avec gate à 85 % ;
-- la couverture de branche de `standard_engine.py` est comparée à la baseline v6.0.2 et publiée dans la preuve de release.
+## Docker
 
-Les résultats exacts de cette archive sont consignés dans `RELEASE_REPORT_v6_0_4.md` et `RELEASE_MANIFEST.json`.
+L’image Community exécute `corep-community` comme **commande one-shot** de diagnostic et se termine normalement. Utilisez `docker compose run --rm app`; l’image n’est pas présentée comme un service HTTP permanent.
 
 ## Historique et licence
 
-Voir [`CHANGELOG_v6_0_4.md`](CHANGELOG_v6_0_4.md) et les autres fichiers `CHANGELOG_v*.md`.
+Voir [`CHANGELOG_v6_9_0.md`](changelogs/CHANGELOG_v6_9_0.md) et les autres fichiers `changelogs/CHANGELOG_v*.md`.
 
 Apache License 2.0 : [`LICENSE`](LICENSE), [`LICENSE-COMMUNITY.md`](LICENSE-COMMUNITY.md) et [`NOTICE`](NOTICE).

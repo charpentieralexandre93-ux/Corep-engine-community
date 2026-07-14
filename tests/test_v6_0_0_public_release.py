@@ -37,7 +37,10 @@ def test_readiness_passes_with_explicit_test_resources(tmp_path: Path) -> None:
     )
     assert report.passed
     assert {check.code for check in report.checks} >= {
-        "PYTHON_VERSION", "ENGINE_VERSION", "PUBLIC_SCOPE", "OUTPUT_WRITABLE"
+        "PYTHON_VERSION",
+        "ENGINE_VERSION",
+        "PUBLIC_SCOPE",
+        "OUTPUT_WRITABLE",
     }
 
 

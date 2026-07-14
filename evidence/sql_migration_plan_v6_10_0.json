@@ -1,0 +1,113 @@
+{
+  "edition": "COMMUNITY",
+  "product_version": "6.10.0",
+  "rollback_policy": "forward-only; compensating SQL must be reviewed and signed separately",
+  "schema_version": 2,
+  "stages": [
+    "00_reset",
+    "01_schema",
+    "02_seeds",
+    "03_mapping",
+    "04_post_seed"
+  ],
+  "state_table": "meta.corep_schema_migrations",
+  "state_table_ddl": "CREATE SCHEMA IF NOT EXISTS meta;\nCREATE TABLE IF NOT EXISTS meta.corep_schema_migrations (\n    applied_order integer NOT NULL,\n    path text PRIMARY KEY,\n    sha256 char(64) NOT NULL,\n    stage text NOT NULL,\n    applied_at timestamptz NOT NULL DEFAULT now(),\n    applied_by text NOT NULL DEFAULT current_user,\n    CONSTRAINT ck_corep_schema_migrations_sha CHECK (sha256 ~ '^[0-9a-f]{64}$')\n);\nCREATE UNIQUE INDEX IF NOT EXISTS ux_corep_schema_migrations_order ON meta.corep_schema_migrations(applied_order);",
+  "steps": [
+    {
+      "destructive": false,
+      "order": 1,
+      "path": "01_schema/01_schema_common_community.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (1, '01_schema/01_schema_common_community.sql', '18a5df34d9a7e7dd021a5d388f144fa2e7785376c390ff5c27391b7d1f411a84', '01_schema') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "18a5df34d9a7e7dd021a5d388f144fa2e7785376c390ff5c27391b7d1f411a84",
+      "stage": "01_schema"
+    },
+    {
+      "destructive": false,
+      "order": 2,
+      "path": "01_schema/02_schema_domain_normalization_community.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (2, '01_schema/02_schema_domain_normalization_community.sql', '5488b028e60106e32e68cf4d533bc8a116d5c226f087271dfc896d94b77fe5d2', '01_schema') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "5488b028e60106e32e68cf4d533bc8a116d5c226f087271dfc896d94b77fe5d2",
+      "stage": "01_schema"
+    },
+    {
+      "destructive": false,
+      "order": 3,
+      "path": "01_schema/03_schema_bcnf_integrity_patch.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (3, '01_schema/03_schema_bcnf_integrity_patch.sql', '34431805fef92a972c6aba893e1890a0e32f6535269014120228359476b60c96', '01_schema') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "34431805fef92a972c6aba893e1890a0e32f6535269014120228359476b60c96",
+      "stage": "01_schema"
+    },
+    {
+      "destructive": false,
+      "order": 4,
+      "path": "01_schema/engines/schema_credit_standard.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (4, '01_schema/engines/schema_credit_standard.sql', '7640c0eb269ee61f37e2cdb8489286a33b7aa4657f38aa5810f77f315eeca03b', '01_schema') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "7640c0eb269ee61f37e2cdb8489286a33b7aa4657f38aa5810f77f315eeca03b",
+      "stage": "01_schema"
+    },
+    {
+      "destructive": false,
+      "order": 5,
+      "path": "01_schema/engines/schema_saccr.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (5, '01_schema/engines/schema_saccr.sql', '0411a98aca03c6d42e05cb0fc265f59d524af5b750ef04be2026a188891f5f55', '01_schema') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "0411a98aca03c6d42e05cb0fc265f59d524af5b750ef04be2026a188891f5f55",
+      "stage": "01_schema"
+    },
+    {
+      "destructive": false,
+      "order": 6,
+      "path": "02_seeds/00_seed_common_reference_community.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (6, '02_seeds/00_seed_common_reference_community.sql', 'f1ecb96e3075f3b33c773acb6da25b91f7ac88d59cfef6623ee35d270b32da55', '02_seeds') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "f1ecb96e3075f3b33c773acb6da25b91f7ac88d59cfef6623ee35d270b32da55",
+      "stage": "02_seeds"
+    },
+    {
+      "destructive": false,
+      "order": 7,
+      "path": "02_seeds/01_seed_credit_standard.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (7, '02_seeds/01_seed_credit_standard.sql', '6857ca6642606c5f7fac46875230811bb528c3718e82c47d141ffdae32ce56dd', '02_seeds') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "6857ca6642606c5f7fac46875230811bb528c3718e82c47d141ffdae32ce56dd",
+      "stage": "02_seeds"
+    },
+    {
+      "destructive": false,
+      "order": 8,
+      "path": "02_seeds/02_seed_saccr.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (8, '02_seeds/02_seed_saccr.sql', '694a36818105d5b04e083f340f61346f7b0111b76f99c00a08f89f0bd7cfe190', '02_seeds') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "694a36818105d5b04e083f340f61346f7b0111b76f99c00a08f89f0bd7cfe190",
+      "stage": "02_seeds"
+    },
+    {
+      "destructive": false,
+      "order": 9,
+      "path": "03_mapping/01_mapping_credit_standard_community.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (9, '03_mapping/01_mapping_credit_standard_community.sql', 'c297646f91f5766c3a4965dc381cf41416cf7a5d691329a154fd6985890302b2', '03_mapping') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "c297646f91f5766c3a4965dc381cf41416cf7a5d691329a154fd6985890302b2",
+      "stage": "03_mapping"
+    },
+    {
+      "destructive": false,
+      "order": 10,
+      "path": "03_mapping/02_mapping_saccr.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (10, '03_mapping/02_mapping_saccr.sql', '08ae6901e978e3b68ac13a647dcc2d06cf4ab54891d8821c2fd402ab55d9c75e', '03_mapping') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "08ae6901e978e3b68ac13a647dcc2d06cf4ab54891d8821c2fd402ab55d9c75e",
+      "stage": "03_mapping"
+    },
+    {
+      "destructive": false,
+      "order": 11,
+      "path": "03_mapping/99_mapping_conditions_bcnf.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (11, '03_mapping/99_mapping_conditions_bcnf.sql', 'f3c1aaf28e3fe2d1cbd4802a315e9cb55b0b2d4668c7d7f76ab3e0d70bad5ae8', '03_mapping') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "f3c1aaf28e3fe2d1cbd4802a315e9cb55b0b2d4668c7d7f76ab3e0d70bad5ae8",
+      "stage": "03_mapping"
+    },
+    {
+      "destructive": false,
+      "order": 12,
+      "path": "04_post_seed/99_post_seed_constraints_community.sql",
+      "record_sql": "INSERT INTO meta.corep_schema_migrations(applied_order, path, sha256, stage) VALUES (12, '04_post_seed/99_post_seed_constraints_community.sql', '54cfe6e8d0ea8ac0e55e416b0420501f1c0ab40c088350cd8e2f369a47108b26', '04_post_seed') ON CONFLICT (path) DO UPDATE SET applied_order = EXCLUDED.applied_order, sha256 = EXCLUDED.sha256, stage = EXCLUDED.stage WHERE meta.corep_schema_migrations.sha256 = EXCLUDED.sha256;",
+      "sha256": "54cfe6e8d0ea8ac0e55e416b0420501f1c0ab40c088350cd8e2f369a47108b26",
+      "stage": "04_post_seed"
+    }
+  ]
+}

@@ -1,11 +1,13 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.7
+# Corep Engine Community v6.10.0 — image one-shot non-root et reproductible.
 FROM python:3.11-slim-bookworm@sha256:e2d3af735aff6eeee600b1933bedd99da6645fedf572cc12ef4cc1331f2ceebe AS builder
-ENV PIP_NO_CACHE_DIR=1 PYTHONDONTWRITEBYTECODE=1 SOURCE_DATE_EPOCH=1767225600
+ENV PIP_NO_CACHE_DIR=1 PYTHONDONTWRITEBYTECODE=1 SOURCE_DATE_EPOCH=1781481600
 WORKDIR /build
+COPY requirements-dev-py311-linux.lock /build/requirements-dev-py311-linux.lock
+RUN python -m pip install --no-cache-dir --require-hashes -r /build/requirements-dev-py311-linux.lock
 COPY . /build
-RUN python -m pip install --no-cache-dir -c constraints-py311.txt build wheel setuptools \
- && PYTHONPATH=src python -m corep_crr3.release_integrity \
-      --root /build --manifest RELEASE_MANIFEST.json --version 6.0.4 \
+RUN PYTHONPATH=src python -m corep_crr3.release_integrity \
+      --root /build --manifest RELEASE_MANIFEST.json --version "$(PYTHONPATH=src python -c 'from corep_crr3 import __version__; print(__version__)')" --edition COMMUNITY \
  && python -m build --wheel --no-isolation \
  && python tools/verify_public_wheel.py dist/*.whl
 
@@ -17,7 +19,6 @@ RUN apt-get update \
  && groupadd --gid 10001 corep \
  && useradd --uid 10001 --gid corep --create-home --shell /usr/sbin/nologin corep
 COPY --from=builder /build/dist/*.whl /tmp/wheels/
-COPY constraints-py311.txt /app/constraints-py311.txt
 COPY requirements-runtime-py311-linux.lock /app/requirements-runtime-py311-linux.lock
 RUN python -m pip install --no-cache-dir --require-hashes -r /app/requirements-runtime-py311-linux.lock \
  && python -m pip install --no-cache-dir --no-deps /tmp/wheels/*.whl \
@@ -25,6 +26,4 @@ RUN python -m pip install --no-cache-dir --require-hashes -r /app/requirements-r
 WORKDIR /app
 RUN mkdir -p /app/output && chown -R corep:corep /app
 USER 10001:10001
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
- CMD corep-community-health --output-dir /tmp/corep-output --min-free-mb 10 >/dev/null || exit 1
 CMD ["corep-community"]

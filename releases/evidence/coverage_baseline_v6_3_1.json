@@ -1,0 +1,27 @@
+{
+  "modules": {
+    "community_gui.py": {
+      "branch_percent": 60.2,
+      "branches": 98,
+      "covered_branches": 59,
+      "statement_percent": 53.88,
+      "statements": 451
+    },
+    "saccr_engine.py": {
+      "branch_percent": 58.62,
+      "branches": 116,
+      "covered_branches": 68,
+      "statement_percent": 67.39,
+      "statements": 371
+    },
+    "standard_engine.py": {
+      "branch_percent": 56.35,
+      "branches": 126,
+      "covered_branches": 71,
+      "statement_percent": 65.93,
+      "statements": 364
+    }
+  },
+  "product_version": "6.3.1",
+  "schema_version": 1
+}

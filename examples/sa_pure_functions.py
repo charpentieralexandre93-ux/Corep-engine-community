@@ -24,10 +24,11 @@ from corep_crr3.standard_engine import (
 
 def main() -> None:
     print("=== CRM — valeur reconnue d'une sûreté (FCP, Art.223/224) ===")
-    print("  100 de collatéral, haircut 15 %        ->",
-          compute_recognized_fcp_value(100.0, 0.15))
-    print("  + asymétrie de change (Hfx 8 %, Art.224) ->",
-          compute_recognized_fcp_value(100.0, 0.15, fx_mismatch=True, fx_haircut=0.08))
+    print("  100 de collatéral, haircut 15 %        ->", compute_recognized_fcp_value(100.0, 0.15))
+    print(
+        "  + asymétrie de change (Hfx 8 %, Art.224) ->",
+        compute_recognized_fcp_value(100.0, 0.15, fx_mismatch=True, fx_haircut=0.08),
+    )
 
     print("\n=== CRM — substitution UFCP partielle (garantie 30 sur EAD 100) ===")
     covered, rwa, residual = apply_ufcp_partial_substitution(
@@ -36,8 +37,7 @@ def main() -> None:
     print(f"  couvert={covered}  RWA_couvert={rwa}  résiduel_obligor={residual}")
 
     print("\n=== CRM — asymétrie de maturité (Art.239(3)) ===")
-    print("  exposition 60 mois, protection 36 mois ->",
-          round(maturity_mismatch_factor(60, 36), 4))
+    print("  exposition 60 mois, protection 36 mois ->", round(maturity_mismatch_factor(60, 36), 4))
 
     print("\n=== SA-CCR — facteur de maturité ===")
     print("  non margé, 1 an   ->", round(_maturity_factor(1.0, margined=False), 4))

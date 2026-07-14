@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Verify Apache licensing, runtime resources and the strict public boundary."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,10 +8,18 @@ import zipfile
 from pathlib import Path
 
 FORBIDDEN = (
-    "irb_engine.py", "cva_engine.py", "sft_engine.py", "liquidity_engine.py",
-    "market_risk_engine.py", "operational_risk_engine.py", "own_funds_engine.py",
-    "dpm_xbrl_exporter.py", "eba_xbrl_csv.py", "regulatory_release.py",
-    "submission_governance.py", "stress_testing_engine.py",
+    "irb_engine.py",
+    "cva_engine.py",
+    "sft_engine.py",
+    "liquidity_engine.py",
+    "market_risk_engine.py",
+    "operational_risk_engine.py",
+    "own_funds_engine.py",
+    "dpm_xbrl_exporter.py",
+    "eba_xbrl_csv.py",
+    "regulatory_release.py",
+    "submission_governance.py",
+    "stress_testing_engine.py",
 )
 
 

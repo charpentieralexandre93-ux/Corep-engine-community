@@ -1,4 +1,5 @@
 """Non-régression v5.0.9 de la frontière publique et de la licence."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,9 +17,15 @@ def test_readme_and_metadata_are_consistently_apache_2_0():
 
 def test_public_distribution_contains_no_enterprise_engine_modules():
     forbidden = {
-        "irb_engine.py", "cva_engine.py", "sft_engine.py", "liquidity_engine.py",
-        "market_risk_engine.py", "operational_risk_engine.py", "own_funds_engine.py",
-        "dpm_xbrl_exporter.py", "stress_testing_engine.py",
+        "irb_engine.py",
+        "cva_engine.py",
+        "sft_engine.py",
+        "liquidity_engine.py",
+        "market_risk_engine.py",
+        "operational_risk_engine.py",
+        "own_funds_engine.py",
+        "dpm_xbrl_exporter.py",
+        "stress_testing_engine.py",
     }
     present = {p.name for p in (ROOT / "src/corep_crr3").glob("*.py")}
     assert forbidden.isdisjoint(present)

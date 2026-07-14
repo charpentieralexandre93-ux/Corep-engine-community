@@ -1,4 +1,4 @@
-# Index des notes méthodologiques Community — v6.0.4
+# Index des notes méthodologiques Community — v6.10.0
 
 L'édition Community expose uniquement les moteurs SA et SA-CCR :
 

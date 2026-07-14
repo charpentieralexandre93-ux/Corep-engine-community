@@ -53,8 +53,8 @@
     },
     {
       "path": "BOOTSTRAP_SQL_WINDOWS.bat",
-      "sha256": "865c85d7c461e70f4da5132fb90906f1f6339f07c935b5e2beb662a4a81c6894",
-      "size": 1198
+      "sha256": "fb1b2eb58646d9f6129a77b1078a03eed9234da1582e7b51322a96686036f4b6",
+      "size": 1154
     },
     {
       "path": "CHANGELOG.md",
@@ -78,8 +78,8 @@
     },
     {
       "path": "INSTALL_WINDOWS.bat",
-      "sha256": "520ddbb4dd6ee2ea3d2fc56928ba76e8e90cf3c0420f42caf0650901857a8f2d",
-      "size": 1918
+      "sha256": "8c638f74a77de384bcd31dbed53e4d9ac063457a912e7e8014c44238d8f4926a",
+      "size": 1850
     },
     {
       "path": "LICENSE",
@@ -113,8 +113,8 @@
     },
     {
       "path": "RUN_GUI_WINDOWS.bat",
-      "sha256": "4c1ea9a1370b7857e7447e342d5d8a1fa10ddd26b9757b89c1db2792a51ac956",
-      "size": 766
+      "sha256": "6857f2cf9f9543b465d0e369feb48c2d886c1e658909c3ab2ee6d268b8e990e8",
+      "size": 738
     },
     {
       "path": "SBOM_Corep_Community_v6.10.0.json",
@@ -1333,8 +1333,8 @@
     },
     {
       "path": "src/corep_crr3/public_registry.py",
-      "sha256": "96c4aacdb06051872436fefee0f1aa21ff818978a87fd47a7863c81f9c5a8d0c",
-      "size": 2459
+      "sha256": "74e9aaac4ad34fcae301e8b8294d6b751564ce83b0a1216c1ccd3206fc846936",
+      "size": 2547
     },
     {
       "path": "src/corep_crr3/py.typed",

@@ -9,6 +9,7 @@ from .engine_contracts import (
     EngineProfiler,
     EngineResult,
     FunctionEngineAdapter,
+    LegacyEngineCallable,
     RegulatoryEngine,
 )
 from .saccr_engine import run_saccr_engine
@@ -16,13 +17,13 @@ from .standard_engine import run_standard_engine
 
 # API historique conservée : plusieurs intégrations et tests comparent encore
 # directement l'identité des fonctions publiques.
-PUBLIC_ENGINES = {
+PUBLIC_ENGINES: dict[str, LegacyEngineCallable] = {
     "SA": run_standard_engine,
     "SA_CCR": run_saccr_engine,
 }
 
 # Nouveau contrat normalisé, additif et sans rupture de PUBLIC_ENGINES.
-PUBLIC_REGULATORY_ENGINES = {
+PUBLIC_REGULATORY_ENGINES: dict[str, RegulatoryEngine] = {
     code: FunctionEngineAdapter(function, name=code) for code, function in PUBLIC_ENGINES.items()
 }
 

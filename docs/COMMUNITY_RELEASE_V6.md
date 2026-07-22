@@ -1,10 +1,10 @@
-# Exploitation Community v6.0.0
+# Exploitation Community v6.10.1
 
 La distribution publique couvre uniquement SA et SA-CCR. Avant publication ou
 installation, vérifier le manifeste de release puis exécuter le diagnostic :
 
 ```bash
-python -m corep_crr3.release_integrity --root . --manifest RELEASE_MANIFEST.json --version 6.0.0
+python -m corep_crr3.release_integrity --root . --manifest RELEASE_MANIFEST.json --version 6.10.1
 corep-community-health --output-dir output --min-free-mb 100
 ```
 

@@ -2,62 +2,119 @@ name: Community CI
 
 on:
   push:
+    branches: ["**"]
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
 
+concurrency:
+  group: community-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PGPASSWORD: "corep_password"
+  SOURCE_DATE_EPOCH: "1781481600"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  COREP_IMAGE_TAG: "ci-${{ github.sha }}"
+
 jobs:
-  static-and-tests:
+  quality:
+    name: Qualité statique et intégrité
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Installer les outils verrouillés
+        run: |
+          python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
+          python -m pip install --no-deps -e ".[dev,postgres]"
+      - name: Contrat public, version et manifeste
+        run: |
+          python tools/check_release_contract.py
+          python tools/bump_version.py --check
+          python -m corep_crr3.release_integrity \
+            --root . --manifest RELEASE_MANIFEST.json --version 6.10.1
+      - name: Politique des exceptions larges
+        run: python tools/check_broad_exception_policy.py
+      - name: Ruff complet et complexité
+        run: ruff check src tools tests benchmarks scripts
+      - name: Formatage déterministe
+        run: ruff format --check src tools tests benchmarks scripts
+      - name: Mypy Community bloquant
+        run: mypy src/corep_crr3
+      - name: Bandit Medium/High
+        run: bandit -r src/corep_crr3 -ll
+      - name: Semgrep — règles sécurité locales (défense en profondeur)
+        run: |
+          pip install "semgrep==1.170.0"
+          semgrep --config .semgrep/rules.yml src/ --metrics=off --error
+      - name: Audit vulnérabilités des dépendances (pip-audit, politique docs/VULNERABILITY_MANAGEMENT_POLICY.md)
+        run: |
+          pip install "pip-audit==2.10.1"
+          pip-audit -r requirements-runtime-py311-linux.lock --disable-pip
+      - name: Documentation des points d'entrée
+        run: python tools/check_cli_docstrings.py --min-percent 85
+      - name: Bloquer les fonctions monolithiques
+        run: python tools/check_function_size.py --root src --max-lines 160
+
+  tests:
+    name: Tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - name: Installer le projet et les outils
+      - name: Installer le projet
         shell: bash
         run: |
-          if [ "${{ matrix.python-version }}" = "3.11" ]; then
-            python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
-            python -m pip install --no-deps -e ".[dev,postgres]"
-          else
-            python -m pip install -e ".[dev]" ruff bandit build
-          fi
-      - name: Contrat public et manifeste de release
-        run: |
-          python tools/check_release_contract.py
-          python -m corep_crr3.release_integrity \
-            --root . --manifest RELEASE_MANIFEST.json --version 6.0.4
-      - name: Politique des exceptions larges
-        run: python tools/check_broad_exception_policy.py
-      - name: Ruff critique
-        run: ruff check src tools tests
-      - name: Mypy Community bloquant
-        run: mypy src/corep_crr3
-      - name: Bandit Medium/High
-        run: bandit -r src/corep_crr3 -ll
+          PY_TAG="${{ matrix.python-version }}"
+          LOCK="requirements-dev-py${PY_TAG//./}-linux.lock"
+          python -m pip install --require-hashes -r "$LOCK"
+          python -m pip install --no-deps -e ".[dev,postgres]"
       - name: Tests et couverture branches
         run: >-
           python -m pytest -q
           --cov=corep_crr3 --cov-branch
           --cov-report=term-missing --cov-report=xml --cov-report=json:coverage.json
           --cov-fail-under=65
-      - name: Documentation des points d'entrée
-        run: python tools/check_cli_docstrings.py --min-percent 85
+          --junitxml=pytest-report.xml
+      - name: Seuils des composants critiques Community
+        run: python tools/check_fragile_engine_coverage.py coverage.json
+      - name: Valider les métriques publiées
+        # v6.7.0 : la gate s'exécute sur le leg 3.12, celui de la toolchain
+        # verrouillée (python_version 3.12.3 dans release_metrics) — sinon
+        # on_locked_toolchain est toujours faux et la couverture publiée
+        # n'est jamais vérifiée strictement (dégradée en avertissement).
+        if: matrix.python-version == '3.12'
+        run: >-
+          python tools/check_release_metrics.py
+          --metrics evidence/release_metrics_v6_10_1.json
+          --readme README.md
+          --coverage coverage.json
+          --junit pytest-report.xml
       - name: Couverture de branche du moteur SA refactoré
         if: matrix.python-version == '3.11'
         run: >-
           python tools/branch_coverage_delta.py coverage.json
-          --baseline evidence/coverage_baseline_v6_0_2.json
-          --version 6.0.4
+          --baseline evidence/coverage_baseline_v6_10_1.json
+          --version 6.10.1
           --module standard_engine.py
-          --output evidence/branch_coverage_v6_0_4.json
+          --module saccr_engine.py
+          --module community_gui.py
+          --output evidence/branch_coverage_v6_10_1.json
       - name: Publier la couverture
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -66,35 +123,111 @@ jobs:
           path: |
             coverage.xml
             coverage.json
-            evidence/branch_coverage_v6_0_4.json
+            pytest-report.xml
+            evidence/branch_coverage_v6_10_1.json
           if-no-files-found: warn
 
-  supply-chain:
+  performance:
+    name: Budget de performance SA / SA-CCR
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.11"
           cache: pip
-      - run: |
+      - name: Installer la baseline verrouillée
+        run: |
           python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
           python -m pip install --no-deps -e ".[dev,postgres]"
-      - name: Audit des dépendances
-        run: pip-audit -r requirements-dev-py311-linux.lock --strict
-      - name: SBOM CycloneDX
-        run: |
-          cyclonedx-py requirements requirements-dev-py311-linux.lock -o sbom.cdx.json
-          python tools/enrich_sbom_licenses.py sbom.cdx.json --required-lock requirements-runtime-py311-linux.lock --strict
-      - name: Publier le SBOM
+      - name: Mesurer les noyaux purs
+        run: >-
+          PYTHONPATH=src python benchmarks/bench_pure_kernels.py
+          --iterations 100000 --min-calls-per-second 100000
+          --json-output evidence/performance_v6_10_1.json
+      - name: Vérifier le plan SQL v6.10.1
+        run: >-
+          PYTHONPATH=src python -m corep_crr3.sql_migrations
+          --sql-root sql --edition COMMUNITY --version 6.10.1
+          --output evidence/sql_migration_plan_v6_10_1.json
+          --rollback-template evidence/sql_rollback_template_v6_10_1.sql
+      - name: Mesurer la volumétrie légère v6.10.1
+        run: >-
+          PYTHONPATH=src python benchmarks/bench_volume_e2e.py
+          --rows 100000 --stress-rows 100000 --json-output evidence/volume_benchmark_v6_10_1.json
+      - name: Valider les budgets ressources v6.10.1
+        run: >-
+          PYTHONPATH=src python -m corep_crr3.resource_budgets
+          --budgets evidence/resource_budgets_v6_10_1.json
+          --measurements evidence/volume_benchmark_v6_10_1.json
+      - name: Valider le budget PostgreSQL EXPLAIN v6.10.1
+        run: >-
+          PYTHONPATH=src python -m corep_crr3.postgres_profiling
+          --budgets evidence/postgres_query_budgets_v6_10_1.json
+          --plan evidence/postgres_explain_smoke_v6_10_1.json
+          --name core_results_lookup
+      - name: Valider le dossier réglementaire fail-closed v6.10.1
+        run: >-
+          PYTHONPATH=src python -m corep_crr3.regulatory_dossier
+          --input evidence/regulatory_dossier_v6_10_1.json
+      - name: Publier la preuve de performance
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: community-sbom-cyclonedx
-          path: sbom.cdx.json
+          name: community-performance
+          path: evidence/performance_v6_10_1.json
           if-no-files-found: error
+
+  supply-chain:
+    name: Supply-chain runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Installer les outils verrouillés
+        run: python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
+      - name: Audit runtime bloquant
+        id: runtime-audit
+        run: |
+          mkdir -p evidence
+          pip-audit -r requirements-runtime-py311-linux.lock --strict \
+            -f json -o evidence/pip-audit-runtime.json
+      - name: Audit toolchain informatif
+        id: toolchain-audit
+        continue-on-error: true
+        run: |
+          pip-audit -r requirements-dev-py311-linux.lock --strict \
+            -f json -o evidence/pip-audit-toolchain.json
+      - name: SBOM CycloneDX runtime
+        if: always()
+        run: |
+          cyclonedx-py requirements requirements-runtime-py311-linux.lock -o sbom.cdx.json
+          python tools/enrich_sbom_licenses.py sbom.cdx.json \
+            --required-lock requirements-runtime-py311-linux.lock --strict
+          test -s sbom.cdx.json
+          python tools/check_sbom_lock_sync.py
+      - name: Publier audits et SBOM
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: community-supply-chain
+          path: |
+            evidence/pip-audit-runtime.json
+            evidence/pip-audit-toolchain.json
+            sbom.cdx.json
+          if-no-files-found: warn
+      - name: Appliquer le verdict runtime
+        if: always()
+        run: |
+          test "${{ steps.runtime-audit.outcome }}" = "success"
 
   package-reproducibility:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
@@ -102,14 +235,28 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
+      - name: Vérifier le manifeste
+        run: >-
+          PYTHONPATH=src python -m corep_crr3.release_integrity
+          --root . --manifest RELEASE_MANIFEST.json --version 6.10.1
       - name: Build reproductible A
-        env:
-          SOURCE_DATE_EPOCH: "1767225600"
         run: python -m build --wheel --no-isolation --outdir dist-a
       - name: Build reproductible B
-        env:
-          SOURCE_DATE_EPOCH: "1767225600"
-        run: python -m build --wheel --no-isolation --outdir dist-b
+        run: |
+          rm -rf build src/*.egg-info
+          python -m build --wheel --no-isolation --outdir dist-b
+      - name: Construire deux ZIP source déterministes
+        run: |
+          python tools/build_source_archive.py --root . \
+            --output /tmp/corep-community-source-a.zip \
+            --prefix Corep_engine_community_v6.10.1
+          python tools/build_source_archive.py --root . \
+            --output /tmp/corep-community-source-b.zip \
+            --prefix Corep_engine_community_v6.10.1
+          test "$(sha256sum /tmp/corep-community-source-a.zip | cut -d' ' -f1)" = \
+               "$(sha256sum /tmp/corep-community-source-b.zip | cut -d' ' -f1)"
+          python tools/build_source_archive.py --verify /tmp/corep-community-source-a.zip \
+            --prefix Corep_engine_community_v6.10.1
       - name: Vérifier les empreintes et le wheel public
         run: |
           sha256sum dist-a/*.whl dist-b/*.whl
@@ -150,24 +297,106 @@ jobs:
       - run: |
           python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
           python -m pip install --no-deps -e ".[dev,postgres]"
-      - run: python -m pytest -q tests/test_postgresql_community_e2e.py
+      - name: E2E PostgreSQL détaillé
+        id: postgres-tests
+        shell: bash
+        run: |
+          mkdir -p output
+          set -o pipefail
+          python -m pytest -vv -s tests/test_postgresql_community_e2e.py 2>&1 | tee output/postgres_e2e.log
       - name: Readiness PostgreSQL stricte
+        if: steps.postgres-tests.outcome == 'success'
         run: corep-community-health --output-dir output --min-free-mb 0 --json-output output/readiness_ci.json
       - name: Générer la preuve de release
-        run: >-
-          python tools/generate_release_evidence.py
-          --edition COMMUNITY --version 6.0.4
-          --postgres-e2e PASSED --postgres-version "PostgreSQL 16"
-          --test-summary "PostgreSQL Community E2E passed"
-          --manifest RELEASE_MANIFEST.json
-          --dependency-audit NOT_EXECUTED
-          --output output/release_evidence_ci.json
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.postgres-tests.outcome }}" = "success" ]; then
+            STATUS=PASSED
+            SUMMARY="PostgreSQL Community E2E passed"
+          else
+            STATUS=FAILED
+            SUMMARY="PostgreSQL Community E2E failed; see postgres_e2e.log"
+          fi
+          python tools/generate_release_evidence.py \
+            --edition COMMUNITY --version 6.10.1 \
+            --postgres-e2e "$STATUS" --postgres-version "PostgreSQL 16" \
+            --test-summary "$SUMMARY" \
+            --manifest RELEASE_MANIFEST.json \
+            --dependency-audit NOT_EXECUTED \
+            --output output/release_evidence_ci.json
       - name: Publier la preuve PostgreSQL
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: community-postgresql-evidence
           path: |
+            output/postgres_e2e.log
             output/readiness_ci.json
             output/release_evidence_ci.json
           if-no-files-found: warn
+      - name: Appliquer le verdict PostgreSQL
+        if: always()
+        run: test "${{ steps.postgres-tests.outcome }}" = "success"
+  docker-smoke:
+    name: Docker Community one-shot et PostgreSQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - name: Construire et contrôler l'image
+        shell: bash
+        run: |
+          docker compose config --quiet
+          docker compose build --progress=plain app
+          IMAGE_REF="corep-engine-community:${COREP_IMAGE_TAG}"
+          docker image inspect "$IMAGE_REF" >/dev/null
+          test "$(docker image inspect --format '{{.Config.User}}' "$IMAGE_REF")" = "10001:10001"
+      - name: Scanner l'image Community High/Critical
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: "corep-engine-community:${{ env.COREP_IMAGE_TAG }}"
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+      - name: Générer le SBOM OCI CycloneDX
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: "corep-engine-community:${{ env.COREP_IMAGE_TAG }}"
+          format: cyclonedx
+          output: evidence/corep-community-image.cdx.json
+          exit-code: "0"
+
+      - name: Smoke test sans base
+        shell: bash
+        run: |
+          export PGPASSWORD=corep_password
+          docker compose run --rm --no-deps --entrypoint corep-community-health app \
+            --output-dir /app/output --min-free-mb 0 --skip-database
+          docker compose run --rm --no-deps --entrypoint python app \
+            -c "import corep_crr3; assert corep_crr3.__version__ == '6.10.1'"
+      - name: Bootstrap et readiness via Docker Compose
+        shell: bash
+        run: |
+          export PGPASSWORD=corep_password
+          docker compose up -d db
+          for attempt in $(seq 1 30); do
+            docker compose exec -T db pg_isready -U corep_user -d corep_crr3 && break
+            sleep 2
+          done
+          docker compose exec -T db pg_isready -U corep_user -d corep_crr3
+          docker compose run --rm --entrypoint corep-community-bootstrap app
+          docker compose run --rm --entrypoint corep-community-health app \
+            --output-dir /app/output --min-free-mb 0
+      - name: Publier le SBOM de l'image
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: community-container-sbom
+          path: evidence/corep-community-image.cdx.json
+          if-no-files-found: warn
+      - name: Nettoyer Docker Compose
+        if: always()
+        run: docker compose down --volumes --remove-orphans
+

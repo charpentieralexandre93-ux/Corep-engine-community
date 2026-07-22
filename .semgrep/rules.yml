@@ -1,0 +1,57 @@
+rules:
+  - id: corep-sql-fstring-execute
+    languages: [python]
+    severity: ERROR
+    message: >
+      Construction SQL par f-string interpolée passée à execute()/query().
+      Utiliser des requêtes paramétrées (%s + tuple de paramètres). Les
+      constructions internes légitimes (identifiants issus de listes fermées)
+      doivent être annotées `# nosemgrep: corep-sql-fstring-execute` avec
+      justification au registre de sécurité.
+    patterns:
+      - pattern-either:
+          - pattern: $DB.execute(f"...", ...)
+          - pattern: $DB.query(f"...", ...)
+          - pattern: $CUR.execute(f"...", ...)
+
+  - id: corep-no-eval-exec
+    languages: [python]
+    severity: ERROR
+    message: eval()/exec() interdits dans un moteur réglementaire.
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)
+
+  - id: corep-no-pickle-load
+    languages: [python]
+    severity: ERROR
+    message: Désérialisation pickle interdite (exécution de code arbitraire).
+    pattern-either:
+      - pattern: pickle.load(...)
+      - pattern: pickle.loads(...)
+
+  - id: corep-xml-parse-stdlib
+    languages: [python]
+    severity: ERROR
+    message: >
+      Parsing XML via xml.etree interdit (XXE) — utiliser defusedxml pour tout
+      XML entrant. L'écriture (Element/SubElement/tostring) reste permise.
+    pattern-either:
+      - pattern: xml.etree.ElementTree.parse(...)
+      - pattern: xml.etree.ElementTree.fromstring(...)
+      - pattern: ET.parse(...)
+      - pattern: ET.fromstring(...)
+
+  - id: corep-no-shell-true
+    languages: [python]
+    severity: ERROR
+    message: subprocess avec shell=True interdit (injection de commandes).
+    pattern: subprocess.$FN(..., shell=True, ...)
+
+  - id: corep-yaml-unsafe-load
+    languages: [python]
+    severity: ERROR
+    message: yaml.load sans SafeLoader interdit — utiliser yaml.safe_load.
+    patterns:
+      - pattern: yaml.load(...)
+      - pattern-not: yaml.load(..., Loader=yaml.SafeLoader)

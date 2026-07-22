@@ -18,7 +18,8 @@ Les mainteneurs sont responsables de clarifier et faire respecter ces critères
 et prendront des mesures correctives appropriées et équitables.
 
 ## Signalement
-Les abus peuvent être signalés en privé à <conduct@à-compléter>. Toutes les
+Les abus peuvent être signalés en privé au mainteneur du dépôt via son profil
+GitHub, ou via le signalement privé de GitHub si activé. Toutes les
 plaintes seront examinées rapidement et équitablement.
 
 ## Attribution

@@ -9,35 +9,98 @@ permissions:
   id-token: write
   attestations: write
 
+env:
+  SOURCE_DATE_EPOCH: "1781481600"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
 jobs:
+  validation:
+    name: Validation complète avant publication
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   release:
+    name: Publier Community
+    needs: validation
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production-release
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.11"
+          cache: pip
+      - name: Installer la toolchain verrouillée
+        run: python -m pip install --require-hashes -r requirements-dev-py311-linux.lock
       - name: Vérifier tag, contrat et intégrité
+        shell: bash
         run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          test "$TAG_VERSION" = "6.0.4"
+          PACKAGE_VERSION="$(PYTHONPATH=src python -c 'from corep_crr3 import __version__; print(__version__)')"
+          test "${GITHUB_REF_NAME}" = "v${PACKAGE_VERSION}"
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> "$GITHUB_ENV"
           python tools/check_release_contract.py
+          python tools/bump_version.py --check
           PYTHONPATH=src python -m corep_crr3.release_integrity \
-            --root . --manifest RELEASE_MANIFEST.json --version "$TAG_VERSION"
-      - name: Build wheel et sdist
-        env:
-          SOURCE_DATE_EPOCH: "1767225600"
+            --root . --manifest RELEASE_MANIFEST.json --version "$PACKAGE_VERSION"
+      - name: Construire wheel, sdist et ZIP source
+        shell: bash
         run: |
-          python -m pip install --upgrade pip build pip-audit cyclonedx-bom
-          python -m build
+          rm -rf dist build src/*.egg-info
+          python -m build --no-isolation
           python tools/verify_public_wheel.py dist/*.whl
-      - name: Audit et SBOM
+          python tools/build_source_archive.py --root . \
+            --output "dist/Corep_engine_community_v${PACKAGE_VERSION}.zip" \
+            --prefix "Corep_engine_community_v${PACKAGE_VERSION}"
+      - name: Construire l'image de release
+        shell: bash
         run: |
-          python -m pip install dist/*.whl
-          pip-audit
-          cyclonedx-py environment -o sbom.cdx.json
-          python tools/enrich_sbom_licenses.py sbom.cdx.json --required-lock requirements-runtime-py311-linux.lock --strict
-          sha256sum dist/* sbom.cdx.json > SHA256SUMS.txt
+          docker build --target runtime -t "corep-engine-community:${PACKAGE_VERSION}" .
+      - name: Scanner l'image Community High/Critical
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: "corep-engine-community:${{ env.PACKAGE_VERSION }}"
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+      - name: Générer le SBOM OCI CycloneDX
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: "corep-engine-community:${{ env.PACKAGE_VERSION }}"
+          format: cyclonedx
+          output: "dist/corep-community-image.cdx.json"
+          exit-code: "0"
+
+      - name: Exporter l'image OCI reproductible
+        shell: bash
+        run: |
+          docker save "corep-engine-community:${PACKAGE_VERSION}" | gzip -n > "dist/Corep_engine_community_image_v${PACKAGE_VERSION}.tar.gz"
+      - name: Installer Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Signer le blob image avec OIDC
+        shell: bash
+        run: >-
+          cosign sign-blob --yes
+          --bundle "dist/Corep_engine_community_image_v${PACKAGE_VERSION}.tar.gz.sigstore.json"
+          "dist/Corep_engine_community_image_v${PACKAGE_VERSION}.tar.gz"
+      - name: Audit runtime bloquant
+        run: |
+          mkdir -p evidence
+          pip-audit -r requirements-runtime-py311-linux.lock --strict \
+            -f json -o evidence/pip-audit-runtime.json
+      - name: SBOM runtime et sommes de contrôle
+        shell: bash
+        run: |
+          cyclonedx-py requirements requirements-runtime-py311-linux.lock -o sbom.cdx.json
+          python tools/enrich_sbom_licenses.py sbom.cdx.json \
+            --required-lock requirements-runtime-py311-linux.lock --strict
+          test -s sbom.cdx.json
+          {
+            find dist -maxdepth 1 -type f -print0
+            printf '%s\0' sbom.cdx.json evidence/pip-audit-runtime.json RELEASE_MANIFEST.json
+          } | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
       - name: Attestation de provenance
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32
         with:
@@ -48,5 +111,7 @@ jobs:
           files: |
             dist/*
             sbom.cdx.json
+            evidence/pip-audit-runtime.json
             SHA256SUMS.txt
+            RELEASE_MANIFEST.json
           generate_release_notes: true

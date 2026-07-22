@@ -1,0 +1,32 @@
+{
+  "cli_docstrings_documented": 110,
+  "cli_docstrings_total": 110,
+  "coverage_branches": 71.95,
+  "coverage_combined": 78.89,
+  "coverage_version_recorded": "7.13.3",
+  "edition": "COMMUNITY",
+  "metric_source": "ci-locked-toolchain",
+  "metrics_tolerance_pp": 0.05,
+  "mypy_modules": 16,
+  "postgres_e2e_profile": "recorded separately from unit coverage",
+  "product_version": "6.5.0",
+  "pytest_version_recorded": "9.0.2",
+  "python_max_exclusive": "3.14",
+  "python_min": "3.11",
+  "required_extras": [
+    "dev",
+    "postgres"
+  ],
+  "tests_collected": 248,
+  "tests_execution_contract": "CI locked Community suite; test counts (collected/passed/skipped) are derived from the JUnit report and validated by tools/check_release_metrics.py on every CI run — no hand-maintained figures.",
+  "tests_passed": 247,
+  "tests_skipped": 1,
+  "toolchain": {
+    "coverage": "7.13.3",
+    "psycopg2": "required for postgres profile",
+    "pytest": "9.0.2",
+    "pytest_cov": "7.0.0",
+    "python_implementation": "CPython",
+    "python_version": "3.12.3"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "coverage_tool": "7.14.1",
+  "generated_at": "2026-06-21T00:42:04.070580+00:00",
+  "modules": {
+    "community_gui.py": {
+      "baseline_branch_percent": 60.2,
+      "baseline_version": "6.4.1",
+      "branch_percent": 60.2,
+      "branches": 98,
+      "covered_branches": 59,
+      "current_branch_percent": 60.2,
+      "delta_percentage_points": 0.0,
+      "statement_percent": 53.88,
+      "statements": 451
+    },
+    "saccr_engine.py": {
+      "baseline_branch_percent": 58.62,
+      "baseline_version": "6.4.1",
+      "branch_percent": 83.62,
+      "branches": 116,
+      "covered_branches": 97,
+      "current_branch_percent": 83.62,
+      "delta_percentage_points": 25.0,
+      "statement_percent": 92.47,
+      "statements": 372
+    },
+    "standard_engine.py": {
+      "baseline_branch_percent": 56.35,
+      "baseline_version": "6.4.1",
+      "branch_percent": 82.81,
+      "branches": 128,
+      "covered_branches": 106,
+      "current_branch_percent": 82.81,
+      "delta_percentage_points": 26.46,
+      "statement_percent": 94.13,
+      "statements": 375
+    }
+  },
+  "overall": {
+    "branch_percent": 78.52,
+    "statement_percent": 82.87
+  },
+  "product_version": "6.4.1",
+  "regressions": {},
+  "schema_version": 1,
+  "status": "PASSED"
+}

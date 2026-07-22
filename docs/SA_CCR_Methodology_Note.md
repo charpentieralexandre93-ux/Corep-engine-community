@@ -1,6 +1,6 @@
 # Note méthodologique — SA-CCR
 
-**Version moteur : 6.0.4**  
+**Version moteur : 6.10.1**  
 **Implémentation :** `src/corep_crr3/saccr_engine.py`
 
 ## 1. Périmètre

@@ -1,6 +1,3 @@
 @echo off
-setlocal
-cd /d "%~dp0"
-python scripts\launch_community_gui.py
-if errorlevel 1 pause
-endlocal
+REM Alias historique conserve - utilisez plutot RUN_GUI_WINDOWS.bat.
+call "%~dp0RUN_GUI_WINDOWS.bat"

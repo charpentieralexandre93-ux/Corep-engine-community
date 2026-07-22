@@ -26,9 +26,7 @@ class build_py(_build_py):
         release.mkdir(parents=True, exist_ok=True)
         manifest = ROOT / "RELEASE_MANIFEST.json"
         if not manifest.is_file():
-            raise RuntimeError(
-                "RELEASE_MANIFEST.json missing; run corep-community-release-verify --generate"
-            )
+            raise RuntimeError("RELEASE_MANIFEST.json missing; run corep-community-release-verify --generate")
         shutil.copy2(manifest, release / manifest.name)
 
 

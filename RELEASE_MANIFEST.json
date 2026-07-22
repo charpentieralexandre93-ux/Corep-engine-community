@@ -58,8 +58,8 @@
     },
     {
       "path": "BOOTSTRAP_SQL_WINDOWS.bat",
-      "sha256": "f2bd0848306143e774463a172fcaff0062f4029e220e6505e0bd3b8bd83d6822",
-      "size": 1154
+      "sha256": "c49e036a8ec45c8e3939080be3b047728943e22fc202cb242ffd9c70b6d0bcd9",
+      "size": 1198
     },
     {
       "path": "CHANGELOG.md",
@@ -83,8 +83,8 @@
     },
     {
       "path": "INSTALL_WINDOWS.bat",
-      "sha256": "24f3a431cb1439c0b9c88fcd3f5c7fd379c1513ec4eca3a97549c46f5ef025b0",
-      "size": 1850
+      "sha256": "51a9177ec5056c065a1612997398119d2c428ebde44cebfa76a7ebdfb6e86c6e",
+      "size": 1918
     },
     {
       "path": "LICENSE",
@@ -118,8 +118,8 @@
     },
     {
       "path": "RUN_GUI_WINDOWS.bat",
-      "sha256": "37aba5fac3d076edee00c019fc17c4d44657ba21cee679610363eeffc9b87b52",
-      "size": 738
+      "sha256": "fdf8d5b0481273271b04928bb3bcbf90c970eecae4b36576c75e0f235b46ddc5",
+      "size": 766
     },
     {
       "path": "SBOM_Corep_Community_v6.10.1.json",

@@ -7,7 +7,7 @@ openpyxl==3.1.5
 defusedxml==0.7.1
 typing-extensions==4.15.0
 pytest==9.0.2
-pytest-cov==7.0.0
+pytest-cov==7.1.0
 hypothesis==6.155.2
 mypy==1.20.2
 types-PyYAML==6.0.32.20260518

@@ -1,0 +1,29 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:pypi/psycopg2-binary@2.9.11",
+      "name": "psycopg2-binary",
+      "purl": "pkg:pypi/psycopg2-binary@2.9.11",
+      "type": "library",
+      "version": "2.9.11"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:pypi/corep-crr3-community@6.8.1",
+      "name": "corep-crr3-community",
+      "purl": "pkg:pypi/corep-crr3-community@6.8.1",
+      "type": "application",
+      "version": "6.8.1"
+    },
+    "tools": [
+      {
+        "name": "generate_sbom_from_lock.py",
+        "vendor": "corep-engine"
+      }
+    ]
+  },
+  "specVersion": "1.5",
+  "version": 1
+}

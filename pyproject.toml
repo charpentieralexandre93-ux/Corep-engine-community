@@ -4,22 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corep-crr3-community"
-version = "6.0.4"
+version = "6.10.1"
 description = "Corep Engine Community — cockpit graphique public SA et SA-CCR."
 readme = "README.md"
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.11,<3.14"
 authors = [{name = "Alexandre Charpentier"}]
 license = "Apache-2.0"
 license-files = ["LICENSE", "LICENSE-COMMUNITY.md", "NOTICE"]
 # Dépendances de base : suffisantes pour les fonctions de calcul PURES (SA, SA-CCR).
 # psycopg2 n'est PAS requis pour le calcul — uniquement pour l'exécution sur une
 # base PostgreSQL réelle (extra `postgres`).
-dependencies = [
-  "typing-extensions>=4.0; python_version < '3.11'",
-]
+dependencies = []
 
 [project.optional-dependencies]
-postgres = ["psycopg2-binary>=2.9.0"]
+postgres = ["psycopg2-binary>=2.9.0"]  # dev/test ; en prod préférer le paquet source psycopg2 (audit P2-2)
 dev = [
   "pytest>=7.0",
   "pytest-cov>=4.0",
@@ -33,6 +31,9 @@ corep-community-bootstrap = "corep_crr3.community_bootstrap:main"
 corep-community-gui = "corep_crr3.community_gui:main"
 corep-community-health = "corep_crr3.operational_readiness:main"
 corep-community-release-verify = "corep_crr3.release_integrity:main"
+corep-community-sql-plan = "corep_crr3.sql_migrations:main"
+corep-community-resource-budgets = "corep_crr3.resource_budgets:main"
+corep-community-regulatory-dossier = "corep_crr3.regulatory_dossier:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -52,30 +53,39 @@ corep_crr3 = [
 testpaths = ["tests"]
 pythonpath = ["src"]
 
-# Couverture v6.0.0 — seuil global et garde-fous publics anti-régression.
+# Couverture v6.4.1 — seuil global et garde-fous publics anti-régression.
 [tool.coverage.run]
 source = ["corep_crr3"]
 branch = true
-omit = ["*/tests/*", "*/community_gui.py"]
+omit = ["*/tests/*"]
 
 [tool.coverage.report]
 show_missing = true
 
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.11"
 ignore_missing_imports = true
 no_implicit_optional = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 strict_equality = true
+warn_return_any = true
+# Typage strict global (v6.10.1) : l'intégralité de src/corep_crr3 est annotée.
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
 
 [tool.bandit]
 exclude_dirs = ["tests"]
 skips = ["B101"]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
+target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E9", "F63", "F7", "F82"]
+select = ["E", "F", "W", "I", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 16  # ratchet v6.10.1 : max réel observé 16 (tools/check_release_contract.py) sur le périmètre Community

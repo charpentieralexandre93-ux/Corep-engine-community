@@ -1,0 +1,23 @@
+{
+  "artifact_bundle_sha256": "",
+  "edition": "COMMUNITY",
+  "enterprise_extra_jobs": [],
+  "product_version": "6.7.1",
+  "release_rule": "publication interdite tant que tous les jobs requis ne sont pas verts sur le tag distribué",
+  "required_jobs": [
+    "tests-3.11",
+    "tests-3.12",
+    "tests-3.13",
+    "coverage",
+    "ruff",
+    "format",
+    "mypy",
+    "bandit",
+    "manifest",
+    "source-archive",
+    "wheel-reproducibility",
+    "docker-smoke"
+  ],
+  "run_url": "",
+  "status": "PENDING_GITHUB_RUN"
+}

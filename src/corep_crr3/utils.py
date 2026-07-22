@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : utils.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.10.1
 ================================================================================
 
 DESCRIPTION
@@ -36,6 +36,7 @@ RÉFÉRENCE
 """
 
 from __future__ import annotations
+
 from typing import Any
 
 

@@ -1,0 +1,17 @@
+[
+  {
+    "Execution Time": 0.48,
+    "Plan": {
+      "Actual Total Time": 0.42,
+      "Index Name": "pk_core_standard_results",
+      "Node Type": "Index Scan",
+      "Plan Rows": 1,
+      "Plan Width": 128,
+      "Plans": [],
+      "Relation Name": "core_standard_results",
+      "Startup Cost": 0.42,
+      "Total Cost": 12.84
+    },
+    "Planning Time": 0.12
+  }
+]

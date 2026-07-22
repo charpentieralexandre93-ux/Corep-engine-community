@@ -1,0 +1,207 @@
+{
+  "edition": "COMMUNITY",
+  "external_artifact_requirements": [
+    {
+      "description": "EBA/NCA taxonomy package and checksum for the reporting reference date.",
+      "minimum_evidence": "archive hash + source URL + filing date + reviewer sign-off",
+      "name": "official_taxonomy_package"
+    },
+    {
+      "description": "Supervisor-specific filing rules profile used for the institution.",
+      "minimum_evidence": "profile identifier + NCA/BCE applicability note + reviewer sign-off",
+      "name": "filing_rules_profile"
+    },
+    {
+      "description": "Known issues, limitations and residual risks reviewed for the release.",
+      "minimum_evidence": "dated review note + issue register hash + release manager sign-off",
+      "name": "known_issues_review"
+    },
+    {
+      "description": "COMMUNITY v6.7.1 DPM mapping independently reconciled cell by cell.",
+      "minimum_evidence": "mapping workbook hash + maker/checker signatures + exception log",
+      "name": "dpm_mapping_signed"
+    },
+    {
+      "description": "Expected results generated outside this codebase for independent validation.",
+      "minimum_evidence": "input hash + expected output hash + methodology note + reviewer sign-off",
+      "name": "external_golden_dataset"
+    },
+    {
+      "description": "Commercial, EULA, IP, GDPR and liability review before sale or official filing.",
+      "minimum_evidence": "legal memo hash + approval date + approver role",
+      "name": "legal_review_signed"
+    },
+    {
+      "description": "Live CI evidence for the exact release commit or tag.",
+      "minimum_evidence": "GitHub Actions URL + commit SHA + green check summary + reviewer sign-off",
+      "name": "github_live_ci_green"
+    }
+  ],
+  "fail_closed": true,
+  "gates": [
+    {
+      "evidence": "External EBA/NCA package not bundled",
+      "evidence_sha256": "",
+      "name": "official_taxonomy_package",
+      "owner": "Regulatory reporting owner",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "evidence": "Supervisor profile must be selected at deployment",
+      "evidence_sha256": "",
+      "name": "filing_rules_profile",
+      "owner": "Regulatory reporting owner",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "evidence": "Review must be dated and signed",
+      "evidence_sha256": "",
+      "name": "known_issues_review",
+      "owner": "Release manager",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "evidence": "Independent DPM sign-off required",
+      "evidence_sha256": "",
+      "name": "dpm_mapping_signed",
+      "owner": "DPM mapping owner",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "evidence": "Golden dataset must be generated outside this codebase",
+      "evidence_sha256": "",
+      "name": "external_golden_dataset",
+      "owner": "Independent validator",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "evidence": "Legal review required before sale or official filing",
+      "evidence_sha256": "",
+      "name": "legal_review_signed",
+      "owner": "Legal owner",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "evidence": "Attach GitHub Actions run URLs for the release tag",
+      "evidence_sha256": "",
+      "name": "github_live_ci_green",
+      "owner": "Release manager",
+      "status": "NOT_EXECUTED"
+    }
+  ],
+  "official_submission_scope": {
+    "excluded_engine_modules": [],
+    "included_engine_modules": [
+      "saccr_engine",
+      "standard_engine"
+    ],
+    "policy": "Only OFFICIAL traceability rows may enter a regulatory submission profile.",
+    "scope_name": "OFFICIAL_SUBMISSION"
+  },
+  "product_version": "6.7.1",
+  "quality_status_summary": {
+    "OFFICIAL": 2
+  },
+  "schema_version": 2,
+  "signoff_register": [
+    {
+      "accountable_owner": "Regulatory reporting owner",
+      "evidence_sha256": "",
+      "gate": "official_taxonomy_package",
+      "minimum_evidence": "archive hash + source URL + filing date + reviewer sign-off",
+      "required_signatory_role": "Head of Regulatory Reporting",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    },
+    {
+      "accountable_owner": "Regulatory reporting owner",
+      "evidence_sha256": "",
+      "gate": "filing_rules_profile",
+      "minimum_evidence": "profile identifier + NCA/BCE applicability note + reviewer sign-off",
+      "required_signatory_role": "Head of Regulatory Reporting",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    },
+    {
+      "accountable_owner": "Release manager",
+      "evidence_sha256": "",
+      "gate": "known_issues_review",
+      "minimum_evidence": "dated review note + issue register hash + release manager sign-off",
+      "required_signatory_role": "Release Manager",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    },
+    {
+      "accountable_owner": "DPM mapping owner",
+      "evidence_sha256": "",
+      "gate": "dpm_mapping_signed",
+      "minimum_evidence": "mapping workbook hash + maker/checker signatures + exception log",
+      "required_signatory_role": "Independent Reviewer (maker/checker)",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    },
+    {
+      "accountable_owner": "Independent validator",
+      "evidence_sha256": "",
+      "gate": "external_golden_dataset",
+      "minimum_evidence": "input hash + expected output hash + methodology note + reviewer sign-off",
+      "required_signatory_role": "Independent Model Validation",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    },
+    {
+      "accountable_owner": "Legal owner",
+      "evidence_sha256": "",
+      "gate": "legal_review_signed",
+      "minimum_evidence": "legal memo hash + approval date + approver role",
+      "required_signatory_role": "Legal Counsel",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    },
+    {
+      "accountable_owner": "Release manager",
+      "evidence_sha256": "",
+      "gate": "github_live_ci_green",
+      "minimum_evidence": "GitHub Actions URL + commit SHA + green check summary + reviewer sign-off",
+      "required_signatory_role": "Release Manager",
+      "signatory": "",
+      "signature_date": "",
+      "signature_status": "NOT_SIGNED"
+    }
+  ],
+  "submission_readiness": "NO_GO",
+  "traceability_matrix": [
+    {
+      "activation_status": "PHASE_1_ACTIVE",
+      "control_or_test": "tests/test_standard_refactor.py",
+      "dpm_datapoint_or_kpi": "C07 RW/EAD/RWA",
+      "engine_module": "standard_engine",
+      "external_evidence": "PENDING_EXTERNAL_SIGNOFF",
+      "formula_or_rule": "RWA = EAD post-CRM x regulatory risk weight",
+      "quality_status": "OFFICIAL",
+      "regulatory_reference": "CRR3 Standardised Approach",
+      "source_sql_or_input": "sql/03_mapping/01_mapping_corep_templates.sql",
+      "status": "PENDING_EXTERNAL_SIGNOFF",
+      "template_or_table": "COREP C 07.00"
+    },
+    {
+      "activation_status": "PHASE_1_ACTIVE",
+      "control_or_test": "tests/test_v5_0_1_coverage.py",
+      "dpm_datapoint_or_kpi": "C34 replacement cost / PFE / EAD",
+      "engine_module": "saccr_engine",
+      "external_evidence": "PENDING_EXTERNAL_SIGNOFF",
+      "formula_or_rule": "EAD = alpha x (RC + multiplier x AddOn)",
+      "quality_status": "OFFICIAL",
+      "regulatory_reference": "CRR3 SA-CCR",
+      "source_sql_or_input": "sql/03_mapping/01_mapping_corep_templates.sql",
+      "status": "PENDING_EXTERNAL_SIGNOFF",
+      "template_or_table": "COREP C 34.x"
+    }
+  ]
+}

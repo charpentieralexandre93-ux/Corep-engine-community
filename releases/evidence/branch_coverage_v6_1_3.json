@@ -1,0 +1,25 @@
+{
+  "coverage_tool": "7.13.3",
+  "generated_at": "2026-06-19T20:19:46.918602+00:00",
+  "modules": {
+    "standard_engine.py": {
+      "baseline_branch_percent": 56.35,
+      "baseline_version": "6.0.2",
+      "branch_percent": 56.35,
+      "branches": 126,
+      "covered_branches": 71,
+      "current_branch_percent": 56.35,
+      "delta_percentage_points": 0.0,
+      "statement_percent": 65.93,
+      "statements": 364
+    }
+  },
+  "overall": {
+    "branch_percent": 64.17,
+    "statement_percent": 72.96
+  },
+  "product_version": "6.1.3",
+  "regressions": {},
+  "schema_version": 1,
+  "status": "PASSED"
+}

@@ -1,4 +1,4 @@
-# ACTIVE_SQL_MANIFEST — Corep Engine Community v6.0.4
+# ACTIVE_SQL_MANIFEST — Corep Engine Community v6.10.1
 # Périmètre public strict : SA + SA-CCR.
 # Source d'exécution : COMMUNITY_SQL_CONTRACT.json.
 
@@ -14,4 +14,5 @@
 09 | run_saccr  | 02_seeds/02_seed_saccr.sql | règles prudentielles SA-CCR
 10 | run_saccr  | 03_mapping/02_mapping_saccr.sql | mapping COREP SA-CCR
 11 | post_seed  | 03_mapping/99_mapping_conditions_bcnf.sql | normalisation BCNF des conditions de mapping
-12 | post_seed  | 04_post_seed/99_post_seed_constraints_community.sql | validation finale du périmètre Community
+12 | post_seed  | 04_post_seed/99_bcnf_hardening_v6_5_0.sql | Data Model BCNF Hardening v6.5.0
+13 | post_seed  | 04_post_seed/99_post_seed_constraints_community.sql | validation finale du périmètre Community

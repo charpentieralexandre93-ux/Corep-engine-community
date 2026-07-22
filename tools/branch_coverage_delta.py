@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Publish branch-coverage measurements and deltas for refactored engines."""
+
 from __future__ import annotations
 
 import argparse
@@ -41,9 +42,7 @@ def build_report(
             "baseline_version": baseline["product_version"],
             "baseline_branch_percent": previous["branch_percent"],
             "current_branch_percent": current["branch_percent"],
-            "delta_percentage_points": round(
-                current["branch_percent"] - float(previous["branch_percent"]), 2
-            ),
+            "delta_percentage_points": round(current["branch_percent"] - float(previous["branch_percent"]), 2),
             **current,
         }
     totals = coverage["totals"]
@@ -84,8 +83,7 @@ def main() -> int:
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     for module, row in report["modules"].items():
         print(
-            f"{module}: branches {row['current_branch_percent']:.2f} % "
-            f"(delta {row['delta_percentage_points']:+.2f} pp)"
+            f"{module}: branches {row['current_branch_percent']:.2f} % (delta {row['delta_percentage_points']:+.2f} pp)"
         )
     return 1 if regressions else 0
 

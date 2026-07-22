@@ -2,7 +2,7 @@
 ================================================================================
 MODULE  : engine_contracts.py
 PROJET  : COREP Engine CRR3
-VERSION : 6.0.4
+VERSION : 6.10.1
 ================================================================================
 
 Contrat d'exécution commun des moteurs réglementaires.
@@ -31,7 +31,18 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Mapping, Optional, Protocol, Tuple, Union, runtime_checkable
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Protocol,
+    Tuple,
+    Union,
+    runtime_checkable,
+)
 
 
 @dataclass(frozen=True)
@@ -246,9 +257,7 @@ class EngineProfiler:
         finished_wall = datetime.now(timezone.utc)
         duration = round(time.perf_counter() - started_perf, 6)
         throughput = (
-            round(result.processed_rows / duration, 3)
-            if duration > 0.0 and result.processed_rows > 0
-            else None
+            round(result.processed_rows / duration, 3) if duration > 0.0 and result.processed_rows > 0 else None
         )
         profile = EngineProfile(
             engine_key=key,
@@ -263,11 +272,7 @@ class EngineProfiler:
         )
         self._profiles.append(profile)
 
-        log_method = (
-            self._logger.warning
-            if duration >= self.slow_threshold_seconds > 0.0
-            else self._logger.info
-        )
+        log_method = self._logger.warning if duration >= self.slow_threshold_seconds > 0.0 else self._logger.info
         log_method(
             "Profil moteur %-16s : %d ligne(s) en %.6fs%s",
             label,
@@ -294,9 +299,7 @@ class EngineProfiler:
             "engine_count": len(self._profiles),
             "completed_count": completed,
             "failed_count": failed,
-            "total_duration_seconds": round(
-                sum(p.duration_seconds for p in self._profiles), 6
-            ),
+            "total_duration_seconds": round(sum(p.duration_seconds for p in self._profiles), 6),
             "total_processed_rows": sum(p.processed_rows for p in self._profiles),
         }
 
@@ -310,8 +313,7 @@ class EngineProfiler:
         directory = Path(output_dir)
         directory.mkdir(parents=True, exist_ok=True)
         safe_batch_id = "".join(
-            character if character.isalnum() or character in {"-", "_"} else "_"
-            for character in str(batch_id)
+            character if character.isalnum() or character in {"-", "_"} else "_" for character in str(batch_id)
         )
         json_path = directory / f"engine_profile_{safe_batch_id}.json"
         csv_path = directory / f"engine_profile_{safe_batch_id}.csv"
@@ -341,9 +343,7 @@ class EngineProfiler:
             "error_type",
             "error_message",
         ]
-        fd, temporary_name = tempfile.mkstemp(
-            prefix=f".{csv_path.name}.", suffix=".tmp", dir=str(directory)
-        )
+        fd, temporary_name = tempfile.mkstemp(prefix=f".{csv_path.name}.", suffix=".tmp", dir=str(directory))
         try:
             with os.fdopen(fd, "w", encoding="utf-8", newline="") as handle:
                 writer = csv.DictWriter(handle, fieldnames=headers)
@@ -364,9 +364,7 @@ class EngineProfiler:
 
     @staticmethod
     def _atomic_write_text(path: Path, content: str) -> None:
-        fd, temporary_name = tempfile.mkstemp(
-            prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent)
-        )
+        fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent))
         try:
             with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
                 handle.write(content)

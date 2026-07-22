@@ -1,0 +1,73 @@
+{
+  "measurements": [
+    {
+      "elapsed_seconds": 0.18883667900036016,
+      "name": "standard_engine_volume",
+      "peak_rss_mb": 297.6875,
+      "result_type": "float",
+      "rows": 100000,
+      "rows_per_second": 529558.1373775869
+    },
+    {
+      "elapsed_seconds": 0.04605116299990186,
+      "name": "saccr_multiplier_volume",
+      "peak_rss_mb": 297.6875,
+      "result_type": "float",
+      "rows": 100000,
+      "rows_per_second": 2171497.8186373515
+    },
+    {
+      "elapsed_seconds": 0.1717033850000007,
+      "name": "standard_engine_volume_100k",
+      "peak_rss_mb": 297.6875,
+      "result_type": "float",
+      "rows": 100000,
+      "rows_per_second": 582399.7005067756
+    },
+    {
+      "elapsed_seconds": 0.04415814899994075,
+      "name": "saccr_multiplier_volume_100k",
+      "peak_rss_mb": 297.6875,
+      "result_type": "float",
+      "rows": 100000,
+      "rows_per_second": 2264587.675541703
+    },
+    {
+      "elapsed_seconds": 0.023029081000004226,
+      "name": "mixed_portfolio_volume_10k",
+      "peak_rss_mb": 297.6875,
+      "result_type": "float",
+      "rows": 10000,
+      "rows_per_second": 434233.5675487079
+    }
+  ],
+  "product_version": "6.10.1",
+  "schema_version": 2,
+  "stress_profiles": [
+    {
+      "name": "standard_engine_volume_100k",
+      "rows": 100000
+    },
+    {
+      "name": "saccr_multiplier_volume_100k",
+      "rows": 100000
+    },
+    {
+      "name": "mixed_portfolio_volume_10k",
+      "rows": 10000
+    }
+  ],
+  "summary": {
+    "measurement_count": 5,
+    "names": [
+      "mixed_portfolio_volume_10k",
+      "saccr_multiplier_volume",
+      "saccr_multiplier_volume_100k",
+      "standard_engine_volume",
+      "standard_engine_volume_100k"
+    ],
+    "peak_rss_mb": 297.688,
+    "total_elapsed_seconds": 0.473778,
+    "total_rows": 410000
+  }
+}

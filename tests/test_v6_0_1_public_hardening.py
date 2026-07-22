@@ -11,15 +11,21 @@ from corep_crr3.release_integrity import create_manifest, verify_manifest
 class RuntimeDb:
     def query(self, sql, params=()):
         return [
-            {"parameter_name": "DEFAULT_ALPHA_SACCR", "parameter_value": "1.4", "parameter_type": "REAL"},
-            {"parameter_name": "ENABLE_TEMPLATE_MAPPING", "parameter_value": "Y", "parameter_type": "BOOLEAN"},
+            {
+                "parameter_name": "DEFAULT_ALPHA_SACCR",
+                "parameter_value": "1.4",
+                "parameter_type": "REAL",
+            },
+            {
+                "parameter_name": "ENABLE_TEMPLATE_MAPPING",
+                "parameter_value": "Y",
+                "parameter_type": "BOOLEAN",
+            },
         ]
 
 
 def test_public_runtime_parameters_are_typed_and_unknown_overrides_ignored():
-    values = runtime_rules.get_parameters(
-        RuntimeDb(), "CRR3_V9", ("DEFAULT_ALPHA_SACCR", "ENABLE_TEMPLATE_MAPPING")
-    )
+    values = runtime_rules.get_parameters(RuntimeDb(), "CRR3_V9", ("DEFAULT_ALPHA_SACCR", "ENABLE_TEMPLATE_MAPPING"))
     assert values == {"DEFAULT_ALPHA_SACCR": 1.4, "ENABLE_TEMPLATE_MAPPING": True}
     assert runtime_rules.merge_parameters({"alpha": 1.0}, {"alpha": 1.4, "private": 99}) == {"alpha": 1.4}
     with pytest.raises(runtime_rules.RuntimeParameterError):

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Callable, Optional
 
 from .engine_contracts import (
     EngineContext,
@@ -23,8 +23,7 @@ PUBLIC_ENGINES = {
 
 # Nouveau contrat normalisé, additif et sans rupture de PUBLIC_ENGINES.
 PUBLIC_REGULATORY_ENGINES = {
-    code: FunctionEngineAdapter(function, name=code)
-    for code, function in PUBLIC_ENGINES.items()
+    code: FunctionEngineAdapter(function, name=code) for code, function in PUBLIC_ENGINES.items()
 }
 
 
@@ -33,15 +32,13 @@ def _normalize_code(engine_code: str) -> str:
     return str(engine_code).strip().upper().replace("-", "_")
 
 
-def get_engine(engine_code: str):
+def get_engine(engine_code: str) -> Callable[..., Any]:
     """Retourne la fonction legacy ou refuse explicitement un domaine privé."""
     code = _normalize_code(engine_code)
     try:
         return PUBLIC_ENGINES[code]
     except KeyError as exc:
-        raise ValueError(
-            f"Moteur indisponible dans l'édition Community : {engine_code}"
-        ) from exc
+        raise ValueError(f"Moteur indisponible dans l'édition Community : {engine_code}") from exc
 
 
 def get_regulatory_engine(engine_code: str) -> RegulatoryEngine:
@@ -50,9 +47,7 @@ def get_regulatory_engine(engine_code: str) -> RegulatoryEngine:
     try:
         return PUBLIC_REGULATORY_ENGINES[code]
     except KeyError as exc:
-        raise ValueError(
-            f"Moteur indisponible dans l'édition Community : {engine_code}"
-        ) from exc
+        raise ValueError(f"Moteur indisponible dans l'édition Community : {engine_code}") from exc
 
 
 def run_engine(

@@ -1,4 +1,5 @@
 """Test path bootstrap for source and project-local quality tools."""
+
 from __future__ import annotations
 
 import sys

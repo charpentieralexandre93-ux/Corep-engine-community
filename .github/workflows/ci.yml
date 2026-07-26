@@ -353,7 +353,7 @@ jobs:
           docker image inspect "$IMAGE_REF" >/dev/null
           test "$(docker image inspect --format '{{.Config.User}}' "$IMAGE_REF")" = "10001:10001"
       - name: Scanner l'image Community High/Critical
-        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: "corep-engine-community:${{ env.COREP_IMAGE_TAG }}"
           format: table
@@ -361,7 +361,7 @@ jobs:
           exit-code: "1"
           ignore-unfixed: true
       - name: Générer le SBOM OCI CycloneDX
-        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: "corep-engine-community:${{ env.COREP_IMAGE_TAG }}"
           format: cyclonedx

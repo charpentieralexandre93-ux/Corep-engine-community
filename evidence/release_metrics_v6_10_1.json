@@ -7,7 +7,7 @@
   "edition": "COMMUNITY",
   "metric_source": "ci-locked-toolchain",
   "metrics_tolerance_pp": 0.05,
-  "mypy_modules": 16,
+  "mypy_modules": 20,
   "postgres_e2e_profile": "recorded separately from unit coverage",
   "product_version": "6.10.1",
   "pytest_version_recorded": "9.0.2",

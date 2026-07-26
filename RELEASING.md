@@ -29,3 +29,15 @@ SBOM CycloneDX, **attestation de provenance** (Sigstore), et création de la
 ## 5. PyPI (optionnel)
 Pour publier sur PyPI, configurer le *Trusted Publishing* (OIDC) côté PyPI puis
 ajouter un job `pypa/gh-action-pypi-publish`. Aucun secret à stocker.
+## Jalons internes et archives de preuves
+
+Les jeux de preuves d'une version publiée sont archivés sous
+`releases/evidence/` (fichiers suffixés `_vX_Y_Z`). Les versions **v6.9.0** et
+**v6.10.0** sont des jalons internes du cycle de durcissement, consolidés dans
+la release **v6.10.1** sans publication autonome : elles n'ont volontairement
+pas d'archive dédiée — la continuité des preuves archivées passe de `v6_8_1`
+aux jeux `v6_10_1`. Règle : toute version *publiée* archive son jeu de preuves
+complet lors de la release suivante ; un jalon interne non publié n'en produit
+pas. Le rescellement des preuves de la version courante est industrialisé par
+le workflow manuel `.github/workflows/reseal_metrics.yml` (toolchain
+verrouillée py3.12, nom du fichier de preuves dérivé de `pyproject.toml`).

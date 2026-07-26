@@ -47,6 +47,11 @@
       "size": 4624
     },
     {
+      "path": ".github/workflows/reseal_metrics.yml",
+      "sha256": "b9b991aeb147328193307188d7527572dab87b2e2d3db294d5d0305eedb79caf",
+      "size": 3515
+    },
+    {
       "path": ".gitignore",
       "sha256": "374876c0db4c8735644dda51a050784ba3719724e6f2376cae9fd2ec195f959f",
       "size": 208
@@ -63,8 +68,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "362b0320747ec49f1823eef98493bb00279ec105c6800cc291eb7acedb8e6708",
-      "size": 5389
+      "sha256": "5af089a0c15ba446e8fdb00c0d05719c42890b2cd62cabe8f1df92b8033715d6",
+      "size": 5929
     },
     {
       "path": "CODE_OF_CONDUCT.md",
@@ -108,13 +113,13 @@
     },
     {
       "path": "README.md",
-      "sha256": "b82285f85ecf782933169c898bf45523f84a937e1912b68f6d32b9a72eb6c666",
+      "sha256": "c2b2832eda2391f972b67aa996909aaff9b234c2eceef305e65c03a3b72555e2",
       "size": 3832
     },
     {
       "path": "RELEASING.md",
-      "sha256": "61af459097ce2d37e9d129ce12b71fb537eedf8a431c842e72199279a4249b73",
-      "size": 966
+      "sha256": "009e80002d3dfd571ea34d108862e96aed66b55a89398c44e417aec7d6607e9b",
+      "size": 1780
     },
     {
       "path": "RUN_GUI_WINDOWS.bat",
@@ -123,7 +128,7 @@
     },
     {
       "path": "SBOM_Corep_Community_v6.10.1.json",
-      "sha256": "10c55436923084d07abd7110a121ebfa5667a836d0e923aed5ff1d41aa1562a0",
+      "sha256": "e338ee54d29d8b4502ab291c37deaec8f31db0efda0a53aa635de66564d98e5c",
       "size": 958
     },
     {
@@ -303,8 +308,8 @@
     },
     {
       "path": "changelogs/CHANGELOG_v6_10_1.md",
-      "sha256": "5848f537fd0f39583cc3dc3c85516698343504dbb2849eab38c9f82450b03aad",
-      "size": 2222
+      "sha256": "70d62bf536a06d07cc7aff500def1d151ad209c65a46de2f9062de0aac8a2722",
+      "size": 3776
     },
     {
       "path": "changelogs/CHANGELOG_v6_1_0.md",
@@ -563,7 +568,7 @@
     },
     {
       "path": "evidence/release_metrics_v6_10_1.json",
-      "sha256": "a4b464811abc5816760d71d004f404774569cac7e13afd37108fc9ae0680f737",
+      "sha256": "6a273e48a471295a445ba5762ebbe02da70a31eb9688ab2e76bb24605414ae95",
       "size": 1060
     },
     {
@@ -1308,8 +1313,8 @@
     },
     {
       "path": "sql/ACTIVE_SQL_MANIFEST_engine_run_saccr.txt",
-      "sha256": "c49f831cc2ae16a2c7f20d4a987e7e5f63b521f492cadb49d010a72409c720a3",
-      "size": 1118
+      "sha256": "5caf526ab185fbb41e98d1da91a0e88bfed71b89c1771fe344b815e3847e1f13",
+      "size": 1119
     },
     {
       "path": "sql/COMMUNITY_SQL_CONTRACT.json",
@@ -1378,8 +1383,8 @@
     },
     {
       "path": "src/corep_crr3/regulatory_dossier.py",
-      "sha256": "05aebf070987befe96fd0757a2572187717898559c0003392f92cfd9007ffefc",
-      "size": 33260
+      "sha256": "87c2d3bbf8990dbad6de42911274de418a76142d9eb7d1831e21cc16a063620d",
+      "size": 33291
     },
     {
       "path": "src/corep_crr3/release_integrity.py",
@@ -1478,8 +1483,8 @@
     },
     {
       "path": "src/corep_crr3/sql/ACTIVE_SQL_MANIFEST_engine_run_saccr.txt",
-      "sha256": "c49f831cc2ae16a2c7f20d4a987e7e5f63b521f492cadb49d010a72409c720a3",
-      "size": 1118
+      "sha256": "5caf526ab185fbb41e98d1da91a0e88bfed71b89c1771fe344b815e3847e1f13",
+      "size": 1119
     },
     {
       "path": "src/corep_crr3/sql/COMMUNITY_SQL_CONTRACT.json",
@@ -1713,8 +1718,8 @@
     },
     {
       "path": "tools/bump_version.py",
-      "sha256": "ed1125126387213215e189d72dca0fd8c471c609a1e82969d0908417a9bfbe9d",
-      "size": 10366
+      "sha256": "18d69fc907215122d71563db816c27693b691f9c39f127c5910fa7c59a4dcc65",
+      "size": 13240
     },
     {
       "path": "tools/check_broad_exception_policy.py",
@@ -1743,8 +1748,8 @@
     },
     {
       "path": "tools/check_release_metrics.py",
-      "sha256": "630850ef5cfe2cf3c34628306260d3aa62c618143021df2573266d21c3b29f15",
-      "size": 7949
+      "sha256": "a84a6d9521df486e7553a0aa8f61b42580cb8937957213355f59dd79ce85c9ce",
+      "size": 8402
     },
     {
       "path": "tools/check_sbom_lock_sync.py",
@@ -1763,8 +1768,8 @@
     },
     {
       "path": "tools/generate_sbom_from_lock.py",
-      "sha256": "536b6e144fd1f2478fa332568caf74e2f3699c902645fe3cfca1d53198d4474e",
-      "size": 5232
+      "sha256": "e3423507fc500941dbd18f347ba9cf3875ea020eea9164fd9c4428113aa2c093",
+      "size": 5901
     },
     {
       "path": "tools/release_check.py",

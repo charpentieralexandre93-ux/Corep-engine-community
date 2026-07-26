@@ -77,7 +77,7 @@ Notes méthodologiques : [`docs/REGULATORY_METHODOLOGY_INDEX.md`](docs/REGULATOR
 
 - **247 tests réussis, 1 ignoré** ;
 - couverture lignes/branches combinée : **78.85 %**, dont **71.93 %** de branches ;
-- Mypy valide les **16 modules** du périmètre ;
+- Mypy valide les **20 modules** du périmètre ;
 - **110/110 fonctions CLI/GUI documentées** ;
 - Ruff, formatage, Bandit, seuils par composant, manifeste et reproductibilité sont bloquants en CI.
 <!-- RELEASE_METRICS_END -->

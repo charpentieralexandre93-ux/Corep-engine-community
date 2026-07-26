@@ -47,11 +47,27 @@ def _license_map(previous: Path | None) -> dict[tuple[str, str], list]:
         return {}
     payload = json.loads(previous.read_text(encoding="utf-8"))
     out: dict[tuple[str, str], list] = {}
-    for component in payload.get("components", []):
+    meta_component = payload.get("metadata", {}).get("component")
+    candidates = list(payload.get("components", []))
+    if meta_component:
+        # v6.10.1 itér. 11 : le composant applicatif porte une licence (EULA /
+        # Apache-2.0, enrichissement P1) qui doit survivre à la régénération au
+        # même titre que celles des bibliothèques — sinon `--check` ne peut
+        # structurellement plus passer une fois l'enrichissement scellé.
+        candidates.append(meta_component)
+    for component in candidates:
         licenses = component.get("licenses")
         if licenses:
             out[(_normalize(str(component.get("name", ""))), str(component.get("version", "")))] = licenses
     return out
+
+
+def _app_component(name: str, version: str, purl: str, lic: dict[tuple[str, str], list]) -> dict:
+    component: dict = {"bom-ref": purl, "name": name, "purl": purl, "type": "application", "version": version}
+    found = lic.get((_normalize(name), version))
+    if found:
+        component["licenses"] = found
+    return component
 
 
 def build_sbom(edition: str, licenses_from: Path | None) -> tuple[dict, list[str]]:
@@ -80,13 +96,7 @@ def build_sbom(edition: str, licenses_from: Path | None) -> tuple[dict, list[str
         "specVersion": "1.5",
         "version": 1,
         "metadata": {
-            "component": {
-                "bom-ref": app_purl,
-                "name": project["name"],
-                "purl": app_purl,
-                "type": "application",
-                "version": version,
-            },
+            "component": _app_component(project["name"], version, app_purl, lic),
             "tools": [{"name": "generate_sbom_from_lock.py", "vendor": "corep-engine"}],
         },
         "components": components,

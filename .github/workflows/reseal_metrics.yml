@@ -1,0 +1,83 @@
+name: Rescellement des métriques publiées
+
+# Déclenchement manuel uniquement. Ce workflow réexécute la suite de tests sur
+# la toolchain verrouillée (Python 3.12, lock --require-hashes — celle du champ
+# `toolchain.python_version` des preuves), puis rescelle
+# `evidence/release_metrics_v<version>.json` et le bloc « Preuves qualité » du
+# README via `tools/check_release_metrics.py --write`. Il remplace l'étape
+# manuelle du playbook de release par un bouton : le diff est publié en
+# artefact et poussé sur une branche `reseal/metrics-<run>` à intégrer par PR.
+#
+# Audit du versionnage (itér. 12) : aucune version n'est codée en dur ici — le
+# nom du fichier de preuves est dérivé de `pyproject.toml` à l'exécution.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reseal:
+    name: Resceller (py3.12, toolchain verrouillée)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Installer le projet (lock verrouillé)
+        shell: bash
+        run: |
+          python -m pip install --require-hashes -r requirements-dev-py312-linux.lock
+          python -m pip install --no-deps -e ".[dev,postgres]"
+      - name: Tests et couverture branches
+        run: >-
+          python -m pytest -q
+          --cov=corep_crr3 --cov-branch
+          --cov-report=term-missing --cov-report=xml --cov-report=json:coverage.json
+          --cov-fail-under=65
+          --junitxml=pytest-report.xml
+      - name: Resceller les preuves et le bloc README
+        shell: bash
+        run: |
+          VF="$(python -c 'import tomllib;print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"].replace(".","_"))')"
+          python tools/check_release_metrics.py \
+            --metrics "evidence/release_metrics_v${VF}.json" \
+            --readme README.md \
+            --coverage coverage.json \
+            --junit pytest-report.xml \
+            --write
+          {
+            echo "## Rescellement des métriques"
+            echo '```'
+            git diff --stat
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Publier le diff en artefact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: reseal-metrics
+          path: |
+            evidence/release_metrics_v*.json
+            README.md
+            coverage.json
+            pytest-report.xml
+      - name: Pousser la branche de rescellement
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "Aucun changement : les preuves publiées sont déjà exactes." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          V="$(python -c 'import tomllib;print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])')"
+          VF="${V//./_}"
+          BR="reseal/metrics-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BR"
+          git add "evidence/release_metrics_v${VF}.json" README.md
+          git commit -m "chore(evidence): rescellement des métriques v${V} (toolchain verrouillée py3.12)"
+          git push origin "$BR"
+          echo "Branche poussée : \`${BR}\` — ouvrir une PR pour intégrer." >> "$GITHUB_STEP_SUMMARY"

@@ -47,6 +47,12 @@ def _live_metrics(coverage_path: Path, junit_path: Path) -> dict[str, Any]:
         "tests_skipped": skipped,
         "coverage_combined": _round(totals["percent_covered"]),
         "coverage_branches": _round(totals["percent_branches_covered"]),
+        # mypy_modules était le dernier chiffre publié maintenu à la main : il
+        # avait dérivé (61 publié pour 66 fichiers réels après le typage strict
+        # global de v6.10.1). Dérivé du système de fichiers depuis l'itér. 11 —
+        # même périmètre que la gate CI `mypy src/corep_crr3` (tous les .py du
+        # paquet, sous-paquets inclus).
+        "mypy_modules": sum(1 for _ in Path("src/corep_crr3").rglob("*.py")),
     }
 
 

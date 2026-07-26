@@ -22,6 +22,15 @@ Emplacements gérés (découverte par motif) :
         (ex. migration `..._v4_2_7.sql`) conserve la version de son nom —
         c'est un label d'introduction, pas la version courante.
     - titre `Corep Engine Community vx.y.z — validation finale` dans **/*.sql
+    - bannières `COREP … vx.y.z`         dans **/*.bat (CRLF préservé)
+
+  CRITIQUES ajoutés (v6.10.1, itér. 11 — audit versionnage) :
+    - `**Version moteur : x.y.z**`       dans **/*.md (notes méthodologiques)
+    - titres H1 des docs vivants         (liste blanche `_LIVING_DOC_TITLES`)
+    - « installe COREP Engine … vx.y.z » dans **/README.md
+    - wheel du runbook, « hors contrat v… », « Phase 1 v… », en-tête du
+      registre `regulatory_release_registry.yaml`
+    - variantes `ACTIVE_SQL_MANIFEST_*.txt` (règle manifest élargie)
 
 Usage :
     python tools/bump_version.py --check            # CI : échoue si dérive
@@ -56,8 +65,21 @@ EXCLUDE_DIRS = {
     "venv",
     ".eggs",
 }
-SCAN_SUFFIXES = {".py", ".toml", ".json", ".txt", ".sql", ".md", ".yml", ".yaml"}
+SCAN_SUFFIXES = {".py", ".toml", ".json", ".txt", ".sql", ".md", ".yml", ".yaml", ".bat"}
 SCAN_NAMES = {"Dockerfile"}
+
+# Docs vivants dont le titre H1 porte la version produit courante (v6.10.1,
+# itér. 11) : la version d'un titre non listé ici reste figée (doc historique).
+_LIVING_DOC_TITLES = {
+    "BOOTSTRAP_SQL.md",
+    "DISASTER_RECOVERY_V6.md",
+    "ENTERPRISE_PRIVATE.md",
+    "INSTALLATION_UTILISATEUR.md",
+    "PRODUCTION_RUNBOOK_V6.md",
+    "PYTHON_COMPATIBILITY.md",
+    "REGULATORY_METHODOLOGY_INDEX.md",
+    "REGULATORY_RELEASE_GOVERNANCE_V6.md",
+}
 
 
 @dataclass(frozen=True)
@@ -96,7 +118,7 @@ RULES: tuple[Rule, ...] = (
     Rule(
         "manifest",
         True,
-        lambda p: p.name == "ACTIVE_SQL_MANIFEST.txt",
+        lambda p: p.name.startswith("ACTIVE_SQL_MANIFEST"),
         re.compile(rf"ACTIVE_SQL_MANIFEST[^\n]*?\bv(?P<v>{SEMVER})\b"),
     ),
     Rule(
@@ -147,6 +169,54 @@ RULES: tuple[Rule, ...] = (
         lambda p: p.suffix == ".py" and "release_contract" in p.name,
         re.compile(rf"(?P<v>{SEMVER})"),
     ),
+    Rule(
+        "methodology_stamp",
+        True,
+        lambda p: p.suffix == ".md",
+        re.compile(rf"\*\*Version moteur : (?P<v>{SEMVER})\*\*"),
+    ),
+    Rule(
+        "readme_install_intro",
+        True,
+        lambda p: p.name == "README.md",
+        re.compile(rf"installe COREP Engine (?:Enterprise|Community) v(?P<v>{SEMVER})"),
+    ),
+    Rule(
+        "living_doc_title",
+        True,
+        lambda p: p.name in _LIVING_DOC_TITLES,
+        re.compile(rf"(?m)^# [^\n]*?v(?P<v>{SEMVER})\b"),
+    ),
+    Rule(
+        "runbook_wheel",
+        True,
+        lambda p: p.name == "PRODUCTION_RUNBOOK_V6.md",
+        re.compile(rf"corep_crr3-(?P<v>{SEMVER})-py3-none-any\.whl"),
+    ),
+    Rule(
+        "python_policy_contract",
+        True,
+        lambda p: p.name == "PYTHON_COMPATIBILITY.md",
+        re.compile(rf"hors contrat v(?P<v>{SEMVER})"),
+    ),
+    Rule(
+        "bootstrap_profile_label",
+        True,
+        lambda p: p.name == "BOOTSTRAP_SQL.md",
+        re.compile(rf"Phase 1 v(?P<v>{SEMVER})"),
+    ),
+    Rule(
+        "release_registry_header",
+        True,
+        lambda p: p.name == "regulatory_release_registry.yaml",
+        re.compile(rf"Corep Engine Enterprise v(?P<v>{SEMVER})"),
+    ),
+    Rule(
+        "bat_banner",
+        False,
+        lambda p: p.suffix == ".bat",
+        re.compile(rf"COREP (?:Engine )?(?:Enterprise|Community) v(?P<v>{SEMVER})"),
+    ),
 )
 
 
@@ -155,6 +225,18 @@ class Finding:
     rule: Rule
     path: Path
     version: str
+
+
+def _read_text(path: Path, errors: str = "strict") -> str:
+    """Lecture avec fins de ligne préservées (les `.bat` restent en CRLF)."""
+    with path.open(encoding="utf-8", errors=errors, newline="") as handle:
+        return handle.read()
+
+
+def _write_text(path: Path, text: str) -> None:
+    """Écriture symétrique de :func:`_read_text` — aucune traduction de fin de ligne."""
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(text)
 
 
 def filename_version(path: Path) -> Optional[str]:
@@ -179,7 +261,7 @@ def iter_files(root: Path, self_path: Path):
 def collect(root: Path, self_path: Path) -> list[Finding]:
     findings: list[Finding] = []
     for p in iter_files(root, self_path):
-        text = p.read_text(encoding="utf-8", errors="ignore")
+        text = _read_text(p, errors="ignore")
         for rule in RULES:
             if not rule.match_file(p):
                 continue
@@ -251,7 +333,7 @@ def cmd_set(root: Path, self_path: Path, target: str, dry_run: bool) -> int:
 
     changes: list[tuple[str, str, str, str]] = []  # (fichier, règle, ancien, nouveau)
     for p in iter_files(root, self_path):
-        text = p.read_text(encoding="utf-8")
+        text = _read_text(p)
         new_text = text
         for rule in RULES:
             if not rule.match_file(p):
@@ -269,7 +351,7 @@ def cmd_set(root: Path, self_path: Path, target: str, dry_run: bool) -> int:
 
             new_text = rule.regex.sub(repl, new_text)
         if new_text != text and not dry_run:
-            p.write_text(new_text, encoding="utf-8")
+            _write_text(p, new_text)
 
     if not changes:
         print(f"Rien à changer : tout est déjà en {target}.")

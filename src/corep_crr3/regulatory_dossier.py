@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping, Optional, Sequence, TypedDict
 
+from . import __version__
+
 REQUIRED_GATES = (
     "official_taxonomy_package",
     "filing_rules_profile",
@@ -766,7 +768,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Validate regulatory readiness dossier")
     parser.add_argument("--input", type=Path)
     parser.add_argument("--generate", type=Path)
-    parser.add_argument("--version", default="6.9.0")
+    parser.add_argument("--version", default=__version__)
     parser.add_argument("--edition", choices=("COMMUNITY", "ENTERPRISE"), default="ENTERPRISE")
     args = parser.parse_args(argv)
     if args.generate:
